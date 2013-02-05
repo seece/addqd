@@ -2,8 +2,9 @@
 #define CONFIG_H
 
 #define SYN_NUMCHANNELS 2
-#define SYN_BUFFERSIZE 4096
+#define SYN_BUFFERSIZE 2048
 #define SYN_RATE        44100
+#define AUDIO_BANKS 2
 
 #define FLOAT_32BIT
 #ifdef FLOAT_32BIT

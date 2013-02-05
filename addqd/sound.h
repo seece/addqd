@@ -42,8 +42,14 @@ WAVEHDR WaveHDR =
 	0
 };
 
-void  InitSound()
-{
+struct AudioBank {
+	WAVEHDR header;
+	SAMPLE_TYPE samples[SYN_BUFFERSIZE];
+};
+
+struct AudioBank buffer[AUDIO_BANKS];
+
+void init_sound(void) {
 	/*
 #ifdef USE_SOUND_THREAD
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)RenderSound, lpSoundBuffer, 0, 0);
@@ -51,18 +57,25 @@ void  InitSound()
 	//RenderSound(lpSoundBuffer);
 #endif
 	*/
-	MMRESULT openResult = 
-		waveOutOpen	( &hWaveOut, WAVE_MAPPER, &WaveFMT, NULL, 0, CALLBACK_NULL );
 
-	if (openResult != MMSYSERR_NOERROR) {
-		fprintf(stderr, "Couldn't open audio device. Error code: 0x%X\n", openResult);
+	for (int i=0;i<AUDIO_BANKS;i++) {
+		buffer[i].header = WaveHDR;
 	}
 
-	waveOutPrepareHeader( hWaveOut, &WaveHDR, sizeof(WaveHDR) );
-	waveOutWrite		( hWaveOut, &WaveHDR, sizeof(WaveHDR) );	
+	MMRESULT result; 
+	result = waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, NULL, 0, CALLBACK_NULL);
+	//result = waveOutPrepareHeader(hWaveOut, &WaveHDR, sizeof(WaveHDR));
+	//result = waveOutWrite(hWaveOut, &WaveHDR, sizeof(WaveHDR));	
+
+	if (result != MMSYSERR_NOERROR) {
+		fprintf(stderr, "Couldn't open audio device. Error code: 0x%X\n", result);
+	}
 
 	fprintf(stdout, "Sound system ready.\n");
 }
 
+void free_sound(void) {
+	waveOutClose(hWaveOut);
+}
 
 #endif

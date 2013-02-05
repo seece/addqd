@@ -11,10 +11,13 @@ static short sampleBuffer[SYN_BUFFERSIZE + 22];
 
 int main(int argc, char argv[]) {
 	dprint(sizeof(Event));
-	InitSound();
+	init_sound();
 
-	WAITKEY();
+	while(!GetAsyncKeyState(VK_ESCAPE)) {
+		Sleep(1);
+	}
 
-	sndPlaySound( 0, 0 );
+	free_sound();
+
 	return 0;
 }
