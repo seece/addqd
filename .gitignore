@@ -1,0 +1,32 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Compiled executables
+*.exe
+
+# Visual Studio cruft
+Debug/
+Release/
+bin/
+obj/
+ipch/
+*.log
+*.suo
+*.ncb
+*.sbr
+*.user
+*.sdf
+*.opensdf
+*.filters
+
+# Project specific
