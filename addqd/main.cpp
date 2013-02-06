@@ -7,8 +7,6 @@
 #include "sound.h"
 #include "addsynth.h"
 
-static short sampleBuffer[SYN_BUFFERSIZE + 22];
-
 int main(int argc, char argv[]) {
 	dprint(sizeof(Event));
 	init_sound();
