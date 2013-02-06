@@ -45,7 +45,7 @@ struct Envelope {
 struct Instrument {
 	Spectra spectra;
 	Envelope env;
-	char * name;
+	//char * name;
 	float volume;
 };
 
@@ -80,10 +80,18 @@ struct Channel {
 	float volume;
 	float pan;
 	int pitch;	
-	EnvState state;
+	EnvState envstate;
 	EffectChain chain;
 };
 
+struct SynthState {
+	double time;
+	int channels;
+};
+
+void create_spectrum(Spectrum * spectrum);
+void syn_load_instrument(int channel, Instrument * instrument);
+void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length);
 void syn_init(int channels);
 void syn_free();

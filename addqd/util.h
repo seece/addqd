@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #define NULL 0
+#define MINUS_INFINITY INT_MIN
 
 #define dprint(expr) printf(#expr " = %d\n", expr);
 #define dprint1f(expr) printf(#expr " = %f\n", expr);
