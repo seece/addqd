@@ -61,7 +61,7 @@ static void CALLBACK fillSoundBuffer(HWAVEOUT hWaveOut,
 									 DWORD dwParam2 ) {
 
 	WAVEHDR* waveheader = (WAVEHDR*) dwParam1;
-	WAVEHDR * header;
+
 	double ratio;
 	int renderStart, renderTime;
 

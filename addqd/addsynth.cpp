@@ -5,6 +5,25 @@
 #include "addsynth.h"
 
 static double tt = 0.0;
+Channel * channelp;
+
+#define EFFECT_NONE 0
+#define EFFECT_TEST 1
+char * effectName[] = {"no effect", "test effect"};
+
+
+static void init_effect(Effect * effect) {
+	effect->name = effectName[EFFECT_NONE];
+	effect->numParams = 0;
+	
+}
+
+static void init_channel(Channel * channel) {
+	for (int i=0;i<SYN_MAX_EFFECTS;i++) {
+		init_effect(&channel->chain.effects[i]);
+	}
+	
+}
 
 // writes stereo samples to the given array
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
@@ -18,4 +37,18 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	}
 
 	tt += length/(double)AUDIO_RATE;
+}
+
+void syn_init(int channels) {
+	channelp = new Channel[channels];
+
+	for (int i=0;i<channels;i++) {
+		init_channel(&channelp[i]);
+	}
+
+	return;
+}
+
+void syn_free(void) {
+	delete channelp;
 }

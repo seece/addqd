@@ -9,6 +9,7 @@
 
 int main(int argc, char argv[]) {
 	dprint(sizeof(Event));
+	syn_init(1);
 	init_sound();
 
 	while(!GetAsyncKeyState(VK_ESCAPE)) {
