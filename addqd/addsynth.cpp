@@ -7,8 +7,8 @@
 #include "config.h"
 #include "addsynth.h"
 
-SynthState state;
-Channel * channelp;
+static SynthState state;
+static Channel * channelp;
 
 #define EFFECT_NONE 0
 #define EFFECT_TEST 1
