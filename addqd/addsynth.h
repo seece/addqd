@@ -7,6 +7,7 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define SYN_PARTIAL_AMOUNT 516
 #define SYN_MAX_EFFECTS 10
 #define SYN_MAX_PARAMETERS 8
+#define SYN_MAX_INSTRUMENTS 8
 
 #define EVENT_NONE		0
 #define EVENT_NOTE_ON	1
@@ -90,7 +91,8 @@ struct SynthState {
 };
 
 void create_spectrum(Spectrum * spectrum);
-void syn_load_instrument(int channel, Instrument * instrument);
+void syn_load_instrument(int slot, Instrument * instrument);
+void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length);
 void syn_init(int channels);
