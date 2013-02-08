@@ -64,30 +64,34 @@ static void CALLBACK fillSoundBuffer(HWAVEOUT hWaveOut,
 
 	double ratio;
 	int renderStart, renderTime;
-
+	int q;
 	switch(uMsg) {
 		case WOM_DONE:
 			MMRESULT result; 
 			waveOutUnprepareHeader(hWaveOut, waveheader, sizeof(WaveHDR));
-
-			currentBuffer = (currentBuffer + 1) % AUDIO_BANKS;
-
+			
 			renderStart = GetTickCount();
-			syn_render_block(buffer[currentBuffer].samples, AUDIO_BUFFERSIZE);
+			syn_render_block((float *)waveheader->lpData, AUDIO_BUFFERSIZE);
 			renderTime = GetTickCount()-renderStart;
 
-			buffer[currentBuffer].header = WaveHDR;
-			buffer[currentBuffer].header.lpData = (LPSTR)buffer[currentBuffer].samples;
-
-			result = waveOutPrepareHeader(hWaveOut, (LPWAVEHDR)&(buffer[currentBuffer].header), sizeof(buffer[currentBuffer].header));
+			result = waveOutPrepareHeader(hWaveOut, waveheader, sizeof(WAVEHDR));
 			CHECK_ERROR;
-			waveOutWrite(hWaveOut,(LPWAVEHDR)&(buffer[currentBuffer].header),sizeof(WAVEHDR));
+			waveOutWrite(hWaveOut,waveheader,sizeof(WAVEHDR));
 			CHECK_ERROR;
+			
+			q=0;
+			// check other banks too
+			for (int i=0;i<AUDIO_BANKS;i++) {
+				if (buffer[i].header.dwFlags & WHDR_INQUEUE) {
+					q++;
+				}
+			}
+			printf("%d buffers in queue\t%d\n", q, currentBuffer);
 
-			//ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
-
+			ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
+			
 			fprintf(stdout, "WOM_DONE\n");
-			fprintf(stdout, "wrote to buffer %d\t took: %d ms\n", currentBuffer, renderTime);
+			fprintf(stdout, "wrote to buffer %d\t took: %d ms %f\n", currentBuffer, renderTime, ratio);
 			break;
 		case WOM_OPEN:
 			fprintf(stdout, "WOM_OPEN\n");

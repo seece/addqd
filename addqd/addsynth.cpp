@@ -54,6 +54,52 @@ static void free_instrument(Instrument * ins) {
 }
 
 static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
+static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
+
+float fast_sine(double phase) {
+	int p = (fmod(phase, (double)PI*2.0)/(PI*2.0)) * SYN_SINE_TABLE_SIZE;
+	return sine_LUT[p];
+}
+
+void init_sine_table(void) {
+	double snr = 0.0;
+	double rms_lut = 0.0;
+	double rms = 0.0;
+	double diff = 0.0;
+
+	for (int i=0;i<SYN_SINE_TABLE_SIZE;i++) {
+		double p = i/(double)SYN_SINE_TABLE_SIZE;
+		sine_LUT[i] = sin(p*2.0*PI);
+	}
+
+	// check the LUT
+	for (int i=0;i<SYN_SINE_TABLE_SIZE;i++) {
+		double p = i/(double)SYN_SINE_TABLE_SIZE;
+		double r = sin(p*2.0*PI);
+		double r2 = fast_sine(p*2.0*PI); 
+		rms += r * r;
+		rms_lut += r2 * r2;
+
+		if (i % 100 == 0) {
+			printf("(%f %f)\n", r, r2);
+		}
+
+		if (diff < (r-r2)) {
+			diff = r-r2;
+		}
+	}
+
+	rms = sqrt(rms/(double)SYN_SINE_TABLE_SIZE);
+	rms_lut = sqrt(rms_lut/(double)SYN_SINE_TABLE_SIZE);
+
+	snr = pow(rms / rms_lut, 2.0);
+	printf("Sine table SNR: %f\n", snr);
+	printf("Sine table largest diff: %f\n", diff);
+
+
+}
+
+#define sine2(p) sine_LUT[(int)(fmod(p, (double)TAU)/(TAU) * SYN_SINE_TABLE_SIZE)]
 
 // writes stereo samples to the given array
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
@@ -70,12 +116,18 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 				double vol = channel_list[c].instrument->volume;
 				double sample = 0.0;
 				double phase = 2.0*3.14*t;
-
-				for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
+				//double pp = fmod(phase, TAU);
+				double pvol = 1.0;
+				//for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
+				for (int p=0;p<50;p++) {
 					double fp = f*p;
 					//if (fp > SYN_PARTIAL_HIGH_CUT) { continue; }
 
-					sample += (sin(phase*(fp)) * 0.05) * vol;
+					//sample += (sin(phase*(fp)) * 0.05) * vol;
+					//sample += (fast_sine(phase*(fp)) * 0.5) * vol;
+					pvol = pvol * 0.5;
+					//sample += (sine2(phase*(fp)) * (pvol)) * vol;
+					sample += (sin(phase*(fp)) * pvol) * vol;
 				}
 
 				buf[i*2] = sample;
@@ -144,6 +196,8 @@ void syn_init(int channels) {
 
 	state.channels = channels;
 	state.time = 0.0;
+
+	init_sine_table();
 
 	return;
 }

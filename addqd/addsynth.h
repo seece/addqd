@@ -10,6 +10,7 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define SYN_MAX_PARAMETERS 8
 #define SYN_MAX_INSTRUMENTS 8
 #define SYN_PARTIAL_HIGH_CUT 17500.0
+#define SYN_SINE_TABLE_SIZE 2205
 
 #define EVENT_NONE		0
 #define EVENT_NOTE_ON	1
@@ -19,7 +20,7 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define INTERPOLATION_LINEAR 1
 
 #define NOTEMAGIC 1.059460646483
-#define PI 3.14159265f
+#define PI 3.14159265
 #define TAU (2*PI)
 #define NOTEFREQ(pitch) pow(NOTEMAGIC, pitch) * 440.0
 
