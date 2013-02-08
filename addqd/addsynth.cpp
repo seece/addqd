@@ -53,23 +53,39 @@ static void free_instrument(Instrument * ins) {
 	}
 }
 
+static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
+
 // writes stereo samples to the given array
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	double bonus = 0.0;
-
-	for (int i=0;i<length;i++) {
+	
 		for (int c=0;c<state.channels;c++) {
 			if (channel_list[c].instrument == NULL) {
 				continue;
 			}
 
-			double vol = channel_list[c].instrument->volume;
-			double t = state.time + i/(double)AUDIO_RATE;
-			double f = 400.0 + bonus;
-			buf[i*2] = (sin(2.0*3.14*t*f) * 0.4) *( 1.0+sin(2.0*3.14*t*0.2)*0.5) * vol;
-			buf[i*2+1] = buf[i*2];
+			for (int i=0;i<length;i++) {
+				double t = state.time + i/(double)AUDIO_RATE;
+				double f = NOTEFREQ(channel_list[c].pitch);
+				double vol = channel_list[c].instrument->volume;
+				double sample = 0.0;
+				double phase = 2.0*3.14*t;
+
+				for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
+					double fp = f*p;
+					//if (fp > SYN_PARTIAL_HIGH_CUT) { continue; }
+
+					sample += (sin(phase*(fp)) * 0.05) * vol;
+				}
+
+				buf[i*2] = sample;
+				buf[i*2+1] = buf[i*2];
+			}
+
+			//temp_array[]
+			
 		}	
-	}
+	
 
 	state.time += length/(double)AUDIO_RATE;
 }

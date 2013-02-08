@@ -4,10 +4,12 @@
 
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 
-#define SYN_PARTIAL_AMOUNT 516
+// IL Harmor has 516 partials
+#define SYN_PARTIAL_AMOUNT 50
 #define SYN_MAX_EFFECTS 10
 #define SYN_MAX_PARAMETERS 8
 #define SYN_MAX_INSTRUMENTS 8
+#define SYN_PARTIAL_HIGH_CUT 17500.0
 
 #define EVENT_NONE		0
 #define EVENT_NOTE_ON	1
@@ -15,6 +17,11 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 
 #define INTERPOLATION_NONE 0
 #define INTERPOLATION_LINEAR 1
+
+#define NOTEMAGIC 1.059460646483
+#define PI 3.14159265f
+#define TAU (2*PI)
+#define NOTEFREQ(pitch) pow(NOTEMAGIC, pitch) * 440.0
 
 
 struct Event {
