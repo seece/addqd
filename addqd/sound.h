@@ -68,7 +68,7 @@ void poll_sound(void) {
 	MMRESULT result;
 
 	int renderlength = 441;	// in stereo samples
-	int rendersize = renderlength*2;	// in real samples
+	//int rendersize = renderlength*2;	// in real samples
 	int lookahead = 4;
 
 	time.wType = TIME_SAMPLES;
@@ -90,7 +90,7 @@ void poll_sound(void) {
 		}
 		printf("\n");
 		//if (startpos/rendersize == 0) {
-		//fprintf(stdout, "%d\t %d\t%d\t%d\n", (startpos/rendersize), startpos, rendersize, (time.u.sample));
+		fprintf(stdout, "%d\t %d\t%d\t%d\n", (startpos/renderlength), startpos, renderlength, (time.u.sample));
 		//}
 		
 		// the synth wants the length as stereo samples
