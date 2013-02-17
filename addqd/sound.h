@@ -1,23 +1,24 @@
 /*
-* Include this only from main.
+* Include this only from main.cpp
 */
 
 #ifndef SOUND_H
 #define SOUND_H
 
+#include <climits>
 #include <windows.h>
 #include <windowsx.h>
 #include <mmsystem.h>
 #include <mmreg.h>
 
-#include <cmath>
-
 #include "config.h"
 #include "addsynth.h"
 
-#define CHECK_ERROR if (result != MMSYSERR_NOERROR) { fprintf(stderr, "Audio error! Error code: %d\n", result); }
+#define CHECK_WAVEOUT_ERROR if (result != MMSYSERR_NOERROR) { fprintf(stderr, "Audio error at %d! Error code: %d\n", __LINE__ , result); }
+#define SAFE_WAVEOUT_ACTION(sta) result = sta; CHECK_WAVEOUT_ERROR
 
 HWAVEOUT	hWaveOut;
+static SAMPLE_TYPE lpBuffer[AUDIO_BUFFERSIZE*2];
 
 WAVEFORMATEX WaveFMT =
 {
@@ -36,7 +37,7 @@ WAVEFORMATEX WaveFMT =
 
 WAVEHDR WaveHDR = 
 {
-	NULL,	// this will be filled in later in the callback
+	NULL,	// this will be filled in later 
 	AUDIO_BUFFERSIZE*sizeof(SAMPLE_TYPE)*2,
 	0, 
 	0, 
@@ -46,98 +47,48 @@ WAVEHDR WaveHDR =
 	0
 };
 
-struct AudioBank {
-	WAVEHDR header;
-	SAMPLE_TYPE samples[AUDIO_BUFFERSIZE*2];
-};
-
-struct AudioBank buffer[AUDIO_BANKS];
-
-static void CALLBACK fillSoundBuffer(HWAVEOUT hWaveOut,
-									 UINT uMsg,
-									 DWORD dwInstance,
-									 DWORD dwParam1,
-									 DWORD dwParam2 ) {
-
-	WAVEHDR* waveheader = (WAVEHDR*) dwParam1;
-
-	double ratio;
-	int renderStart, renderTime;
-	int q;
-	switch(uMsg) {
-		case WOM_DONE:
-			MMRESULT result; 
-			waveOutUnprepareHeader(hWaveOut, waveheader, sizeof(WaveHDR));
-			
-			renderStart = GetTickCount();
-			syn_render_block((float *)waveheader->lpData, AUDIO_BUFFERSIZE);
-			renderTime = GetTickCount()-renderStart;
-
-			result = waveOutPrepareHeader(hWaveOut, waveheader, sizeof(WAVEHDR));
-			CHECK_ERROR;
-			waveOutWrite(hWaveOut,waveheader,sizeof(WAVEHDR));
-			CHECK_ERROR;
-			
-			q=0;
-			// check other banks too
-			for (int i=0;i<AUDIO_BANKS;i++) {
-				if (buffer[i].header.dwFlags & WHDR_INQUEUE) {
-					q++;
-				}
-			}
-			printf("%d buffers in queue\t\n", q);
-			Sleep(10);
-			ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
-			
-			fprintf(stdout, "WOM_DONE\n");
-			fprintf(stdout, "wrote to buffer %X\t took: %d ms %f\n", waveheader->lpData, renderTime, ratio);
-			break;
-		case WOM_OPEN:
-			fprintf(stdout, "WOM_OPEN\n");
-
-			break;
-		case WOM_CLOSE:
-			fprintf(stdout, "WOM_CLOSE\n");
-			break;
-		default:
-			fprintf(stderr, "Illegal audio callback.\n");
-			break;
-	}
-}
-
+int renderpos = 0;	// rendering position in lpBuffer in samples
 
 void init_sound(void) {
-	/*
-#ifdef USE_SOUND_THREAD
-	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)RenderSound, lpSoundBuffer, 0, 0);
-#else
-	
-#endif
-	*/
+	MMRESULT result;
 
-	for (int i=0;i<AUDIO_BANKS;i++) {
-		// TODO fill the initial blocks with silence
-		syn_render_block(buffer[i].samples, AUDIO_BUFFERSIZE);
-		buffer[i].header = WaveHDR;
-		buffer[i].header.lpData = (LPSTR)buffer[i].samples;
+	WaveHDR.lpData = (LPSTR)lpBuffer;
+	WaveHDR.dwFlags |= WHDR_BEGINLOOP | WHDR_ENDLOOP;
+	WaveHDR.dwLoops = INT_MAX;
+
+	syn_render_block(lpBuffer, AUDIO_BUFFERSIZE);
+
+	SAFE_WAVEOUT_ACTION(waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, 0, 0, CALLBACK_NULL));
+	SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(	hWaveOut, &WaveHDR, sizeof(WaveHDR)));
+	SAFE_WAVEOUT_ACTION(waveOutWrite		(	hWaveOut, &WaveHDR, sizeof(WaveHDR)));
+}
+
+void poll_sound(void) {
+	MMTIME time;
+	MMRESULT result;
+
+	int renderlength = 441;	// in stereo samples
+	int rendersize = renderlength*2;	// in real samples
+	int lookahead = 0;
+
+	SAFE_WAVEOUT_ACTION(waveOutGetPosition(hWaveOut, &time, sizeof(time)));
+	//fprintf(stdout, "samples: %d\n", time.u.sample);
+
+	while (time.u.sample + lookahead*rendersize > renderpos) {
+		// render block at lpBuffer[renderpos] with the length renderlength
+		
+		int startpos = renderpos % (AUDIO_BUFFERSIZE*2);
+
+		fprintf(stdout, "%d\t %d\t%d\t%d\n", (startpos/rendersize), startpos, rendersize, (time.u.sample));
+		
+		syn_render_block((lpBuffer + startpos), renderlength);
+		renderpos += rendersize;
 	}
-
-	MMRESULT result; 
-	result = waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, (DWORD_PTR)fillSoundBuffer, (DWORD)&WaveHDR, CALLBACK_FUNCTION); 
-	CHECK_ERROR;
-
-	for (int i=0;i<AUDIO_BANKS;i++) {
-		result = waveOutPrepareHeader(hWaveOut, &(buffer[i].header), sizeof(WAVEHDR));
-		CHECK_ERROR;
-		result = waveOutWrite(hWaveOut, &(buffer[i].header), sizeof(WAVEHDR));	
-		CHECK_ERROR;
-	}
-	
-	fprintf(stdout, "Sound system ready.\n");
 }
 
 void free_sound(void) {
-	waveOutClose(hWaveOut);
+	MMRESULT result;
+	SAFE_WAVEOUT_ACTION(waveOutClose(hWaveOut));
 }
 
 #endif

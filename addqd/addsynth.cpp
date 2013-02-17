@@ -102,41 +102,44 @@ void init_sine_table(void) {
 #define sine2(p) sine_LUT[(int)(fmod(p, (double)TAU)/(TAU) * SYN_SINE_TABLE_SIZE)]
 
 // writes stereo samples to the given array
+// buf		sample buffer
+// length	buffer length in stereo samples
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	double bonus = 0.0;
 	
-		for (int c=0;c<state.channels;c++) {
-			if (channel_list[c].instrument == NULL) {
-				continue;
+	for (int c=0;c<state.channels;c++) {
+		if (channel_list[c].instrument == NULL) {
+			continue;
+		}
+
+		for (int i=0;i<length;i++) {
+			double t = state.time + i/(double)AUDIO_RATE;
+			double f = NOTEFREQ(channel_list[c].pitch);
+			double vol = channel_list[c].instrument->volume;
+
+			double sample = 0.0;
+			double phase = 2.0*3.14*t;
+			//double pp = fmod(phase, TAU);
+			double pvol = 0.5*(1.0+sin(t));
+			//for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
+			for (int p=0;p<5;p++) {
+				double fp = f*p;
+				//if (fp > SYN_PARTIAL_HIGH_CUT) { continue; }
+
+				//sample += (sin(phase*(fp)) * 0.05) * vol;
+				//sample += (fast_sine(phase*(fp)) * 0.5) * vol;
+				pvol = pvol * 0.5;
+				//sample += (sine2(phase*(fp)) * (pvol)) * vol;
+				sample += (sin(phase*(fp)) * pvol) * vol;
 			}
 
-			for (int i=0;i<length;i++) {
-				double t = state.time + i/(double)AUDIO_RATE;
-				double f = NOTEFREQ(channel_list[c].pitch);
-				double vol = channel_list[c].instrument->volume;
-				double sample = 0.0;
-				double phase = 2.0*3.14*t;
-				//double pp = fmod(phase, TAU);
-				double pvol = 1.0;
-				//for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
-				for (int p=0;p<50;p++) {
-					double fp = f*p;
-					//if (fp > SYN_PARTIAL_HIGH_CUT) { continue; }
+			buf[i*2] = sample;
+			buf[i*2+1] = sample;
+		}
 
-					//sample += (sin(phase*(fp)) * 0.05) * vol;
-					//sample += (fast_sine(phase*(fp)) * 0.5) * vol;
-					pvol = pvol * 0.5;
-					//sample += (sine2(phase*(fp)) * (pvol)) * vol;
-					sample += (sin(phase*(fp)) * pvol) * vol;
-				}
-
-				buf[i*2] = sample;
-				buf[i*2+1] = buf[i*2];
-			}
-
-			//temp_array[]
+		//temp_array[]
 			
-		}	
+	}	
 	
 
 	state.time += length/(double)AUDIO_RATE;

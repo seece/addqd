@@ -24,6 +24,7 @@ int main(int argc, char argv[]) {
 	init_sound();
 
 	while(!GetAsyncKeyState(VK_ESCAPE)) {
+		poll_sound();
 		Sleep(1);
 	}
 
