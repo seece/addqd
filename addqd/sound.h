@@ -52,7 +52,6 @@ struct AudioBank {
 };
 
 struct AudioBank buffer[AUDIO_BANKS];
-static int currentBuffer = 0;	// the next buffer to write to
 
 static void CALLBACK fillSoundBuffer(HWAVEOUT hWaveOut,
 									 UINT uMsg,
@@ -86,12 +85,12 @@ static void CALLBACK fillSoundBuffer(HWAVEOUT hWaveOut,
 					q++;
 				}
 			}
-			printf("%d buffers in queue\t%d\n", q, currentBuffer);
-
+			printf("%d buffers in queue\t\n", q);
+			Sleep(10);
 			ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
 			
 			fprintf(stdout, "WOM_DONE\n");
-			fprintf(stdout, "wrote to buffer %d\t took: %d ms %f\n", currentBuffer, renderTime, ratio);
+			fprintf(stdout, "wrote to buffer %X\t took: %d ms %f\n", waveheader->lpData, renderTime, ratio);
 			break;
 		case WOM_OPEN:
 			fprintf(stdout, "WOM_OPEN\n");
@@ -127,7 +126,6 @@ void init_sound(void) {
 	result = waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, (DWORD_PTR)fillSoundBuffer, (DWORD)&WaveHDR, CALLBACK_FUNCTION); 
 	CHECK_ERROR;
 
-	currentBuffer = AUDIO_BANKS-1;	
 	for (int i=0;i<AUDIO_BANKS;i++) {
 		result = waveOutPrepareHeader(hWaveOut, &(buffer[i].header), sizeof(WAVEHDR));
 		CHECK_ERROR;
