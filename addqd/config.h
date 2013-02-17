@@ -4,7 +4,7 @@
 #define AUDIO_NUMCHANNELS 2
 #define AUDIO_RATE        44100
 #define AUDIO_BUFFERSIZE  (44100)
-#define AUDIO_BANKS 3
+#define AUDIO_BUFFERS 2
 
 #define FLOAT_32BIT
 #ifdef FLOAT_32BIT

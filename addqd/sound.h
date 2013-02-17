@@ -18,7 +18,11 @@
 #define SAFE_WAVEOUT_ACTION(sta) result = sta; CHECK_WAVEOUT_ERROR
 
 HWAVEOUT	hWaveOut;
-static SAMPLE_TYPE lpBuffer[AUDIO_BUFFERSIZE*2];
+
+struct Buffer {
+	WAVEHDR header;
+	SAMPLE_TYPE data[AUDIO_BUFFERSIZE*2];
+};
 
 WAVEFORMATEX WaveFMT =
 {
@@ -47,20 +51,32 @@ WAVEHDR WaveHDR =
 	0
 };
 
+int currentBuffer;
+static Buffer buffers[AUDIO_BUFFERS];
 int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 
 void init_sound(void) {
 	MMRESULT result;
 
-	WaveHDR.lpData = (LPSTR)lpBuffer;
-	WaveHDR.dwFlags |= WHDR_BEGINLOOP | WHDR_ENDLOOP;
-	WaveHDR.dwLoops = INT_MAX;
+	for (int i=0;i<AUDIO_BUFFERS;i++) {
+		buffers[i].header=WaveHDR;
+		buffers[i].header.lpData = (LPSTR)buffers[i].data;
+		syn_render_block(buffers[i].data, AUDIO_BUFFERSIZE);
 
-	syn_render_block(lpBuffer, AUDIO_BUFFERSIZE);
+		SAFE_WAVEOUT_ACTION(waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, 0, 0, CALLBACK_NULL));
+		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(	hWaveOut, &buffers[i].header, sizeof(buffers[i].header)));
+		SAFE_WAVEOUT_ACTION(waveOutWrite		(	hWaveOut, &buffers[i].header, sizeof(buffers[i].header)));
+	}
 
-	SAFE_WAVEOUT_ACTION(waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, 0, 0, CALLBACK_NULL));
-	SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(	hWaveOut, &WaveHDR, sizeof(WaveHDR)));
-	SAFE_WAVEOUT_ACTION(waveOutWrite		(	hWaveOut, &WaveHDR, sizeof(WaveHDR)));
+	currentBuffer = 0;
+
+	//WaveHDR.lpData = (LPSTR)lpBuffer;
+	//WaveHDR.dwFlags |= WHDR_BEGINLOOP | WHDR_ENDLOOP;
+	//WaveHDR.dwLoops = INT_MAX;
+
+	//syn_render_block(lpBuffer, AUDIO_BUFFERSIZE);
+
+
 }
 
 void poll_sound(void) {
@@ -73,29 +89,16 @@ void poll_sound(void) {
 
 	time.wType = TIME_SAMPLES;
 	SAFE_WAVEOUT_ACTION(waveOutGetPosition(hWaveOut, &time, sizeof(time)));
-	//fprintf(stdout, "samples: %d\n", time.u.sample);
 
-	while ((time.u.sample + lookahead*renderlength)*2 > renderpos) {
-		// render block at lpBuffer[renderpos] with the length renderlength
-		
-		int startpos = renderpos % AUDIO_BUFFERSIZE;
+	if (buffers[currentBuffer].header.dwFlags & WHDR_DONE != 0) {
+		SAFE_WAVEOUT_ACTION(
+			waveOutUnprepareHeader(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR));
+			);
 
-		printf("\r");
-		for (int i=0;i<AUDIO_BUFFERSIZE/renderlength;i++) {
-			if (startpos/renderlength >= i) {
-				printf("=");
-			} else {
-				printf(".");
-			}
-		}
-		printf("\n");
-		//if (startpos/rendersize == 0) {
-		fprintf(stdout, "%d\t %d\t%d\t%d\n", (startpos/renderlength), startpos, renderlength, (time.u.sample));
-		//}
-		
-		// the synth wants the length as stereo samples
-		syn_render_block((lpBuffer + startpos*2), renderlength);
-		renderpos += renderlength;
+		syn_render_block(buffers[currentBuffer].data, AUDIO_BUFFERSIZE);
+		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(	hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
+		SAFE_WAVEOUT_ACTION(waveOutWrite		(	hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
+		currentBuffer=(currentBuffer+1) % AUDIO_BUFFERS;
 	}
 }
 
