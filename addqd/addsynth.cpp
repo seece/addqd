@@ -122,7 +122,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 			//double pp = fmod(phase, TAU);
 			double pvol = 0.5*(1.0+sin(t));
 			//for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
-			for (int p=0;p<5;p++) {
+			for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
 				double fp = f*p;
 				//if (fp > SYN_PARTIAL_HIGH_CUT) { continue; }
 

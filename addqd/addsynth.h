@@ -5,7 +5,7 @@
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 
 // IL Harmor has 516 partials
-#define SYN_PARTIAL_AMOUNT 50
+#define SYN_PARTIAL_AMOUNT 20
 #define SYN_MAX_EFFECTS 10
 #define SYN_MAX_PARAMETERS 8
 #define SYN_MAX_INSTRUMENTS 8
