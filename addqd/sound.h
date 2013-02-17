@@ -47,7 +47,7 @@ WAVEHDR WaveHDR =
 	0
 };
 
-int renderpos = 0;	// rendering position in lpBuffer in samples
+int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 
 void init_sound(void) {
 	MMRESULT result;
@@ -69,20 +69,33 @@ void poll_sound(void) {
 
 	int renderlength = 441;	// in stereo samples
 	int rendersize = renderlength*2;	// in real samples
-	int lookahead = 0;
+	int lookahead = 4;
 
+	time.wType = TIME_SAMPLES;
 	SAFE_WAVEOUT_ACTION(waveOutGetPosition(hWaveOut, &time, sizeof(time)));
 	//fprintf(stdout, "samples: %d\n", time.u.sample);
 
-	while (time.u.sample + lookahead*rendersize > renderpos) {
+	while ((time.u.sample + lookahead*renderlength)*2 > renderpos) {
 		// render block at lpBuffer[renderpos] with the length renderlength
 		
-		int startpos = renderpos % (AUDIO_BUFFERSIZE*2);
+		int startpos = renderpos % AUDIO_BUFFERSIZE;
 
-		fprintf(stdout, "%d\t %d\t%d\t%d\n", (startpos/rendersize), startpos, rendersize, (time.u.sample));
+		printf("\r");
+		for (int i=0;i<AUDIO_BUFFERSIZE/renderlength;i++) {
+			if (startpos/renderlength >= i) {
+				printf("=");
+			} else {
+				printf(".");
+			}
+		}
+		printf("\n");
+		//if (startpos/rendersize == 0) {
+		//fprintf(stdout, "%d\t %d\t%d\t%d\n", (startpos/rendersize), startpos, rendersize, (time.u.sample));
+		//}
 		
-		syn_render_block((lpBuffer + startpos), renderlength);
-		renderpos += rendersize;
+		// the synth wants the length as stereo samples
+		syn_render_block((lpBuffer + startpos*2), renderlength);
+		renderpos += renderlength;
 	}
 }
 
