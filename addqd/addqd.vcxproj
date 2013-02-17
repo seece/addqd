@@ -64,6 +64,7 @@
   <ItemGroup>
     <ClCompile Include="addsynth.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sound.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>

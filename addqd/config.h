@@ -3,7 +3,7 @@
 
 #define AUDIO_NUMCHANNELS (2)
 #define AUDIO_RATE        (44100)
-#define AUDIO_BUFFERSIZE  (2048*2)
+#define AUDIO_BUFFERSIZE  (2048)
 #define AUDIO_BUFFERS (2)
 
 #define FLOAT_32BIT
