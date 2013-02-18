@@ -104,6 +104,7 @@ void init_sine_table(void) {
 // writes stereo samples to the given array
 // buf		sample buffer
 // length	buffer length in stereo samples
+// Compatible with SynthRender_t found from sound.h
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	double bonus = 0.0;
 	

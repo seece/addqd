@@ -12,35 +12,36 @@ void init_sound(void) {
 	for (int i=0;i<AUDIO_BUFFERS;i++) {
 		buffers[i].header=WaveHDR;
 		buffers[i].header.lpData = (LPSTR)buffers[i].data;
-		syn_render_block(buffers[i].data, AUDIO_BUFFERSIZE);
-		
-		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(	hWaveOut, &buffers[i].header, sizeof(buffers[i].header)));
-		SAFE_WAVEOUT_ACTION(waveOutWrite		(	hWaveOut, &buffers[i].header, sizeof(buffers[i].header)));
+		buffers[i].header.dwFlags |= WHDR_DONE;	// reset the buffers, so they are rendered into on the first run
 	}
 
 	currentBuffer = 0;
 }
 
-void poll_sound(void) {
+// If necessary, renders a new block of audio and "swaps" the buffers
+void poll_sound(SynthRender_t synthRender) {
 	MMRESULT result;
 	int renderStart, renderTime;
 
-	if ((buffers[currentBuffer].header.dwFlags & WHDR_DONE) != 0) {
-		SAFE_WAVEOUT_ACTION(
-			waveOutUnprepareHeader(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR));
-			);
+	if (buffers[currentBuffer].header.dwFlags & WHDR_DONE) {
+		// On the first round only WHDR_DONE flag is set
+		if (buffers[currentBuffer].header.dwFlags & WHDR_PREPARED) {
+			SAFE_WAVEOUT_ACTION(
+				waveOutUnprepareHeader(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR));
+				);
+		}
 
 		renderStart = GetTickCount();
-		syn_render_block(buffers[currentBuffer].data, AUDIO_BUFFERSIZE);
+		synthRender(buffers[currentBuffer].data, AUDIO_BUFFERSIZE);
 		renderTime = GetTickCount()-renderStart;
 
-		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(	hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
-		SAFE_WAVEOUT_ACTION(waveOutWrite		(	hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
+		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
+		SAFE_WAVEOUT_ACTION(waveOutWrite		(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
 		currentBuffer=(currentBuffer+1) % AUDIO_BUFFERS;
 
 		#ifdef DEBUG_PRINT_SPEED
-		double ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
-		fprintf(stdout, "took %d ms\t %f x realtime \n", renderTime, ratio);
+			double ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
+			fprintf(stdout, "took %d ms\t %f x realtime \n", renderTime, ratio);
 		#endif
 	}
 }

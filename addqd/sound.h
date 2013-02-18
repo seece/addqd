@@ -12,7 +12,6 @@
 #include <mmreg.h>
 
 #include "config.h"
-#include "addsynth.h"
 
 #define CHECK_WAVEOUT_ERROR if (result != MMSYSERR_NOERROR) { fprintf(stderr, "Audio error at %d! Error code: %d\n", __LINE__ , result); }
 #define SAFE_WAVEOUT_ACTION(sta) result = sta; CHECK_WAVEOUT_ERROR
@@ -58,7 +57,7 @@ static int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 typedef void (*SynthRender_t)(SAMPLE_TYPE * buf, int length);
 
 void init_sound(void);
-void poll_sound(void);
+void poll_sound(SynthRender_t);	// needs the synth callback as a parameter
 void free_sound(void);
 
 #endif
