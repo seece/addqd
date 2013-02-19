@@ -54,7 +54,7 @@ static int currentBuffer;
 static Buffer buffers[AUDIO_BUFFERS];
 static int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 
-typedef void (*SynthRender_t)(SAMPLE_TYPE * buf, int length);
+typedef void (*SynthRender_t)(SAMPLE_TYPE *, int);
 
 void init_sound(void);
 void poll_sound(SynthRender_t);	// needs the synth callback as a parameter

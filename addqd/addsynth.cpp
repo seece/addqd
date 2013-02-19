@@ -10,7 +10,9 @@
 static SynthState state;
 static Channel * channel_list;
 // an array of instrument pointers
+// TODO get this from the outside
 static Instrument * instrument_list[SYN_MAX_INSTRUMENTS];
+static Voice voice_list[SYN_MAX_VOICES];
 
 #define EFFECT_NONE 0
 #define EFFECT_TEST 1
@@ -21,12 +23,26 @@ static void init_effect(Effect * effect) {
 	effect->numParams = 0;
 }
 
+static void init_voice(Voice * v) {
+	v->active = false;
+	v->channel = NULL;
+	v->envstate.hold = false;
+	v->envstate.lastPress = 0;
+	v->pitch = 0;
+}
+
+static void init_voices() {
+	for (int i=0;i<SYN_MAX_VOICES;i++) {
+		init_voice(&voice_list[i]);
+	}
+}
+
 static void init_channel(Channel * channel) {
 	channel->pan = 1.0f;
 	channel->volume = 1.0f;
-	channel->pitch = 0;
-	channel->envstate.hold = false;
-	channel->envstate.lastPress = MINUS_INFINITY;
+	//channel->pitch = 0;
+	//channel->envstate.hold = false;
+	//channel->envstate.lastPress = MINUS_INFINITY;
 
 	channel->chain.numberOfEffects = 0;
 	channel->instrument = NULL;
@@ -108,34 +124,13 @@ void init_sine_table(void) {
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	double bonus = 0.0;
 	
-	for (int c=0;c<state.channels;c++) {
-		if (channel_list[c].instrument == NULL) {
+	for (int v=0;v<SYN_MAX_VOICES;v++) {
+		if (!voice_list[v].active) {
 			continue;
 		}
 
-		for (int i=0;i<length;i++) {
-			double t = state.time + i/(double)AUDIO_RATE;
-			double f = NOTEFREQ(channel_list[c].pitch);
-			double vol = channel_list[c].instrument->volume;
-
-			double sample = 0.0;
-			double phase = 2.0*3.14*t;
-			//double pp = fmod(phase, TAU);
-			double pvol = 0.5*(1.0+sin(t));
-			//for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
-			for (int p=0;p<SYN_PARTIAL_AMOUNT;p++) {
-				double fp = f*p;
-				//if (fp > SYN_PARTIAL_HIGH_CUT) { continue; }
-
-				//sample += (sin(phase*(fp)) * 0.05) * vol;
-				//sample += (fast_sine(phase*(fp)) * 0.5) * vol;
-				pvol = pvol * 0.5;
-				//sample += (sine2(phase*(fp)) * (pvol)) * vol;
-				sample += (sin(phase*(fp)) * pvol) * vol;
-			}
-
-			buf[i*2] = sample;
-			buf[i*2+1] = sample;
+		if (voice_list[v].channel->instrument == NULL) {
+			continue;
 		}
 
 		//temp_array[]
@@ -188,6 +183,8 @@ void create_spectrum(Spectrum * spectrum) {
 
 void syn_init(int channels) {
 	channel_list = new Channel[channels];
+
+	init_voices();
 
 	for (int i=0;i<channels;i++) {
 		init_channel(&channel_list[i]);

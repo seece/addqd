@@ -1,3 +1,14 @@
+/*
+*	Each channel can have multiple voices assigned to them.
+*	Each voice has a pitch, envelope etc. and after the voice
+*	is rendered, it's added to the channel audio bus.
+*
+*	After this, all DSP effects for this channel are processed,
+*	and then routed to the main bus.
+*
+*	A voice can change during the buffer rendering.
+*/
+
 #ifndef ADDSYNTH_H
 #define ADDSYNTH_H
 #include "config.h"
@@ -11,6 +22,7 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define SYN_MAX_INSTRUMENTS 8
 #define SYN_PARTIAL_HIGH_CUT 17500.0
 #define SYN_SINE_TABLE_SIZE 2205
+#define SYN_MAX_VOICES 8
 
 #define EVENT_NONE		0
 #define EVENT_NOTE_ON	1
@@ -88,9 +100,14 @@ struct Channel {
 	Instrument * instrument;
 	float volume;
 	float pan;
-	int pitch;	
-	EnvState envstate;
 	EffectChain chain;
+};
+
+struct Voice {
+	int pitch;
+	EnvState envstate;
+	bool active;
+	Channel * channel;
 };
 
 struct SynthState {
