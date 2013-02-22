@@ -50,6 +50,8 @@ static void init_channel(Channel * channel) {
 	for (int i=0;i<SYN_MAX_EFFECTS;i++) {
 		init_effect(&channel->chain.effects[i]);
 	}
+
+	memset(channel->buffer, 0, AUDIO_BUFFERSIZE*2);
 }
 
 static void init_instrument(Instrument * ins) {
@@ -123,22 +125,90 @@ void init_sine_table(void) {
 // Compatible with SynthRender_t found from sound.h
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	double bonus = 0.0;
+	double sample = 0.0;
+	double t;
+	
+	double f;
+
+	if (length > AUDIO_BUFFERSIZE*2) {
+		fprintf(stderr, "Warning: Requesting too big buffersize: %d\n ", length);
+	}
+
+	int active = 0;
 	
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
 		if (!voice_list[v].active) {
 			continue;
 		}
 
+		active++;
+
 		if (voice_list[v].channel->instrument == NULL) {
 			continue;
 		}
 
-		//temp_array[]
-			
+		f = NOTEFREQ(voice_list[v].pitch);
+		double rate = (double)AUDIO_RATE;
+
+		for (int i=0;i<length;i++) {
+			t = state.time + i/rate;
+			sample = 0.5f + sinf(2.0*PI*t*f)*0.5f;
+			sample *= 0.5f;
+
+			//buf[i*2] = sample;
+			voice_list[v].channel->buffer[i*2] += sample;
+			voice_list[v].channel->buffer[i*2+1] += sample;
+
+			//printf("m,agic %f\n", voice_list[v].channel->buffer[i*2]);
+		}
 	}	
-	
+
+	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
+
+	for (int c=0;c<state.channels;c++) {
+		if (channel_list[c].volume == 0.0) {
+			continue;
+		}
+
+		for (int i=0;i<length;i++) {
+			// TODO clipping
+			buf[i*2] += channel_list[c].buffer[i*2];
+			buf[i*2+1] += channel_list[c].buffer[i*2+1];
+			//voice_list[v].channel->buffer[i*2+1];
+			//channel_list[c].buffer[i*2] = 0;
+			//channel_list[c].buffer[i*2+1] = 0;
+		}
+
+		memset(&channel_list[c].buffer, 0, AUDIO_BUFFERSIZE*2*sizeof(SAMPLE_TYPE));
+	}
 
 	state.time += length/(double)AUDIO_RATE;
+
+	printf("voices active: %d\n", active);
+}
+
+
+EnvState constructEnvstate() {
+	EnvState s;
+	s.hold = true;
+	s.lastPress = state.time;
+	return s;
+}
+
+void syn_play_note(int channel, int pitch) {
+	for (int v=0;v<SYN_MAX_VOICES;v++) {
+		if (voice_list[v].active) {
+			continue;
+		}
+
+		voice_list[v].active = true;
+		voice_list[v].channel = &channel_list[channel];
+		voice_list[v].envstate = constructEnvstate();
+		voice_list[v].pitch = pitch;
+		return;
+	}
+
+	fprintf(stderr, "Warning: voice buffer overflow!\n");
 }
 
 // loads an instrument to the given slot

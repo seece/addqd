@@ -101,6 +101,7 @@ struct Channel {
 	float volume;
 	float pan;
 	EffectChain chain;
+	SAMPLE_TYPE buffer[AUDIO_BUFFERSIZE*2];
 };
 
 struct Voice {
@@ -121,6 +122,7 @@ void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length);
 void syn_init(int channels);
+void syn_play_note(int channel, int pitch);	// for testing
 void syn_free();
 
 #endif
