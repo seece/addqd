@@ -27,6 +27,24 @@ void keys_init() {
 	keymap[0x4f] = 14;	// O
 	keymap[0x30] = 15;	// 0
 	keymap[0x50] = 16;	// P
+
+	keymap[0x5A] = -12 + 0;		// Z
+	keymap[0x53] = -12 + 1;		// S
+	keymap[0x58] = -12 + 2;		// X
+	keymap[0x44] = -12 + 3;		// D
+	keymap[0x43] = -12 + 4;		// C
+	keymap[0x56] = -12 + 5;		// V
+	keymap[0x47] = -12 + 6;		// G
+	keymap[0x42] = -12 + 7;		// B
+	keymap[0x48] = -12 + 8;		// H
+	keymap[0x4E] = -12 + 9;		// N
+	keymap[0x4A] = -12 + 10;	// J
+	keymap[0x4D] = -12 + 11;	// M
+	keymap[VK_OEM_COMMA]	= -12 + 12;	// ,
+	keymap[0x4C]			= -12 + 13;	// L
+	keymap[VK_OEM_PERIOD]	= -12 + 14;	// .
+	keymap[0x4f]			= -12 + 15;	// Ö
+	keymap[VK_OEM_MINUS]	= -12 + 16;	// -
 }
 
 void keys_check_presses() {

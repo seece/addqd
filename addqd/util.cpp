@@ -30,3 +30,4 @@ float fmax_func(float a, float b) {
 float lerp_func(float a, float b, float dist) {
 	return b * dist + a * (1.0f-dist);
 }
+

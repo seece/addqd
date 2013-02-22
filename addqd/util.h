@@ -17,5 +17,6 @@ float fmin_func(float a, float b);
 float fmax_func(float a, float b);
 // if dist == 1.0, lerp = b
 float lerp_func(float a, float b, float dist);
+#define saturate(a) min(1.0, max(0.0, a))
 
 #endif

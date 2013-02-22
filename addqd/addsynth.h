@@ -24,6 +24,8 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define SYN_SINE_TABLE_SIZE 2205
 #define SYN_MAX_VOICES 8
 
+#define SYN_UBERSAMPLE 
+
 #define EVENT_NONE		0
 #define EVENT_NOTE_ON	1
 #define EVENT_NOTE_OFF	2
@@ -58,11 +60,11 @@ struct Spectra {
 };
 
 struct Envelope {
-	char attack;
-	char decay;
-	char hold;
-	char sustain;
-	char release;
+	float attack;	// attack time in seconds
+	float decay;
+	float hold;
+	float sustain;
+	float release;
 };
 
 struct Instrument {
@@ -75,7 +77,9 @@ struct Instrument {
 
 struct EnvState {
 	bool hold;	// if a key is held down
-	float lastPress;
+	float beginTime;
+	float endTime;
+	bool released;
 };
 
 struct Parameter {

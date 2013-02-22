@@ -27,7 +27,7 @@ static void init_voice(Voice * v) {
 	v->active = false;
 	v->channel = NULL;
 	v->envstate.hold = false;
-	v->envstate.lastPress = 0;
+	v->envstate.beginTime = 0;
 	v->pitch = 0;
 }
 
@@ -129,11 +129,11 @@ void init_sine_table(void) {
 // length	buffer length in stereo samples
 // Compatible with SynthRender_t found from sound.h
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
-	double bonus = 0.0;
-	double sample = 0.0;
-	double t;
-	
-	double f;
+	float bonus = 0.0;
+	float sample = 0.0;
+	float t;
+	float envelope_amp;
+	float f;
 
 	if (length > AUDIO_BUFFERSIZE*2) {
 		fprintf(stderr, "Warning: Requesting too big buffersize: %d\n ", length);
@@ -152,15 +152,40 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 			continue;
 		}
 
+		Voice * voice = &voice_list[v];
+		Instrument * ins = voice->channel->instrument;
 		WaveformFunc_t wavefunc = voice_list[v].channel->instrument->waveFunc;
+
 		f = NOTEFREQ(voice_list[v].pitch+3);
-		double rate = (double)AUDIO_RATE;
+		float rate = (float)AUDIO_RATE;
 
 		for (int i=0;i<length;i++) {
 			t = state.time + i/rate;
-			sample = 0.5f + wavefunc(2.0*PI*t*f)*0.5f;
+			#ifdef SYN_UBERSAMPLE
+				sample = 0.5f + wavefunc(2.0*PI*t*f)*0.25f + wavefunc(2.0*PI*t*f+0.05f)*0.25;
+			#else
+				sample = 0.5f + wavefunc(2.0*PI*t*f)*0.5f;
+			#endif
+			
 			//sample = 0.5f + sinf(2.0*PI*t*f)*0.25f + sinf(2.0*PI*t*f+0.0f)*0.25;
-			sample *= 0.3f;
+			envelope_amp = saturate(((t-voice->envstate.beginTime)+0.001f)/ins->env.attack);
+
+			if (voice->envstate.released) {
+				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
+			}
+
+			if (t-voice->envstate.endTime > ins->env.release) {
+				
+				if (voice->envstate.released) {
+					voice->active=false;
+					
+				}
+			}
+
+		
+			sample *= 0.3f * envelope_amp;
+
+			
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
@@ -193,21 +218,39 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 EnvState constructEnvstate() {
 	EnvState s;
 	s.hold = true;
-	s.lastPress = state.time;
+	s.beginTime = state.time;
+	s.released = false;
 	return s;
 }
 
 void syn_play_note(int channel, int pitch) {
+	int activeVoices = 0;
+
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
-		if (voice_list[v].active && voice_list[v].pitch != pitch) {
-			continue;
+		Voice * voice = &voice_list[v];
+		if (voice->active && voice->channel_id == channel) {
+			if (!voice->envstate.released && voice->pitch == pitch) {
+				return;
+			}
+		}
+	}
+
+	for (int v=0;v<SYN_MAX_VOICES;v++) {
+		Voice * voice = &voice_list[v];
+
+		if (voice->active) {
+			//if (voice->channel_id != channel) {
+				continue;
+			//}
 		}
 
-		voice_list[v].active = true;
-		voice_list[v].channel = &channel_list[channel];
-		voice_list[v].channel_id = channel;
-		voice_list[v].envstate = constructEnvstate();
-		voice_list[v].pitch = pitch;
+		voice->active = true;
+		voice->channel = &channel_list[channel];
+		voice->channel_id = channel;
+		voice->envstate = constructEnvstate();
+		voice->pitch = pitch;
+
+		printf("new voice %d!\n", v);
 		return;
 	}
 
@@ -229,7 +272,13 @@ void syn_end_note(int channel, int pitch) {
 			continue;
 		}
 
-		voice_list[v].active = false;
+		if (voice_list[v].envstate.released) {
+			break;
+		}
+
+		//voice_list[v].active = false;
+		voice_list[v].envstate.released = true;
+		voice_list[v].envstate.endTime = state.time;
 	}
 }
 
