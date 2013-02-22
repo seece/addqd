@@ -56,19 +56,24 @@ static void init_channel(Channel * channel) {
 
 static void init_instrument(Instrument * ins) {
 	ins->volume = 1.0f;
-	ins->spectra.interpolation = NULL;
-	ins->spectra.keyframe_amount = 0;
-	ins->spectra.spectrum = NULL;
+	ins->waveFunc = sinf;
+	//ins->spectra.interpolation = NULL;
+	//ins->spectra.keyframe_amount = 0;
+	//ins->spectra.spectrum = NULL;
 }
 
 static void free_instrument(Instrument * ins) {
-	if (ins->spectra.interpolation != NULL) {
-		delete ins->spectra.interpolation;
-	}
+	//if (ins->spectra.interpolation != NULL) {
+	//	delete ins->spectra.interpolation;
+	//}
+	//
+	//if (ins->spectra.spectrum != NULL) {
+	//	delete ins->spectra.spectrum;
+	//}
+}
 
-	if (ins->spectra.spectrum != NULL) {
-		delete ins->spectra.spectrum;
-	}
+void syn_free_instrument(Instrument * ins) {
+	free_instrument(ins);
 }
 
 static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
@@ -147,13 +152,15 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 			continue;
 		}
 
-		f = NOTEFREQ(voice_list[v].pitch);
+		WaveformFunc_t wavefunc = voice_list[v].channel->instrument->waveFunc;
+		f = NOTEFREQ(voice_list[v].pitch+3);
 		double rate = (double)AUDIO_RATE;
 
 		for (int i=0;i<length;i++) {
 			t = state.time + i/rate;
-			sample = 0.5f + sinf(2.0*PI*t*f)*0.5f;
-			sample *= 0.5f;
+			sample = 0.5f + wavefunc(2.0*PI*t*f)*0.5f;
+			//sample = 0.5f + sinf(2.0*PI*t*f)*0.25f + sinf(2.0*PI*t*f+0.0f)*0.25;
+			sample *= 0.3f;
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
@@ -255,11 +262,6 @@ void print_instrument_pointers(void) {
 	for (int i=0;i<SYN_MAX_INSTRUMENTS;i++) {
 		fprintf(stdout, "%d:\t%X\n", i, instrument_list[i]);
 	}
-}
-
-void syn_free_instrument(Instrument * instrument) {
-	delete instrument->spectra.interpolation;
-	delete instrument->spectra.spectrum;
 }
 
 void create_spectrum(Spectrum * spectrum) {

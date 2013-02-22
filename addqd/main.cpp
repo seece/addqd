@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <windows.h>
 #include <mmsystem.h>
+#include <cmath>
 
 #include "util.h"
 #include "sound.h"
@@ -14,10 +15,7 @@ int main(int argc, char argv[]) {
 
 	Instrument ins;
 	ins.volume=1.0;
-	ins.spectra.keyframe_amount = 1;
-	ins.spectra.interpolation = new char[1];
-	ins.spectra.spectrum = new Spectrum[1];
-	create_spectrum(&ins.spectra.spectrum[0]);
+	ins.waveFunc = sinf;
 
 	syn_load_instrument(0, &ins);
 	syn_attach_instrument(0, 0);
@@ -28,7 +26,7 @@ int main(int argc, char argv[]) {
 	while(!GetAsyncKeyState(VK_ESCAPE)) {
 		keys_check_presses();
 		poll_sound(syn_render_block);
-		Sleep(1);
+		Sleep(10);
 	}
 
 	syn_free_instrument(&ins);

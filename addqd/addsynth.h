@@ -36,6 +36,8 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define TAU (2*PI)
 #define NOTEFREQ(pitch) pow(NOTEMAGIC, pitch) * 440.0
 
+// A function that generates a waveform when given the phase p
+typedef float (*WaveformFunc_t)(float p);
 
 struct Event {
 	char type;
@@ -64,10 +66,11 @@ struct Envelope {
 };
 
 struct Instrument {
-	Spectra spectra;
+	//Spectra spectra;
 	Envelope env;
 	//char * name;
 	float volume;
+	WaveformFunc_t waveFunc;
 };
 
 struct EnvState {
