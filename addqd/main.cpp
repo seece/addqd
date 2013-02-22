@@ -6,6 +6,7 @@
 #include "util.h"
 #include "sound.h"
 #include "addsynth.h"
+#include "keyboard.h"
 
 int main(int argc, char argv[]) {
 	dprint(sizeof(Event));
@@ -21,12 +22,11 @@ int main(int argc, char argv[]) {
 	syn_load_instrument(0, &ins);
 	syn_attach_instrument(0, 0);
 
+	keys_init();
 	init_sound();
-
-	syn_play_note(0, 1);
-	syn_play_note(0, 4);
-
+	
 	while(!GetAsyncKeyState(VK_ESCAPE)) {
+		keys_check_presses();
 		poll_sound(syn_render_block);
 		Sleep(1);
 	}

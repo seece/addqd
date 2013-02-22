@@ -63,6 +63,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="addsynth.cpp" />
+    <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="util.cpp" />
@@ -70,6 +71,7 @@
   <ItemGroup>
     <ClInclude Include="addsynth.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="keyboard.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>

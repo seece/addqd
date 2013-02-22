@@ -155,11 +155,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 			sample = 0.5f + sinf(2.0*PI*t*f)*0.5f;
 			sample *= 0.5f;
 
-			//buf[i*2] = sample;
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
-
-			//printf("m,agic %f\n", voice_list[v].channel->buffer[i*2]);
 		}
 	}	
 
@@ -170,13 +167,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 			continue;
 		}
 
-		for (int i=0;i<length;i++) {
-			// TODO clipping
-			buf[i*2] += channel_list[c].buffer[i*2];
-			buf[i*2+1] += channel_list[c].buffer[i*2+1];
-			//voice_list[v].channel->buffer[i*2+1];
-			//channel_list[c].buffer[i*2] = 0;
-			//channel_list[c].buffer[i*2+1] = 0;
+		double volume = channel_list[c].volume;
+
+		for (int i=0;i<length*2;i++) {
+			// TODO panning (user proper power distribution)
+			buf[i] += channel_list[c].buffer[i] * volume;
 		}
 
 		memset(&channel_list[c].buffer, 0, AUDIO_BUFFERSIZE*2*sizeof(SAMPLE_TYPE));
@@ -197,18 +192,38 @@ EnvState constructEnvstate() {
 
 void syn_play_note(int channel, int pitch) {
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
-		if (voice_list[v].active) {
+		if (voice_list[v].active && voice_list[v].pitch != pitch) {
 			continue;
 		}
 
 		voice_list[v].active = true;
 		voice_list[v].channel = &channel_list[channel];
+		voice_list[v].channel_id = channel;
 		voice_list[v].envstate = constructEnvstate();
 		voice_list[v].pitch = pitch;
 		return;
 	}
 
 	fprintf(stderr, "Warning: voice buffer overflow!\n");
+}
+
+// stops a playing voice
+void syn_end_note(int channel, int pitch) {
+	for (int v=0;v<SYN_MAX_VOICES;v++) {
+		if (!voice_list[v].active) {
+			continue;
+		}
+
+		if (voice_list[v].channel_id != channel) {
+			continue;
+		}
+
+		if (voice_list[v].pitch != pitch) {
+			continue;
+		}
+
+		voice_list[v].active = false;
+	}
 }
 
 // loads an instrument to the given slot

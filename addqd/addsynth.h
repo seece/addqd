@@ -108,7 +108,8 @@ struct Voice {
 	int pitch;
 	EnvState envstate;
 	bool active;
-	Channel * channel;
+	Channel * channel;	// used for quick access
+	int channel_id;		// used to detect playing notes on each channel 
 };
 
 struct SynthState {
@@ -123,6 +124,7 @@ void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length);
 void syn_init(int channels);
 void syn_play_note(int channel, int pitch);	// for testing
+void syn_end_note(int channel, int pitch);	// for testing
 void syn_free();
 
 #endif
