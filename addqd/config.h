@@ -13,6 +13,6 @@
 	#define SAMPLE_TYPE short
 #endif
 
-#define DEBUG_PRINT_SPEED
+//#define DEBUG_PRINT_SPEED
 
 #endif
