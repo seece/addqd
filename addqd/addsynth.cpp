@@ -162,6 +162,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 		for (int i=0;i<length;i++) {
 			t = state.time + i/rate;
 			#ifdef SYN_UBERSAMPLE
+				//sample = 0.5f + wavefunc(2.0*PI*t*f)*0.5f;
 				sample = 0.5f + wavefunc(fmod(2.0*PI*t*f, 2.0*PI))*0.5f;
 			#else
 				sample = 0.5f + wavefunc(2.0*PI*t*f)*0.5f;
@@ -226,6 +227,8 @@ EnvState constructEnvstate() {
 void syn_play_note(int channel, int pitch) {
 	int activeVoices = 0;
 
+	// skip if this voice is already playing at this pitch
+	/*
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
 		Voice * voice = &voice_list[v];
 		if (voice->active && voice->channel_id == channel) {
@@ -234,6 +237,7 @@ void syn_play_note(int channel, int pitch) {
 			}
 		}
 	}
+	*/
 
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
 		Voice * voice = &voice_list[v];
@@ -258,7 +262,6 @@ void syn_play_note(int channel, int pitch) {
 }
 
 // stops a playing voice
-// TODO find out why notes from C-4 > are retriggered
 void syn_end_note(int channel, int pitch) {
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
 		if (!voice_list[v].active) {
@@ -274,7 +277,7 @@ void syn_end_note(int channel, int pitch) {
 		}
 
 		if (voice_list[v].envstate.released) {
-			break;
+			continue;
 		}
 
 		printf("%d ends here\n", channel);

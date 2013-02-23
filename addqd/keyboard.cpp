@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <Windows.h>
 #include "config.h"
 #include "keyboard.h"
@@ -6,6 +7,7 @@
 void keys_init() {
 	for (int i=0;i<KEYBOARD_KEYS;i++) {
 		keymap[i] = KEY_NULL;
+		keys_held[i] = false;
 	}
 
 	// These are key codes from 
@@ -43,7 +45,7 @@ void keys_init() {
 	keymap[VK_OEM_COMMA]	= -12 + 12;	// ,
 	keymap[0x4C]			= -12 + 13;	// L
 	keymap[VK_OEM_PERIOD]	= -12 + 14;	// .
-	keymap[0x4f]			= -12 + 15;	// Ö
+	//keymap[0x4f]			= -12 + 15;	// Ö
 	keymap[VK_OEM_MINUS]	= -12 + 16;	// -
 }
 
@@ -54,9 +56,22 @@ void keys_check_presses() {
 		} 
 
 		if (GetAsyncKeyState(i)) {
+			if (keys_held[i]) {
+				continue;
+			}
+			
+			keys_held[i] = true;
+			
 			syn_play_note(0, keymap[i]);
+			
+			printf("key: %x\n", i);
 		} else {
-			syn_end_note(0, keymap[i]);
+			// send the noteoff event only once
+			if (keys_held[i]) {
+				syn_end_note(0, keymap[i]);
+			}
+
+			keys_held[i] = false;
 		}
 	}
 }
