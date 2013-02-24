@@ -121,6 +121,7 @@ struct Voice {
 
 struct SynthState {
 	double time;
+	int samples;
 	int channels;
 };
 

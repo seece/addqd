@@ -122,6 +122,16 @@ void init_sine_table(void) {
 
 }
 
+// by Alexander Kritov
+double sawsin(double x)
+{
+   double t = fmod(x/(2*PI),(double)1.0);
+   if (t>0.5)
+	   return -sin(x);
+   if (t<=0.5)
+	   return (double)2.0*t-1.0;
+}
+
 #define sine2(p) sine_LUT[(int)(fmod(p, (double)TAU)/(TAU) * SYN_SINE_TABLE_SIZE)]
 
 // writes stereo samples to the given array
@@ -132,6 +142,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	float bonus = 0.0;
 	float sample = 0.0;
 	float t;
+	double phase;
+	double startphase;
 	float envelope_amp;
 	float f;
 
@@ -158,23 +170,31 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 
 		f = NOTEFREQ(voice_list[v].pitch+3);
 		float rate = (float)AUDIO_RATE;
+		double addition = (double)1.0/(double)rate;
 
 		for (int i=0;i<length;i++) {
+			//printf("p:\t%f\n", phase);
 			t = state.time + i/rate;
-			#ifdef SYN_UBERSAMPLE
-				//sample = 0.5f + wavefunc(2.0*PI*t*f)*0.5f;
-				sample = 0.5f + wavefunc(fmod(2.0*PI*t*f, 2.0*PI))*0.5f;
-			#else
-				sample = 0.5f + wavefunc(2.0*PI*t*f)*0.5f;
-			#endif
-			
-			//sample = 0.5f + sinf(2.0*PI*t*f)*0.25f + sinf(2.0*PI*t*f+0.0f)*0.25;
-			envelope_amp = saturate(((t-voice->envstate.beginTime)+0.001f)/ins->env.attack);
+
+			envelope_amp = saturate(((t-voice->envstate.beginTime)+0.00001f)/ins->env.attack);
 
 			if (voice->envstate.released) {
 				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
 			}
 
+			//printf("\tsampl: %d\n", state.samples+i);
+			phase = ((double)((state.samples+i)%AUDIO_RATE)/(double)AUDIO_RATE);
+			//phase = state.time + i/(double)AUDIO_RATE;
+			//double ofs = sin(fmod(2.0*PI*phase*f*0.5, 2.0*PI))*(3.0 - envelope_amp*3.0);
+			double ofs = 0.0;
+			#ifdef SYN_UBERSAMPLE
+				sample = wavefunc(fmod(2.0*PI*phase*f+ofs, 2.0*PI))*0.5f;
+						//+ wavefunc(fmod(2.0*PI*(phase+(1.0/(22050.0*4.0)))*f, 2.0*PI))*0.5f;
+			#else
+				sample = wavefunc(fmod(2.0*PI*phase*f, 2.0*PI))*0.5f;
+			#endif
+			
+		
 			if (t-voice->envstate.endTime > ins->env.release) {
 				
 				if (voice->envstate.released) {
@@ -185,8 +205,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 
 		
 			sample *= 0.3f * envelope_amp;
-
-			
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
@@ -211,7 +229,9 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	}
 
 	state.time += length/(double)AUDIO_RATE;
+	state.samples = (state.samples + length) % (AUDIO_RATE+400);
 
+	printf("sampl: %d\n", state.samples);
 	printf("voices active: %d\n", active);
 }
 
@@ -339,6 +359,7 @@ void syn_init(int channels) {
 
 	state.channels = channels;
 	state.time = 0.0;
+	state.samples = 0;
 
 	init_sine_table();
 
