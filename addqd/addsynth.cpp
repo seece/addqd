@@ -56,7 +56,7 @@ static void init_channel(Channel * channel) {
 
 static void init_instrument(Instrument * ins) {
 	ins->volume = 1.0f;
-	ins->waveFunc = sinf;
+	ins->waveFunc = sin;
 	//ins->spectra.interpolation = NULL;
 	//ins->spectra.keyframe_amount = 0;
 	//ins->spectra.spectrum = NULL;
@@ -80,7 +80,7 @@ static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
 static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
 
 float fast_sine(double phase) {
-	int p = (fmod(phase, (double)PI*2.0)/(PI*2.0)) * SYN_SINE_TABLE_SIZE;
+	int p = int((fmod(phase, (double)PI*2.0)/(PI*2.0)) * SYN_SINE_TABLE_SIZE);
 	return sine_LUT[p];
 }
 
@@ -92,7 +92,7 @@ void init_sine_table(void) {
 
 	for (int i=0;i<SYN_SINE_TABLE_SIZE;i++) {
 		double p = i/(double)SYN_SINE_TABLE_SIZE;
-		sine_LUT[i] = sin(p*2.0*PI);
+		sine_LUT[i] = float(sin(p*2.0*PI));
 	}
 
 	// check the LUT
@@ -141,11 +141,10 @@ double sawsin(double x)
 void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	float bonus = 0.0;
 	float sample = 0.0;
-	float t;
+	double t;
 	double phase;
-	double startphase;
-	float envelope_amp;
-	float f;
+	double envelope_amp;
+	double f;
 
 	if (length > AUDIO_BUFFERSIZE*2) {
 		fprintf(stderr, "Warning: Requesting too big buffersize: %d\n ", length);
@@ -173,7 +172,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 		double addition = (double)1.0/(double)rate;
 
 		for (int i=0;i<length;i++) {
-			//printf("p:\t%f\n", phase);
 			t = state.time + i/rate;
 
 			envelope_amp = saturate(((t-voice->envstate.beginTime)+0.00001f)/ins->env.attack);
@@ -182,29 +180,19 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
 			}
 
-			//printf("\tsampl: %d\n", state.samples+i);
-			phase = ((double)((state.samples+i)%AUDIO_RATE)/(double)AUDIO_RATE);
-			//phase = state.time + i/(double)AUDIO_RATE;
-			//double ofs = sin(fmod(2.0*PI*phase*f*0.5, 2.0*PI))*(3.0 - envelope_amp*3.0);
+			phase = voice->phase;
 			double ofs = 0.0;
-			#ifdef SYN_UBERSAMPLE
-				sample = wavefunc(fmod(2.0*PI*phase*f+ofs, 2.0*PI))*0.5f;
-						//+ wavefunc(fmod(2.0*PI*(phase+(1.0/(22050.0*4.0)))*f, 2.0*PI))*0.5f;
-			#else
-				sample = wavefunc(fmod(2.0*PI*phase*f, 2.0*PI))*0.5f;
-			#endif
-			
+			sample = float(wavefunc(phase * 2.0 * PI));
+			voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
 			if (t-voice->envstate.endTime > ins->env.release) {
 				
 				if (voice->envstate.released) {
 					voice->active=false;
-					
 				}
 			}
 
-		
-			sample *= 0.3f * envelope_amp;
+			sample *= 0.3f * float(envelope_amp);
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
@@ -222,7 +210,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 
 		for (int i=0;i<length*2;i++) {
 			// TODO panning (user proper power distribution)
-			buf[i] += channel_list[c].buffer[i] * volume;
+			buf[i] += channel_list[c].buffer[i] * float(volume);
 		}
 
 		memset(&channel_list[c].buffer, 0, AUDIO_BUFFERSIZE*2*sizeof(SAMPLE_TYPE));

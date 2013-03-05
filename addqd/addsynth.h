@@ -34,12 +34,12 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define INTERPOLATION_LINEAR 1
 
 #define NOTEMAGIC 1.059460646483
-#define PI 3.14159265
+//#define PI 3.14159265
 #define TAU (2*PI)
 #define NOTEFREQ(pitch) pow(NOTEMAGIC, pitch) * 440.0
 
 // A function that generates a waveform when given the phase p
-typedef float (*WaveformFunc_t)(float p);
+typedef double (*WaveformFunc_t)(double p);
 
 struct Event {
 	char type;
@@ -77,8 +77,8 @@ struct Instrument {
 
 struct EnvState {
 	bool hold;	// if a key is held down
-	float beginTime;
-	float endTime;
+	double beginTime;
+	double endTime;
 	bool released;
 };
 
@@ -115,6 +115,7 @@ struct Voice {
 	int pitch;
 	EnvState envstate;
 	bool active;
+	double phase;
 	Channel * channel;	// used for quick access
 	int channel_id;		// used to detect playing notes on each channel 
 };

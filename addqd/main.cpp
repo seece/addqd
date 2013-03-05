@@ -15,7 +15,7 @@ int main(int argc, char argv[]) {
 
 	Instrument ins;
 	ins.volume=1.0;
-	ins.waveFunc = sinf;
+	ins.waveFunc = sin;
 	ins.env.attack = 0.01f;
 	ins.env.release = 0.4f;
 
