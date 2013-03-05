@@ -9,6 +9,7 @@
 #include "addsynth.h"
 #include "keyboard.h"
 #include "amigamod.h"
+#include "player.h"
 
 int main(int argc, char argv[]) {
 	dprint(sizeof(Event));

@@ -66,6 +66,7 @@
     <ClCompile Include="amigamod.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
@@ -74,6 +75,7 @@
     <ClInclude Include="amigamod.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
