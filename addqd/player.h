@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "amigamod.h"	// for the Note struct
 
+#define PATTERN_DEBUG 1
 #define SYNTH_EMPTY_NOTE_VALUE 112	// please note that this differs from the one defined in amigamod.h
 
 struct Songinfo {
@@ -35,8 +36,13 @@ struct Instrumentinfo {
 	PTInstrument instruments[256];	// usually only 31 is in use
 };
 
-void setDefaultInstrumentValues(PTInstrument *ins);
+struct PTSong {
+	Songinfo song;
+	Instrumentinfo ins;
+};
 
+PTSong loadPTSong(const char * input_path);
+void setDefaultInstrumentValues(PTInstrument *ins);
 uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments);
 void printPattern(Note *synthnotes,Songinfo *ssong, uint32_t pattern);
 

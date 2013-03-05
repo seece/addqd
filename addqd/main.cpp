@@ -12,7 +12,7 @@
 #include "player.h"
 
 int main(int argc, char argv[]) {
-	dprint(sizeof(Event));
+	PTSong song = loadPTSong("mods/antipasti.mod");
 	syn_init(1);
 
 	Instrument ins;
