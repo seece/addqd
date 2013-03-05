@@ -1,7 +1,13 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#define NULL 0
+#include <stdio.h>
+#include <stdint.h>
+
+#ifndef NULL
+	#define NULL 0
+#endif
+
 #define MINUS_INFINITY INT_MIN
 #define PI 3.14159265358979323846
 
@@ -19,5 +25,16 @@ float fmax_func(float a, float b);
 // if dist == 1.0, lerp = b
 float lerp_func(float a, float b, float dist);
 #define saturate(a) min(1.0, max(0.0, a))
+
+uint64_t dumpArrayToDisk(uint8_t *data, uint32_t length, uint8_t *output_path);
+uint64_t getFilesize(FILE *fp);
+
+uint8_t *intToBin(int a, uint8_t *buffer, int buf_size);
+uint8_t *intToBin2(int a, uint8_t *buffer, int buf_size);
+// these write three bytes to output
+uint8_t *charToHex(uint8_t a, uint8_t *output);
+uint8_t *charToNiceHex(uint8_t a, uint8_t *output);
+// AMIGAA
+short swapBytes(short in);
 
 #endif

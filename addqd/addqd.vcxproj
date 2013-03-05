@@ -63,6 +63,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="addsynth.cpp" />
+    <ClCompile Include="amigamod.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -70,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="addsynth.h" />
+    <ClInclude Include="amigamod.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="sound.h" />
