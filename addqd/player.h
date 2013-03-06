@@ -39,11 +39,13 @@ struct Instrumentinfo {
 struct PTSong {
 	Songinfo song;
 	Instrumentinfo ins;
+	Note * notedata;
 };
 
-PTSong loadPTSong(const char * input_path);
-void setDefaultInstrumentValues(PTInstrument *ins);
-uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments);
+PTSong load_PTSong(const char * input_path);
+//void setDefaultInstrumentValues(PTInstrument *ins);
+//uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments);
 void printPattern(Note *synthnotes,Songinfo *ssong, uint32_t pattern);
+void play_PTSong(PTSong * song, int time);
 
 #endif

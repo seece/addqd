@@ -219,8 +219,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	state.time += length/(double)AUDIO_RATE;
 	state.samples = (state.samples + length) % (AUDIO_RATE+400);
 
-	printf("sampl: %d\n", state.samples);
-	printf("voices active: %d\n", active);
+	//printf("sampl: %d\n", state.samples);
+	//printf("voices active: %d\n", active);
 }
 
 
@@ -262,7 +262,7 @@ void syn_play_note(int channel, int pitch) {
 		voice->envstate = constructEnvstate();
 		voice->pitch = pitch;
 
-		printf("new voice %d!\n", v);
+		//printf("new voice %d!\n", v);
 		return;
 	}
 
@@ -288,7 +288,7 @@ void syn_end_note(int channel, int pitch) {
 			continue;
 		}
 
-		printf("%d ends here\n", channel);
+		//printf("%d ends here\n", channel);
 
 		//voice_list[v].active = false;
 		voice_list[v].envstate.released = true;
