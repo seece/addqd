@@ -27,10 +27,6 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 
 #define SYN_UBERSAMPLE 
 
-#define EVENT_NONE		0
-#define EVENT_NOTE_ON	1
-#define EVENT_NOTE_OFF	2
-
 #define INTERPOLATION_NONE 0
 #define INTERPOLATION_LINEAR 1
 

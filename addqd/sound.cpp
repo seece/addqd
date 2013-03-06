@@ -25,6 +25,7 @@ void init_sound(void) {
 	// setup events
 	event_buffer.amount = 0;
 	event_buffer.events = event_array;
+	event_buffer.max_events = AUDIO_MAX_EVENTS;
 }
 
 

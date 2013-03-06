@@ -64,6 +64,7 @@
   <ItemGroup>
     <ClCompile Include="addsynth.cpp" />
     <ClCompile Include="amigamod.cpp" />
+    <ClCompile Include="event.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
