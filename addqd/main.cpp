@@ -12,7 +12,10 @@
 #include "player.h"
 
 int main(int argc, char argv[]) {
+	player_init();
 	PTSong song = load_PTSong("mods/test1.mod");
+	player_load_PTSong(&song);
+
 	syn_init(4);
 
 	Instrument ins;

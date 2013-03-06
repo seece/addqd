@@ -19,7 +19,6 @@ static void setDefaultInstrumentValues(PTInstrument *ins) {
 	ins->volume = 64;	// 040
 }
 
-
 static uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments) {
 	uint32_t i;
 
@@ -56,7 +55,6 @@ void printPattern(Note *synthnotes, Songinfo *ssong, uint32_t pattern) {
 	}
 
 	printf("\n");
-
 }
 
 PTSong load_PTSong(const char * input_path) {
@@ -213,17 +211,35 @@ PTSong load_PTSong(const char * input_path) {
 	return song;
 }
 
+static PTSong * loaded_song;
+
 static int lastrow = -1;
 static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
 
+static long millis = 0;
+
+void player_init() {
+	millis = 0;
+	loaded_song = NULL;
+}
+
+
+void player_load_PTSong(PTSong * song) {
+	loaded_song = song;
+}
 
 // pushes new commands to the command buffer
 // only picks commands between start_time and end_time
 void player_update(EventBuffer * buffer, long samplecount) {
+	millis+=samplecount;
+	long time = long((double)millis/((double)AUDIO_RATE/1000.0));
+	PTSong * song = loaded_song;
 
-}
+	if (loaded_song == NULL) {
+		fprintf(stderr, "Song not loaded, cannot play!\n");
+		return;
+	}
 
-void play_PTSong(PTSong * song, int time) {
 	int ticklength = 125;
 	int current_row = time/ticklength;
 	int current_position = (current_row/64) % song->song.length;
@@ -265,4 +281,8 @@ void play_PTSong(PTSong * song, int time) {
 	}
 
 	lastrow = current_row;
+}
+
+void play_PTSong(PTSong * song, int time) {
+	
 }
