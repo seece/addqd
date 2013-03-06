@@ -74,6 +74,7 @@
     <ClInclude Include="addsynth.h" />
     <ClInclude Include="amigamod.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="event.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="sound.h" />

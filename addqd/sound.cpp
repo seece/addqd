@@ -3,6 +3,11 @@
 #include <mmsystem.h>
 #include <mmreg.h>
 #include "sound.h"
+#include "event.h"
+
+// does this really belong to the sound subsystem?
+static Event event_array[AUDIO_MAX_EVENTS];
+static EventBuffer event_buffer;
 
 void init_sound(void) {
 	MMRESULT result;
@@ -16,10 +21,15 @@ void init_sound(void) {
 	}
 
 	currentBuffer = 0;
+
+	// setup events
+	event_buffer.amount = 0;
+	event_buffer.events = event_array;
 }
 
+
 // If necessary, renders a new block of audio and "swaps" the buffers
-void poll_sound(SynthRender_t synthRender) {
+void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer) {
 	MMRESULT result;
 	int renderStart, renderTime;
 
@@ -31,6 +41,10 @@ void poll_sound(SynthRender_t synthRender) {
 				);
 		}
 
+		// render a new set of note events
+		// TODO and then pass the events to the rendering routine 
+		updatePlayer(&event_buffer, (long)AUDIO_BUFFERSIZE);
+		
 		renderStart = GetTickCount();
 		synthRender(buffers[currentBuffer].data, AUDIO_BUFFERSIZE);
 		renderTime = GetTickCount()-renderStart;

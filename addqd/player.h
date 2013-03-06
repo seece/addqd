@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "amigamod.h"	// for the Note struct
+#include "event.h"
 
 #define PATTERN_DEBUG 1
 #define SYNTH_EMPTY_NOTE_VALUE 112	// please note that this differs from the one defined in amigamod.h
@@ -43,9 +44,11 @@ struct PTSong {
 };
 
 PTSong load_PTSong(const char * input_path);
+void update_player(PTSong * song, int start_time, int end_time);
 //void setDefaultInstrumentValues(PTInstrument *ins);
 //uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments);
 void printPattern(Note *synthnotes,Songinfo *ssong, uint32_t pattern);
 void play_PTSong(PTSong * song, int time);
+void player_update(EventBuffer * buffer, long samplecount);
 
 #endif

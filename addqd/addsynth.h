@@ -12,6 +12,7 @@
 #ifndef ADDSYNTH_H
 #define ADDSYNTH_H
 #include "config.h"
+#include "event.h"
 
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 
@@ -40,13 +41,6 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 
 // A function that generates a waveform when given the phase p
 typedef double (*WaveformFunc_t)(double p);
-
-struct Event {
-	char type;
-	unsigned char channel;
-	char data[2];
-	char payload[4];
-};
 
 struct Spectrum {
 	char bands[SYN_PARTIAL_AMOUNT];

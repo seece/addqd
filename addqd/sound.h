@@ -12,6 +12,9 @@
 #include <mmreg.h>
 
 #include "config.h"
+#include "event.h"
+
+#define AUDIO_MAX_EVENTS 16384
 
 #define CHECK_WAVEOUT_ERROR if (result != MMSYSERR_NOERROR) { fprintf(stderr, "Audio error at %d! Error code: %d\n", __LINE__ , result); }
 #define SAFE_WAVEOUT_ACTION(sta) result = sta; CHECK_WAVEOUT_ERROR
@@ -55,9 +58,11 @@ static Buffer buffers[AUDIO_BUFFERS];
 static int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 
 typedef void (*SynthRender_t)(SAMPLE_TYPE *, int);
+// void update_player(PTSong * song, int start_time, int end_time)
+typedef void (*PollEventCallback_t)(EventBuffer * buffer, long samplecount);
 
 void init_sound(void);
-void poll_sound(SynthRender_t);	// needs the synth callback as a parameter
+void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer);
 void free_sound(void);
 
 #endif

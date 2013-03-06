@@ -34,9 +34,9 @@ int main(int argc, char argv[]) {
 
 	while(!GetAsyncKeyState(VK_ESCAPE)) {
 		int t = GetTickCount()-start;
-		keys_check_presses();
-		play_PTSong(&song, t);
-		poll_sound(syn_render_block);
+		//keys_check_presses();
+		//play_PTSong(&song, t);
+		poll_sound(syn_render_block, player_update);
 		Sleep(10);
 	}
 

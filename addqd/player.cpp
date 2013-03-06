@@ -3,6 +3,7 @@
 #include <string.h>
 #include "amigamod.h"
 #include "player.h"
+#include "event.h"
 #include "addsynth.h"
 #include "util.h"
 
@@ -214,6 +215,13 @@ PTSong load_PTSong(const char * input_path) {
 
 static int lastrow = -1;
 static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
+
+
+// pushes new commands to the command buffer
+// only picks commands between start_time and end_time
+void player_update(EventBuffer * buffer, long samplecount) {
+
+}
 
 void play_PTSong(PTSong * song, int time) {
 	int ticklength = 125;
