@@ -192,7 +192,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 				}
 			}
 
-			sample *= 0.3f * float(envelope_amp);
+			sample *= ins->volume * float(envelope_amp);
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
@@ -293,6 +293,23 @@ void syn_end_note(int channel, int pitch) {
 		//voice_list[v].active = false;
 		voice_list[v].envstate.released = true;
 		voice_list[v].envstate.endTime = state.time;
+	}
+}
+
+void syn_end_all_notes(int channel) {
+	for (int v=0;v<SYN_MAX_VOICES;v++) {
+		if (!voice_list[v].active) {
+			continue;
+		}
+
+		if (voice_list[v].envstate.released) {
+			continue;
+		}
+
+		if (voice_list[v].channel_id == channel) {
+			voice_list[v].envstate.released = true;
+			voice_list[v].envstate.endTime = state.time;
+		}
 	}
 }
 

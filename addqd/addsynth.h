@@ -22,7 +22,7 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define SYN_MAX_INSTRUMENTS 8
 #define SYN_PARTIAL_HIGH_CUT 17500.0
 #define SYN_SINE_TABLE_SIZE 2205
-#define SYN_MAX_VOICES 8
+#define SYN_MAX_VOICES 16
 
 #define SYN_UBERSAMPLE 
 
@@ -134,6 +134,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length);
 void syn_init(int channels);
 void syn_play_note(int channel, int pitch);	// for testing
 void syn_end_note(int channel, int pitch);	// for testing
+void syn_end_all_notes(int channel);
 void syn_free();
 
 #endif

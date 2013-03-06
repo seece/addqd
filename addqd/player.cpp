@@ -216,7 +216,7 @@ static int lastrow = -1;
 static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
 
 void play_PTSong(PTSong * song, int time) {
-	int ticklength = 100;
+	int ticklength = 125;
 	int current_row = time/ticklength;
 	int current_position = (current_row/64) % song->song.length;
 
@@ -236,12 +236,21 @@ void play_PTSong(PTSong * song, int time) {
 
 		//if (c == 0) {
 			//printf("NOTE: %d, %d, %d\n", note.pitch, note_array_offset, note.parameters);
+		switch (note.command) {
+			case 0xC:
+				if (note.parameters == 0) {
+					syn_end_all_notes(c);
+				}
+			default:
+				break;
+		}
+
 		if (note.pitch == EMPTY_NOTE_VALUE) {
 			continue;
 		}
 
 		printf("c: %d\n", c);
-		syn_end_note(c, lastnote[c]);
+		syn_end_all_notes(c);
 		syn_play_note(c, note.pitch);
 		lastnote[c] = note.pitch;
 		//}

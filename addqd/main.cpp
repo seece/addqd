@@ -16,10 +16,10 @@ int main(int argc, char argv[]) {
 	syn_init(4);
 
 	Instrument ins;
-	ins.volume=1.0;
+	ins.volume=0.15;
 	ins.waveFunc = sin;
 	ins.env.attack = 0.01f;
-	ins.env.release = 0.4f;
+	ins.env.release = 0.2f;
 
 	syn_load_instrument(0, &ins);
 	syn_attach_instrument(0, 0);
