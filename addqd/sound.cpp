@@ -34,24 +34,32 @@ void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer) {
 	MMRESULT result;
 	int renderStart, renderTime;
 
-	if (buffers[currentBuffer].header.dwFlags & WHDR_DONE) {
-		// On the first round only WHDR_DONE flag is set
-		if (buffers[currentBuffer].header.dwFlags & WHDR_PREPARED) {
-			SAFE_WAVEOUT_ACTION(
-				waveOutUnprepareHeader(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR));
-				);
+	for (int i=0;i<AUDIO_BUFFERS;i++) {
+	//if (buffers[currentBuffer].header.dwFlags & WHDR_DONE) {
+		DWORD flags = buffers[i].header.dwFlags;
+
+		if (flags & WHDR_INQUEUE) {
+			continue;
 		}
+
+		if (!(flags & WHDR_DONE)) {
+			continue;
+		}
+
+		SAFE_WAVEOUT_ACTION(
+			waveOutUnprepareHeader(hWaveOut, &buffers[i].header, sizeof(WAVEHDR));
+			);
 
 		// fetch a new set of note events
 		updatePlayer(&event_buffer, (long)AUDIO_BUFFERSIZE);
 		
 		renderStart = GetTickCount();
-		synthRender(buffers[currentBuffer].data, AUDIO_BUFFERSIZE, &event_buffer);
+		synthRender(buffers[i].data, AUDIO_BUFFERSIZE, &event_buffer);
 		renderTime = GetTickCount()-renderStart;
 
-		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
-		SAFE_WAVEOUT_ACTION(waveOutWrite		(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));
-		currentBuffer=(currentBuffer+1) % AUDIO_BUFFERS;
+		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(hWaveOut, &buffers[i].header, sizeof(WAVEHDR)));
+		SAFE_WAVEOUT_ACTION(waveOutWrite		(hWaveOut, &buffers[i].header, sizeof(WAVEHDR)));
+		//currentBuffer=(currentBuffer+1) % AUDIO_BUFFERS;
 
 		#ifdef DEBUG_PRINT_SPEED
 			double ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
