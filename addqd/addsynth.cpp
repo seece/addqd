@@ -134,46 +134,105 @@ double sawsin(double x)
 
 #define sine2(p) sine_LUT[(int)(fmod(p, (double)TAU)/(TAU) * SYN_SINE_TABLE_SIZE)]
 
+static double find_next_event_start(EventBuffer * eventbuffer, double start) {
+	// TODO do a binary search here?
+	for (int i=0;i<eventbuffer->amount;i++) {
+		if (eventbuffer->event_list[i].when >= start) {
+			return eventbuffer->event_list[i].when;
+		}
+	}
+
+	return -1.0;
+}
+
+static void syn_process_event(Event * e) {
+	if (e->channel < 0 || e->channel >= state.channels) {
+		fprintf(stderr, "Invalid event channel %d.", e->channel);
+		return;
+	}
+
+	printf("CHN: %2d\t", e->channel);
+	// used in note events
+	int pitch = e->data[0] << 8 | e->data[1];	
+
+	switch (e->type) {
+		case EVENT_NONE:
+			printf("EVENT_NONE at %lf.", e->when);
+			break;
+		case EVENT_NOTE_ON:
+			printf("EVENT_NOTE_ON at %lf.", e->when);
+			syn_play_note(e->channel, pitch);
+			break;
+		case EVENT_NOTE_OFF:
+			printf("EVENT_NOTE_OFF at %lf.", e->when);
+			syn_end_note(e->channel, pitch);
+			break;
+		case EVENT_END_ALL:
+			printf("EVENT_END_ALL at %lf.", e->when);
+			syn_end_all_notes(e->channel);
+			break;
+		default:
+			fprintf(stderr, "Invalid event type %d on channel %d.", e->type, e->channel);
+			return;
+	}
+
+	printf("\n");
+}
+
 // writes stereo samples to the given array
-// buf		sample buffer
-// length	buffer length in stereo samples
+// buf			sample buffer
+// length		buffer length in stereo samples
+// eventbuffer	list of note events to apply on this buffer
 // Compatible with SynthRender_t found from sound.h
-void syn_render_block(SAMPLE_TYPE * buf, int length) {
+void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) {
 	float bonus = 0.0;
 	float sample = 0.0;
 	double t;
 	double phase;
 	double envelope_amp;
 	double f;
+	double next_event_time = 0.0;
+	//next_event_time = find_next_event_start(eventbuffer, state.time);
 
 	if (length > AUDIO_BUFFERSIZE*2) {
 		fprintf(stderr, "Warning: Requesting too big buffersize: %d\n ", length);
 	}
 
 	int active = 0;
-	
-	for (int v=0;v<SYN_MAX_VOICES;v++) {
-		if (!voice_list[v].active) {
-			continue;
+
+	float rate = (float)AUDIO_RATE;
+	double addition = (double)1.0/(double)rate;
+	int current_event = 0;
+
+	for (int i=0;i<length;i++) {
+		t = state.time + i/rate;
+
+		while(eventbuffer->event_list[current_event].when <= t) {
+			if (current_event >= eventbuffer->amount) {
+				break;
+			}	
+
+			syn_process_event(&eventbuffer->event_list[current_event]);
+
+			current_event++;
+			//next_event_time = find_next_event_start(eventbuffer, t);
 		}
+		
 
-		active++;
+		for (int v=0;v<SYN_MAX_VOICES;v++) {
+			if (!voice_list[v].active) {
+				continue;
+			}
 
-		if (voice_list[v].channel->instrument == NULL) {
-			continue;
-		}
+			if (voice_list[v].channel->instrument == NULL) {
+				continue;
+			}
 
-		Voice * voice = &voice_list[v];
-		Instrument * ins = voice->channel->instrument;
-		WaveformFunc_t wavefunc = voice_list[v].channel->instrument->waveFunc;
+			Voice * voice = &voice_list[v];
+			Instrument * ins = voice->channel->instrument;
+			WaveformFunc_t wavefunc = voice_list[v].channel->instrument->waveFunc;
 
-		f = NOTEFREQ(voice_list[v].pitch+3);
-		float rate = (float)AUDIO_RATE;
-		double addition = (double)1.0/(double)rate;
-
-		for (int i=0;i<length;i++) {
-			t = state.time + i/rate;
-
+			f = NOTEFREQ(voice_list[v].pitch+3);
 			envelope_amp = saturate(((t-voice->envstate.beginTime)+0.00001f)/ins->env.attack);
 
 			if (voice->envstate.released) {
@@ -217,10 +276,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length) {
 	}
 
 	state.time += length/(double)AUDIO_RATE;
-	state.samples = (state.samples + length) % (AUDIO_RATE+400);
-
-	//printf("sampl: %d\n", state.samples);
-	//printf("voices active: %d\n", active);
+	state.samples = state.samples + length;
+	eventbuffer->amount=0;	// assume that we consumed all the events we were given
 }
 
 
@@ -335,12 +392,12 @@ void syn_attach_instrument(int channel, int instrument_slot) {
 
 	channel_list[channel].instrument = instrument_list[instrument_slot];
 
-	fprintf(stdout, "Ins %d attached to channel %d.\n", instrument_slot, channel);
+	printf("Ins %d attached to channel %d.\n", instrument_slot, channel);
 }
 
 void print_instrument_pointers(void) {
 	for (int i=0;i<SYN_MAX_INSTRUMENTS;i++) {
-		fprintf(stdout, "%d:\t%X\n", i, instrument_list[i]);
+		printf("%d:\t%X\n", i, instrument_list[i]);
 	}
 }
 

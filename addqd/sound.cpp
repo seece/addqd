@@ -24,7 +24,7 @@ void init_sound(void) {
 
 	// setup events
 	event_buffer.amount = 0;
-	event_buffer.events = event_array;
+	event_buffer.event_list = event_array;
 	event_buffer.max_events = AUDIO_MAX_EVENTS;
 }
 
@@ -42,12 +42,11 @@ void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer) {
 				);
 		}
 
-		// render a new set of note events
-		// TODO and then pass the events to the rendering routine 
+		// fetch a new set of note events
 		updatePlayer(&event_buffer, (long)AUDIO_BUFFERSIZE);
 		
 		renderStart = GetTickCount();
-		synthRender(buffers[currentBuffer].data, AUDIO_BUFFERSIZE);
+		synthRender(buffers[currentBuffer].data, AUDIO_BUFFERSIZE, &event_buffer);
 		renderTime = GetTickCount()-renderStart;
 
 		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(hWaveOut, &buffers[currentBuffer].header, sizeof(WAVEHDR)));

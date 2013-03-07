@@ -17,10 +17,11 @@ struct Event {
 
 // The event stack
 struct EventBuffer {
-	Event * events;	// pointer to the event array
+	Event * event_list;	// pointer to the event array
 	int amount;		// how many events does the buffer currently hold
 	int max_events;	// the size of the stack
 };
 
-Event create_note_event(double when, int channel, int pitch);
+Event create_note_event(double when, int channel, int pitch, bool state);
+Event create_end_all_event(double when, int channel);
 #endif

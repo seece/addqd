@@ -120,7 +120,7 @@ void create_spectrum(Spectrum * spectrum);
 void syn_load_instrument(int slot, Instrument * instrument);
 void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
-void syn_render_block(SAMPLE_TYPE * buf, int length);
+void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer);
 void syn_init(int channels);
 void syn_play_note(int channel, int pitch);	// for testing
 void syn_end_note(int channel, int pitch);	// for testing

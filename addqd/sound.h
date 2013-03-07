@@ -57,7 +57,7 @@ static int currentBuffer;
 static Buffer buffers[AUDIO_BUFFERS];
 static int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 
-typedef void (*SynthRender_t)(SAMPLE_TYPE *, int);
+typedef void (*SynthRender_t)(SAMPLE_TYPE *, int, EventBuffer *);
 // void update_player(PTSong * song, int start_time, int end_time)
 typedef void (*PollEventCallback_t)(EventBuffer * buffer, long samplecount);
 

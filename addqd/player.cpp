@@ -232,7 +232,21 @@ void player_load_PTSong(PTSong * song) {
 void play_PTSong(PTSong * song, int time) {}
 
 // time between rows in MILLISECS
-#define TEMPO 50
+#define TEMPO 40
+
+static int push_event(EventBuffer * buffer, Event e) {
+	if (buffer->amount >= buffer->max_events) {
+		fprintf(stderr, "Note event stack full!");
+		return -1;
+	} 
+
+	printf("Added event to #%d\n", buffer->amount);
+
+	buffer->event_list[buffer->amount] = e;
+	buffer->amount++;
+
+	return 0;
+}
 
 static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecount) {
 	int speed = 4;
@@ -266,15 +280,9 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			long start_samples = r*((TEMPO * AUDIO_RATE*0.001)*speed);
 			double start_sec = start_samples/(double)AUDIO_RATE;
 
-			// add new event to the event stack
-			Event e = create_note_event(start_sec, c, note.pitch);
-			if (buffer->amount >= buffer->max_events) {
-				fprintf(stderr, "Note event stack full!");
-				return;
-			} 
+			push_event(buffer, create_end_all_event(start_sec, c));
+			push_event(buffer, create_note_event(start_sec, c, note.pitch, true));
 
-			buffer->events[buffer->amount] = e;
-			buffer->events++;
 		}
 	}
 
