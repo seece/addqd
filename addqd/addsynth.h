@@ -70,6 +70,7 @@ struct EnvState {
 	double beginTime;
 	double endTime;
 	bool released;
+	double volume;	// volume set by note-on command
 };
 
 struct Parameter {
@@ -122,7 +123,8 @@ void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer);
 void syn_init(int channels);
-void syn_play_note(int channel, int pitch);	// for testing
+Voice * syn_play_note(int channel, int pitch);	// for testing
+static void set_channel_volume(int channel, double volume);
 void syn_end_note(int channel, int pitch);	// for testing
 void syn_end_all_notes(int channel);
 void syn_free();

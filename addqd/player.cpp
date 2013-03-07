@@ -272,16 +272,25 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		for (int c=0;c<channels;c++) {
 			int note_array_offset = (current_pattern*MOD_ROWS*channels) + pattern_row*channels + c;
 			Note note = song->notedata[note_array_offset];
-
-			if (note.pitch == EMPTY_NOTE_VALUE) {
-				continue;
-			}
-
 			long start_samples = r*((TEMPO * AUDIO_RATE*0.001)*speed);
 			double start_sec = start_samples/(double)AUDIO_RATE;
+			unsigned char volume = 200;
+			
+			switch (note.command) {
+				case 0x0C:
+					volume = note.parameters*4;	// in MOD the max volume is 0x40
+					push_event(buffer, create_volume_event(start_sec, c, volume));
+					break;
+				default:
+					if (note.pitch == EMPTY_NOTE_VALUE) {
+						continue;
+					}
+
+					break;
+			}
 
 			push_event(buffer, create_end_all_event(start_sec, c));
-			push_event(buffer, create_note_event(start_sec, c, note.pitch, true));
+			push_event(buffer, create_note_event(start_sec, c, note.pitch, true, volume));
 
 		}
 	}

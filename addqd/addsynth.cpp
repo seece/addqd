@@ -28,6 +28,7 @@ static void init_voice(Voice * v) {
 	v->channel = NULL;
 	v->envstate.hold = false;
 	v->envstate.beginTime = 0;
+	v->envstate.volume = 1.0;
 	v->pitch = 0;
 }
 
@@ -79,49 +80,6 @@ void syn_free_instrument(Instrument * ins) {
 static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
 static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
 
-float fast_sine(double phase) {
-	int p = int((fmod(phase, (double)PI*2.0)/(PI*2.0)) * SYN_SINE_TABLE_SIZE);
-	return sine_LUT[p];
-}
-
-void init_sine_table(void) {
-	double snr = 0.0;
-	double rms_lut = 0.0;
-	double rms = 0.0;
-	double diff = 0.0;
-
-	for (int i=0;i<SYN_SINE_TABLE_SIZE;i++) {
-		double p = i/(double)SYN_SINE_TABLE_SIZE;
-		sine_LUT[i] = float(sin(p*2.0*PI));
-	}
-
-	// check the LUT
-	for (int i=0;i<SYN_SINE_TABLE_SIZE;i++) {
-		double p = i/(double)SYN_SINE_TABLE_SIZE;
-		double r = sin(p*2.0*PI);
-		double r2 = fast_sine(p*2.0*PI); 
-		rms += r * r;
-		rms_lut += r2 * r2;
-
-		if (i % 100 == 0) {
-			printf("(%f %f)\n", r, r2);
-		}
-
-		if (diff < (r-r2)) {
-			diff = r-r2;
-		}
-	}
-
-	rms = sqrt(rms/(double)SYN_SINE_TABLE_SIZE);
-	rms_lut = sqrt(rms_lut/(double)SYN_SINE_TABLE_SIZE);
-
-	snr = pow(rms / rms_lut, 2.0);
-	printf("Sine table SNR: %f\n", snr);
-	printf("Sine table largest diff: %f\n", diff);
-
-
-}
-
 // by Alexander Kritov
 double sawsin(double x)
 {
@@ -131,8 +89,6 @@ double sawsin(double x)
    if (t<=0.5)
 	   return (double)2.0*t-1.0;
 }
-
-#define sine2(p) sine_LUT[(int)(fmod(p, (double)TAU)/(TAU) * SYN_SINE_TABLE_SIZE)]
 
 static double find_next_event_start(EventBuffer * eventbuffer, double start) {
 	// TODO do a binary search here?
@@ -154,6 +110,8 @@ static void syn_process_event(Event * e) {
 	printf("CHN: %2d\t", e->channel);
 	// used in note events
 	int pitch = e->data[0] << 8 | e->data[1];	
+	Voice * voice = NULL;
+	unsigned char vol;
 
 	switch (e->type) {
 		case EVENT_NONE:
@@ -161,7 +119,12 @@ static void syn_process_event(Event * e) {
 			break;
 		case EVENT_NOTE_ON:
 			printf("EVENT_NOTE_ON at %lf.", e->when);
-			syn_play_note(e->channel, pitch);
+			voice = syn_play_note(e->channel, pitch);
+			if (voice != NULL) {
+				vol = ((unsigned char)(e->payload[0]));
+				voice->envstate.volume = vol/255.0;
+			}
+
 			break;
 		case EVENT_NOTE_OFF:
 			printf("EVENT_NOTE_OFF at %lf.", e->when);
@@ -171,8 +134,12 @@ static void syn_process_event(Event * e) {
 			printf("EVENT_END_ALL at %lf.", e->when);
 			syn_end_all_notes(e->channel);
 			break;
+		case EVENT_VOLUME:
+			printf("EVENT_VOLUME at %lf.", e->when);
+			set_channel_volume(e->channel, e->payload[0]/255.0);
+			break;
 		default:
-			fprintf(stderr, "Invalid event type %d on channel %d.", e->type, e->channel);
+			fprintf(stderr, "Invalid event type %d on channel %d.\n", e->type, e->channel);
 			return;
 	}
 
@@ -251,7 +218,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				}
 			}
 
-			sample *= ins->volume * float(envelope_amp);
+			sample *= ins->volume * float(envelope_amp) * voice->envstate.volume;
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
@@ -289,7 +256,9 @@ EnvState constructEnvstate() {
 	return s;
 }
 
-void syn_play_note(int channel, int pitch) {
+// returns a pointer to the channel where the note was assigned to
+// if no suitable voices are found, returns NULL
+Voice * syn_play_note(int channel, int pitch) {
 	int activeVoices = 0;
 
 	// skip if this voice is already playing at this pitch
@@ -320,10 +289,11 @@ void syn_play_note(int channel, int pitch) {
 		voice->pitch = pitch;
 
 		//printf("new voice %d!\n", v);
-		return;
+		return voice;
 	}
 
 	fprintf(stderr, "Warning: voice buffer overflow!\n");
+	return NULL;
 }
 
 // stops a playing voice
@@ -366,6 +336,21 @@ void syn_end_all_notes(int channel) {
 		if (voice_list[v].channel_id == channel) {
 			voice_list[v].envstate.released = true;
 			voice_list[v].envstate.endTime = state.time;
+		}
+	}
+}
+
+// finds all voices on the given channel and sets their volume
+static void set_channel_volume(int channel, double volume) {
+	for (int i=0;i<SYN_MAX_VOICES;i++) {
+		Voice * v = &voice_list[i];
+		
+		if (!v->active) {
+			continue;
+		}
+
+		if (v->channel_id == channel) {
+			v->envstate.volume = volume;
 		}
 	}
 }
@@ -422,8 +407,6 @@ void syn_init(int channels) {
 	state.channels = channels;
 	state.time = 0.0;
 	state.samples = 0;
-
-	init_sine_table();
 
 	return;
 }

@@ -5,6 +5,7 @@
 #define EVENT_NOTE_ON	1
 #define EVENT_NOTE_OFF	2
 #define EVENT_END_ALL	3
+#define EVENT_VOLUME	4
 
 struct Event {
 	double when;		// event begin time in seconds
@@ -14,7 +15,6 @@ struct Event {
 	char payload[4];	// secondary data
 };
 
-
 // The event stack
 struct EventBuffer {
 	Event * event_list;	// pointer to the event array
@@ -22,6 +22,7 @@ struct EventBuffer {
 	int max_events;	// the size of the stack
 };
 
-Event create_note_event(double when, int channel, int pitch, bool state);
+Event create_volume_event(double when, int channel, unsigned char volume);
+Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume=200);
 Event create_end_all_event(double when, int channel);
 #endif

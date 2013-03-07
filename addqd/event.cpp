@@ -8,9 +8,22 @@
 		fprintf(stderr, "Invalid channel num %d in %s", channel, __FUNCTION__); \
 	} \
 
+Event create_volume_event(double when, int channel, unsigned char volume) {
+	CHECK_EVENT_CHANNEL;
+
+	Event e;
+	memset(&e, 0xFE, sizeof(e));	// for debug purposes
+	e.channel = unsigned char (channel);
+	e.type = EVENT_VOLUME;
+	e.data[0] =  static_cast<char>(volume);
+	e.when = when;
+
+	return e;
+}
+
 // creates a note on/note off event
 // outcome depends on the flag
-Event create_note_event(double when, int channel, int pitch, bool state) {
+Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume) {
 	CHECK_EVENT_CHANNEL;
 
 	if (pitch < SHRT_MIN || pitch > SHRT_MAX) {
@@ -25,6 +38,9 @@ Event create_note_event(double when, int channel, int pitch, bool state) {
 	e.channel = unsigned char (channel);
 	e.data[0] = spitch >> 8;
 	e.data[1] = spitch & 0x00FF;
+
+	e.payload[0] = static_cast<char>(volume);
+
 	if (state) {
 		e.type = EVENT_NOTE_ON;
 	} else {

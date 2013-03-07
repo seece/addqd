@@ -53,7 +53,6 @@ struct Buffer {
 	SAMPLE_TYPE data[AUDIO_BUFFERSIZE*2];
 };
 
-static int currentBuffer;
 static Buffer buffers[AUDIO_BUFFERS];
 static int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 

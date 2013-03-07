@@ -5,7 +5,6 @@
 #include "sound.h"
 #include "event.h"
 
-// does this really belong to the sound subsystem?
 static Event event_array[AUDIO_MAX_EVENTS];
 static EventBuffer event_buffer;
 
@@ -20,8 +19,6 @@ void init_sound(void) {
 		buffers[i].header.dwFlags |= WHDR_DONE;	// reset the buffers, so they are rendered into on the first run
 	}
 
-	currentBuffer = 0;
-
 	// setup events
 	event_buffer.amount = 0;
 	event_buffer.event_list = event_array;
@@ -35,7 +32,6 @@ void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer) {
 	int renderStart, renderTime;
 
 	for (int i=0;i<AUDIO_BUFFERS;i++) {
-	//if (buffers[currentBuffer].header.dwFlags & WHDR_DONE) {
 		DWORD flags = buffers[i].header.dwFlags;
 
 		if (flags & WHDR_INQUEUE) {
@@ -59,7 +55,6 @@ void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer) {
 
 		SAFE_WAVEOUT_ACTION(waveOutPrepareHeader(hWaveOut, &buffers[i].header, sizeof(WAVEHDR)));
 		SAFE_WAVEOUT_ACTION(waveOutWrite		(hWaveOut, &buffers[i].header, sizeof(WAVEHDR)));
-		//currentBuffer=(currentBuffer+1) % AUDIO_BUFFERS;
 
 		#ifdef DEBUG_PRINT_SPEED
 			double ratio = (((double)AUDIO_BUFFERSIZE/(double)AUDIO_RATE))/(double)(renderTime/1000.0);
