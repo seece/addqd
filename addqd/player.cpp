@@ -288,8 +288,22 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			long start_samples = r*((TEMPO * AUDIO_RATE*0.001)*speed);
 			double start_sec = start_samples/(double)AUDIO_RATE;
 			unsigned char volume = 200;
+			int third, fifth;
+
+			push_event(buffer, create_end_all_event(start_sec, c));
 			
 			switch (note.command) {
+				case 0x00:
+					if (note.parameters == 0) {
+						break;
+					}
+
+					third = (note.parameters & 0xF0) >> 4;
+					fifth = (note.parameters & 0x0F);
+					push_event(buffer, create_note_event(start_sec, c, note.pitch + third, true, volume));
+					push_event(buffer, create_note_event(start_sec, c, note.pitch + fifth, true, volume));
+
+					break;
 				case 0x0C:
 					volume = note.parameters*4;	// in MOD the max volume is 0x40
 					push_event(buffer, create_volume_event(start_sec, c, volume));
@@ -302,7 +316,6 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 					break;
 			}
 
-			push_event(buffer, create_end_all_event(start_sec, c));
 			push_event(buffer, create_note_event(start_sec, c, note.pitch, true, volume));
 
 		}

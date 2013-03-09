@@ -13,7 +13,7 @@
 
 int main(int argc, char argv[]) {
 	player_init();
-	PTSong song = load_PTSong("mods/test1.mod");
+	PTSong song = load_PTSong("mods/class05.mod");
 	player_load_PTSong(&song);
 
 	syn_init(4);
