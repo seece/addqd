@@ -165,6 +165,16 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		fprintf(stderr, "Warning: Requesting too big buffersize: %d\n ", length);
 	}
 
+	#ifdef DEBUG_EVENT_SANITY_CHECKS
+		double buffer_end_time = state.time+length/(float)AUDIO_RATE;
+		for (int u=0;u<eventbuffer->amount;u++) {
+			if (eventbuffer->event_list[u].when > buffer_end_time) {
+				fprintf(stderr, "Warning: trying to render future note events (diff:%lf)!\n", 
+					eventbuffer->event_list[u].when - buffer_end_time);
+			}
+		}
+	#endif
+
 	int active = 0;
 
 	float rate = (float)AUDIO_RATE;
@@ -172,7 +182,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	int current_event = 0;
 
 	for (int i=0;i<length;i++) {
-		t = state.time + i/rate;
+		t = state.time + (double)i/rate;
 
 		while(eventbuffer->event_list[current_event].when <= t) {
 			if (current_event >= eventbuffer->amount) {
@@ -244,7 +254,16 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 	state.time += length/(double)AUDIO_RATE;
 	state.samples = state.samples + length;
-	eventbuffer->amount=0;	// assume that we consumed all the events we were given
+
+	if (eventbuffer->amount > current_event) {
+		#ifdef DEBUG_EVENT_SANITY_CHECKS
+		printf("Warning: eventbuffer not empty: %d/%d\n", current_event, eventbuffer->amount);
+		#endif
+		eventbuffer->amount -= current_event;	// try to recover gracefully and render
+												// these on then next round
+	} else {
+		eventbuffer->amount=0;	
+	}
 }
 
 

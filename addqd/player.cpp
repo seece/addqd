@@ -215,6 +215,7 @@ static PTSong * loaded_song;
 
 static int last_row = -1;
 static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
+static int row_offset = 0;
 
 static long player_millis = 0;
 static long player_samples = 0;
@@ -222,6 +223,7 @@ static long player_samples = 0;
 void player_init() {
 	player_millis = 0;
 	player_samples = 0;
+	row_offset = 0;
 	loaded_song = NULL;
 }
 
@@ -230,6 +232,11 @@ void player_load_PTSong(PTSong * song) {
 }
 
 void play_PTSong(PTSong * song, int time) {}
+
+int player_add_offset(int offset) {
+	row_offset += offset;
+	return row_offset;
+}
 
 // time between rows in MILLISECS
 #define TEMPO 40
@@ -248,15 +255,20 @@ static int push_event(EventBuffer * buffer, Event e) {
 	return 0;
 }
 
+
 static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecount) {
 	int speed = 4;
 	int ticklength = (TEMPO * AUDIO_RATE*0.001)*speed;	// tick length in samples
 	int channels =	song->song.channels;
-	int start_row =	player_samples/ticklength;
-	int end_row =	(player_samples + samplecount)/ticklength;
+	int start_row =	player_samples/ticklength + row_offset;
+	int end_row =	(player_samples + samplecount)/ticklength + row_offset;
 
 	if (start_row == end_row) {
 		return;
+	}
+
+	if (start_row>=127) {
+		printf("127!\n");
 	}
 
 	for (int r=start_row;r<=end_row;r++) {
@@ -264,7 +276,8 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		int current_position = (r/64) % song->song.length;
 		int current_pattern = song->song.orderlist[current_position];
 
-		// don't play border rows twice
+		printf("\tord: %d\n", current_position);
+
 		if (r == last_row) {
 			continue;
 		}
@@ -293,6 +306,8 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			push_event(buffer, create_note_event(start_sec, c, note.pitch, true, volume));
 
 		}
+
+		
 	}
 
 	printf("start_row: %d\t end_row: %d\t ticklen: %d\n", start_row, end_row, samplecount);

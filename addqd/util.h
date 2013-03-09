@@ -16,6 +16,8 @@
 #define dprints(_fmt, expr) printf(#expr " = " #_fmt "\n", expr);
 #define WAITKEY() printf("Press ENTER to continue.\n"); getchar();
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 // from http://www.iquilezles.org/www/articles/functions/functions.htm
 float impulse(float k, float x);

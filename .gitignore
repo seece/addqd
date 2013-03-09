@@ -15,6 +15,7 @@
 *.exe
 
 # Visual Studio cruft
+CodeAnalyst/
 Debug/
 Release/
 bin/

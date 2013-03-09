@@ -3,6 +3,7 @@
 #include "config.h"
 #include "keyboard.h"
 #include "addsynth.h"
+#include "player.h"
 
 void keys_init() {
 	for (int i=0;i<KEYBOARD_KEYS;i++) {
@@ -47,6 +48,16 @@ void keys_init() {
 	keymap[VK_OEM_PERIOD]	= -12 + 14;	// .
 	//keymap[0x4f]			= -12 + 15;	// Ö
 	keymap[VK_OEM_MINUS]	= -12 + 16;	// -
+}
+
+void keys_check_transport() {
+	int jump = 32;
+
+	if (GetAsyncKeyState(VK_LEFT)) {
+		player_add_offset(-jump);
+	} else if (GetAsyncKeyState(VK_RIGHT)) {
+		player_add_offset(jump);
+	}
 }
 
 void keys_check_presses() {

@@ -10,4 +10,5 @@ static int keymap[KEYBOARD_KEYS];
 static bool keys_held[KEYBOARD_KEYS];
 void keys_init();
 void keys_check_presses();
+void keys_check_transport();
 #endif
