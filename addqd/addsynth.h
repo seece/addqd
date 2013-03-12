@@ -23,7 +23,7 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 #define SYN_MAX_INSTRUMENTS 8
 #define SYN_PARTIAL_HIGH_CUT 17500.0
 #define SYN_SINE_TABLE_SIZE 2205
-#define SYN_MAX_VOICES 16
+#define SYN_MAX_VOICES 160
 
 #define SYN_UBERSAMPLE 
 
@@ -62,6 +62,7 @@ struct Instrument {
 	Envelope env;
 	//char * name;
 	float volume;
+	int octave;
 	WaveformFunc_t waveFunc;
 };
 

@@ -58,6 +58,9 @@ static void init_channel(Channel * channel) {
 static void init_instrument(Instrument * ins) {
 	ins->volume = 1.0f;
 	ins->waveFunc = sin;
+	ins->octave=0;
+	ins->env.attack=0.1f;
+	ins->env.release=0.1f;
 	//ins->spectra.interpolation = NULL;
 	//ins->spectra.keyframe_amount = 0;
 	//ins->spectra.spectrum = NULL;
@@ -209,7 +212,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			Instrument * ins = voice->channel->instrument;
 			WaveformFunc_t wavefunc = voice_list[v].channel->instrument->waveFunc;
 
-			f = NOTEFREQ(voice_list[v].pitch+3);
+			f = NOTEFREQ(voice_list[v].pitch+3+ins->octave*12);
 			envelope_amp = saturate(((t-voice->envstate.beginTime)+0.00001f)/ins->env.attack);
 
 			if (voice->envstate.released) {
