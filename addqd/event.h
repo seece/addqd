@@ -22,7 +22,7 @@ struct EventBuffer {
 	int max_events;	// the size of the stack
 };
 
-Event create_volume_event(double when, int channel, unsigned char volume);
+Event create_volume_event(double when, int channel, int volume);
 Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume=200);
 Event create_end_all_event(double when, int channel);
 #endif

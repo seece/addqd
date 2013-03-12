@@ -247,7 +247,9 @@ static int push_event(EventBuffer * buffer, Event e) {
 		return -1;
 	} 
 
-	printf("Added event to #%d\n", buffer->amount);
+	#ifdef DEBUG_EVENT
+	printf("Added event to slot #%d\n", buffer->amount);
+	#endif
 
 	buffer->event_list[buffer->amount] = e;
 	buffer->amount++;
@@ -263,12 +265,10 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 	int start_row =	player_samples/ticklength + row_offset;
 	int end_row =	(player_samples + samplecount)/ticklength + row_offset;
 
+	int debug_channel_semitones[256];	// used only for printing
+
 	if (start_row == end_row) {
 		return;
-	}
-
-	if (start_row>=127) {
-		printf("127!\n");
 	}
 
 	for (int r=start_row;r<=end_row;r++) {
@@ -287,10 +287,13 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			Note note = song->notedata[note_array_offset];
 			long start_samples = r*((TEMPO * AUDIO_RATE*0.001)*speed);
 			double start_sec = start_samples/(double)AUDIO_RATE;
-			unsigned char volume = 200;
+			unsigned char volume = 150;
 			int third, fifth;
+			// new notes to be played on this channel
+			int new_notes[3] = {EMPTY_NOTE_VALUE, EMPTY_NOTE_VALUE, EMPTY_NOTE_VALUE};
+			debug_channel_semitones[c] = EMPTY_NOTE_VALUE;
 
-			push_event(buffer, create_end_all_event(start_sec, c));
+			//if (c!=3) { continue; }
 			
 			switch (note.command) {
 				case 0x00:
@@ -300,8 +303,8 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 
 					third = (note.parameters & 0xF0) >> 4;
 					fifth = (note.parameters & 0x0F);
-					push_event(buffer, create_note_event(start_sec, c, note.pitch + third, true, volume));
-					push_event(buffer, create_note_event(start_sec, c, note.pitch + fifth, true, volume));
+					new_notes[1] = note.pitch + third;
+					new_notes[2] = note.pitch + fifth;
 
 					break;
 				case 0x0C:
@@ -309,21 +312,44 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 					push_event(buffer, create_volume_event(start_sec, c, volume));
 					break;
 				default:
-					if (note.pitch == EMPTY_NOTE_VALUE) {
-						continue;
-					}
-
 					break;
 			}
 
-			push_event(buffer, create_note_event(start_sec, c, note.pitch, true, volume));
+			if (note.pitch != EMPTY_NOTE_VALUE) {
+				new_notes[0] = note.pitch;
+				//continue;
+			}
 
+			// if there's new notes on this channel, create end_all event first
+			for (int i=0;i<3;i++) {
+				if (new_notes[i] != EMPTY_NOTE_VALUE) {
+					push_event(buffer, create_end_all_event(start_sec, c));
+					break;
+				}
+			}
+
+			for (int i=0;i<3;i++) {
+				if (new_notes[i] == EMPTY_NOTE_VALUE) {
+					continue;
+				}
+		
+				push_event(buffer, create_note_event(start_sec, c, new_notes[i], true, volume));
+			}
+
+			debug_channel_semitones[c] = note.pitch;
 		}
 
 		
 	}
 
 	printf("start_row: %d\t end_row: %d\t ticklen: %d\n", start_row, end_row, samplecount);
+	for (int i=0;i<channels;i++) {
+		char name[4];
+		getNoteName(debug_channel_semitones[i], (uint8_t *)name);
+		printf("%s ", name);
+	}	
+
+	printf("\n");
 
 	last_row = end_row;
 

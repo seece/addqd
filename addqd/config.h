@@ -15,5 +15,7 @@
 
 //#define DEBUG_PRINT_SPEED
 #define DEBUG_EVENT_SANITY_CHECKS
+#define DEBUG_EVENT
+#define DEBUG_INSTRUMENTS
 
 #endif

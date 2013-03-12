@@ -8,14 +8,16 @@
 		fprintf(stderr, "Invalid channel num %d in %s", channel, __FUNCTION__); \
 	} \
 
-Event create_volume_event(double when, int channel, unsigned char volume) {
+Event create_volume_event(double when, int channel, int volume) {
 	CHECK_EVENT_CHANNEL;
 
 	Event e;
 	memset(&e, 0xFE, sizeof(e));	// for debug purposes
 	e.channel = unsigned char (channel);
 	e.type = EVENT_VOLUME;
+	
 	e.data[0] =  static_cast<char>(volume);
+	//printf("vol: %d == %d\n", volume, e.data[0]);
 	e.when = when;
 
 	return e;

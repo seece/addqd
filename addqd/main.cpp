@@ -13,32 +13,35 @@
 
 int main(int argc, char argv[]) {
 	player_init();
-	PTSong song = load_PTSong("mods/class05.mod");
+	PTSong song = load_PTSong("mods/test2.mod");
 	player_load_PTSong(&song);
 
-	syn_init(4);
+	syn_init(8);
 
 	Instrument ins;
 	ins.volume=0.15;
-	ins.octave=-1;
+	ins.octave=0;
 	ins.waveFunc = sin;
 	ins.env.attack = 0.01f;
 	ins.env.release = 0.1f;
 
 	Instrument ins2;
 	ins2.volume=0.14;
-	ins2.octave=-1;
+	ins2.octave=0;
 	ins2.waveFunc = sin;
 	ins2.env.attack = 0.05f;
 	ins2.env.release = 0.1f;
 
-
 	syn_load_instrument(0, &ins);
 	syn_load_instrument(1, &ins2);
-	syn_attach_instrument(0, 1);
+	syn_attach_instrument(0, 0);
 	syn_attach_instrument(1, 0);
 	syn_attach_instrument(2, 0);
 	syn_attach_instrument(3, 0);
+	syn_attach_instrument(4, 0);
+	syn_attach_instrument(5, 0);
+	syn_attach_instrument(6, 0);
+	syn_attach_instrument(7, 0);
 
 	keys_init();
 	init_sound();

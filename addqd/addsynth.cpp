@@ -110,18 +110,26 @@ static void syn_process_event(Event * e) {
 		return;
 	}
 
+	#ifdef DEBUG_EVENT
 	printf("CHN: %2d\t", e->channel);
+	#endif
 	// used in note events
 	int pitch = e->data[0] << 8 | e->data[1];	
 	Voice * voice = NULL;
 	unsigned char vol;
+	double volume;
 
 	switch (e->type) {
 		case EVENT_NONE:
+			#ifdef DEBUG_EVENT
 			printf("EVENT_NONE at %lf.", e->when);
+			#endif
 			break;
 		case EVENT_NOTE_ON:
-			printf("EVENT_NOTE_ON at %lf.", e->when);
+			#ifdef DEBUG_EVENT
+			printf("EVENT_NOTE_ON (%d) at %lf.", pitch,e->when);
+			#endif
+
 			voice = syn_play_note(e->channel, pitch);
 			if (voice != NULL) {
 				vol = ((unsigned char)(e->payload[0]));
@@ -130,23 +138,39 @@ static void syn_process_event(Event * e) {
 
 			break;
 		case EVENT_NOTE_OFF:
+			#ifdef DEBUG_EVENT
 			printf("EVENT_NOTE_OFF at %lf.", e->when);
+			#endif
+
 			syn_end_note(e->channel, pitch);
 			break;
 		case EVENT_END_ALL:
+			#ifdef DEBUG_EVENT
 			printf("EVENT_END_ALL at %lf.", e->when);
+			#endif
+
 			syn_end_all_notes(e->channel);
 			break;
 		case EVENT_VOLUME:
-			printf("EVENT_VOLUME at %lf.", e->when);
-			set_channel_volume(e->channel, e->payload[0]/255.0);
+			vol = e->data[0];
+			volume = vol/255.0;
+			#ifdef DEBUG_EVENT
+			printf("EVENT_VOLUME %d (%lf) at %lf.", vol, volume, e->when);
+			#endif
+
+			set_channel_volume(e->channel, volume);
 			break;
 		default:
+			#ifdef DEBUG_EVENT
 			fprintf(stderr, "Invalid event type %d on channel %d.\n", e->type, e->channel);
+			#endif
+
 			return;
 	}
 
+	#ifdef DEBUG_EVENT
 	printf("\n");
+	#endif
 }
 
 // writes stereo samples to the given array
@@ -205,6 +229,10 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			}
 
 			if (voice_list[v].channel->instrument == NULL) {
+				#ifdef DEBUG_INSTRUMENTS
+					fprintf(stderr, "Warning: NULL instrument on active voice %d\n", 
+						voice_list[v].channel_id);
+				#endif
 				continue;
 			}
 
@@ -310,7 +338,7 @@ Voice * syn_play_note(int channel, int pitch) {
 		voice->envstate = constructEnvstate();
 		voice->pitch = pitch;
 
-		//printf("new voice %d!\n", v);
+		printf("new voice %d on chn %d!\n", v, voice->channel_id);
 		return voice;
 	}
 
