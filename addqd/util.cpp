@@ -113,9 +113,9 @@ uint64_t dumpArrayToDisk(uint8_t *data, uint32_t length, char *output_path) {
 	return written;
 }
 
-uint64_t getFilesize(FILE *fp) {
+long getFilesize(FILE *fp) {
     fseek(fp, 0L, SEEK_END);
-	uint64_t sz = ftell(fp);
+	long sz = ftell(fp);
 	fseek(fp, 0L, SEEK_SET);
 
 	return sz;

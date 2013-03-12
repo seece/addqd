@@ -29,7 +29,7 @@ float lerp_func(float a, float b, float dist);
 #define saturate(a) min(1.0, max(0.0, a))
 
 uint64_t dumpArrayToDisk(uint8_t *data, uint32_t length, uint8_t *output_path);
-uint64_t getFilesize(FILE *fp);
+long getFilesize(FILE *fp);
 
 uint8_t *intToBin(int a, uint8_t *buffer, int buf_size);
 uint8_t *intToBin2(int a, uint8_t *buffer, int buf_size);

@@ -41,9 +41,6 @@ static void init_voices() {
 static void init_channel(Channel * channel) {
 	channel->pan = 1.0f;
 	channel->volume = 1.0f;
-	//channel->pitch = 0;
-	//channel->envstate.hold = false;
-	//channel->envstate.lastPress = MINUS_INFINITY;
 
 	channel->chain.numberOfEffects = 0;
 	channel->instrument = NULL;
@@ -61,19 +58,10 @@ static void init_instrument(Instrument * ins) {
 	ins->octave=0;
 	ins->env.attack=0.1f;
 	ins->env.release=0.1f;
-	//ins->spectra.interpolation = NULL;
-	//ins->spectra.keyframe_amount = 0;
-	//ins->spectra.spectrum = NULL;
 }
 
 static void free_instrument(Instrument * ins) {
-	//if (ins->spectra.interpolation != NULL) {
-	//	delete ins->spectra.interpolation;
-	//}
-	//
-	//if (ins->spectra.spectrum != NULL) {
-	//	delete ins->spectra.spectrum;
-	//}
+
 }
 
 void syn_free_instrument(Instrument * ins) {
@@ -105,10 +93,12 @@ static double find_next_event_start(EventBuffer * eventbuffer, double start) {
 }
 
 static void syn_process_event(Event * e) {
+	#ifdef DEBUG_EVENT_SANITY_CHECKS
 	if (e->channel < 0 || e->channel >= state.channels) {
 		fprintf(stderr, "Invalid event channel %d.", e->channel);
 		return;
 	}
+	#endif
 
 	#ifdef DEBUG_EVENT
 	printf("CHN: %2d\t", e->channel);
@@ -186,7 +176,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	double envelope_amp;
 	double f;
 	double next_event_time = 0.0;
-	//next_event_time = find_next_event_start(eventbuffer, state.time);
 
 	if (length > AUDIO_BUFFERSIZE*2) {
 		fprintf(stderr, "Warning: Requesting too big buffersize: %d\n ", length);
@@ -219,7 +208,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			syn_process_event(&eventbuffer->event_list[current_event]);
 
 			current_event++;
-			//next_event_time = find_next_event_start(eventbuffer, t);
 		}
 		
 
@@ -259,7 +247,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				}
 			}
 
-			sample *= ins->volume * float(envelope_amp) * voice->envstate.volume;
+			sample *= ins->volume * float(envelope_amp) * float(voice->envstate.volume);
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
@@ -306,22 +294,10 @@ EnvState constructEnvstate() {
 	return s;
 }
 
-// returns a pointer to the channel where the note was assigned to
+// returns a pointer to the voice where the note was assigned to
 // if no suitable voices are found, returns NULL
 Voice * syn_play_note(int channel, int pitch) {
 	int activeVoices = 0;
-
-	// skip if this voice is already playing at this pitch
-	/*
-	for (int v=0;v<SYN_MAX_VOICES;v++) {
-		Voice * voice = &voice_list[v];
-		if (voice->active && voice->channel_id == channel) {
-			if (!voice->envstate.released && voice->pitch == pitch) {
-				return;
-			}
-		}
-	}
-	*/
 
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
 		Voice * voice = &voice_list[v];
@@ -338,11 +314,15 @@ Voice * syn_play_note(int channel, int pitch) {
 		voice->envstate = constructEnvstate();
 		voice->pitch = pitch;
 
+		#ifdef DEBUG_VOICE
 		printf("new voice %d on chn %d!\n", v, voice->channel_id);
+		#endif
 		return voice;
 	}
 
+	#ifdef DEBUG_VOICE
 	fprintf(stderr, "Warning: voice buffer overflow!\n");
+	#endif
 	return NULL;
 }
 
@@ -364,8 +344,6 @@ void syn_end_note(int channel, int pitch) {
 		if (voice_list[v].envstate.released) {
 			continue;
 		}
-
-		//printf("%d ends here\n", channel);
 
 		//voice_list[v].active = false;
 		voice_list[v].envstate.released = true;

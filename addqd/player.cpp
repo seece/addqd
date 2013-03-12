@@ -63,8 +63,8 @@ PTSong load_PTSong(const char * input_path) {
 	PTSong song;
 	Songinfo ssong;
 	Instrumentinfo sinstruments;
-
-		int sz, i, u, r, offset;
+	long sz;
+	int i, u, r, offset;
 
 	// Load the MOD to memory
 
@@ -83,8 +83,8 @@ PTSong load_PTSong(const char * input_path) {
 	fread(moduledata, sizeof(char), sz, fp);
 	fclose(fp);
 
-	uint8_t modulename[20];	// well, uh
-	uint8_t initials[5];		// the magic code
+//	uint8_t modulename[20];	// well, uh
+//	uint8_t initials[5];		// the magic code
 	int song_data_offset;
 	uint8_t song_length;		// song length in patterns (the length of the order list)
 	int pattern_amount;
@@ -243,7 +243,9 @@ int player_add_offset(int offset) {
 
 static int push_event(EventBuffer * buffer, Event e) {
 	if (buffer->amount >= buffer->max_events) {
+		#ifdef DEBUG_EVENT_SANITY_CHECKS
 		fprintf(stderr, "Note event stack full!");
+		#endif
 		return -1;
 	} 
 
@@ -260,7 +262,7 @@ static int push_event(EventBuffer * buffer, Event e) {
 
 static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecount) {
 	int speed = 4;
-	int ticklength = (TEMPO * AUDIO_RATE*0.001)*speed;	// tick length in samples
+	int ticklength = int((TEMPO * AUDIO_RATE*0.001)*speed);	// tick length in samples
 	int channels =	song->song.channels;
 	int start_row =	player_samples/ticklength + row_offset;
 	int end_row =	(player_samples + samplecount)/ticklength + row_offset;
@@ -276,7 +278,9 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		int current_position = (r/64) % song->song.length;
 		int current_pattern = song->song.orderlist[current_position];
 
+		#ifdef DEBUG_PLAYER
 		printf("\tord: %d\n", current_position);
+		#endif
 
 		if (r == last_row) {
 			continue;
@@ -285,7 +289,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		for (int c=0;c<channels;c++) {
 			int note_array_offset = (current_pattern*MOD_ROWS*channels) + pattern_row*channels + c;
 			Note note = song->notedata[note_array_offset];
-			long start_samples = r*((TEMPO * AUDIO_RATE*0.001)*speed);
+			long start_samples = long(r*((TEMPO * AUDIO_RATE*0.001)*speed));
 			double start_sec = start_samples/(double)AUDIO_RATE;
 			unsigned char volume = 150;
 			int third, fifth;
@@ -342,7 +346,11 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		
 	}
 
+	#ifdef DEBUG_PLAYER
 	printf("start_row: %d\t end_row: %d\t ticklen: %d\n", start_row, end_row, samplecount);
+	#endif
+
+	#ifdef DEBUG_PLAYER_VERBOSE
 	for (int i=0;i<channels;i++) {
 		char name[4];
 		getNoteName(debug_channel_semitones[i], (uint8_t *)name);
@@ -350,6 +358,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 	}	
 
 	printf("\n");
+	#endif
 
 	last_row = end_row;
 

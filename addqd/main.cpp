@@ -19,14 +19,14 @@ int main(int argc, char argv[]) {
 	syn_init(8);
 
 	Instrument ins;
-	ins.volume=0.15;
+	ins.volume=0.15f;
 	ins.octave=0;
 	ins.waveFunc = sin;
 	ins.env.attack = 0.01f;
 	ins.env.release = 0.1f;
 
 	Instrument ins2;
-	ins2.volume=0.14;
+	ins2.volume=0.14f;
 	ins2.octave=0;
 	ins2.waveFunc = sin;
 	ins2.env.attack = 0.05f;
