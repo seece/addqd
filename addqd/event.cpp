@@ -3,10 +3,17 @@
 #include <cstring>
 #include <limits.h>
 #include "event.h"
+#include "config.h"
 
+#ifdef DEBUG_EVENT_SANITY_CHECKS
 #define CHECK_EVENT_CHANNEL if (channel < 0 || channel > 255) { \
 		fprintf(stderr, "Invalid channel num %d in %s", channel, __FUNCTION__); \
-	} \
+	} 
+
+#else
+// on release mode we don't want additional checks
+#define CHECK_EVENT_CHANNEL 
+#endif
 
 Event create_volume_event(double when, int channel, int volume) {
 	CHECK_EVENT_CHANNEL;
@@ -26,11 +33,14 @@ Event create_volume_event(double when, int channel, int volume) {
 // creates a note on/note off event
 // outcome depends on the flag
 Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume) {
+	
 	CHECK_EVENT_CHANNEL;
-
+	
+	#ifdef DEBUG_EVENT_SANITY_CHECKS
 	if (pitch < SHRT_MIN || pitch > SHRT_MAX) {
 		fprintf(stderr, "Invalid pitch value %d in %s", pitch, __FUNCTION__);	
 	}
+	#endif
 
 	short spitch = short (pitch);
 
