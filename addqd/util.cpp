@@ -120,3 +120,37 @@ long getFilesize(FILE *fp) {
 
 	return sz;
 }
+
+char * load16bitWAV(const char * path) {
+	size_t result;
+	char * data=NULL;
+	size_t size=0;
+	size_t datasize = 0;
+
+	FILE * fp;
+	fp = fopen(path, "rb");
+
+	if (fp == NULL) {
+		fprintf(stderr, "Cannot open file %s!\n", path);
+		return NULL;
+	}
+
+	fseek(fp, 0L, SEEK_END);
+	size = ftell(fp);
+	rewind(fp);
+
+
+	fseek(fp, 40, SEEK_SET);
+	fread(&datasize, 4, 1, fp);	// Subchunk2 Size
+
+	data = new char[datasize];
+	result = fread(data,1,datasize,fp);
+
+	if (result == datasize) {
+		printf("Read %d bytes from %s\n", result, path);
+	} else {
+		fprintf(stderr, "Read error with file %s.\n", path);
+	}
+
+	return data;
+}

@@ -16,6 +16,8 @@ int main(int argc, char argv[]) {
 	PTSong song = load_PTSong("mods/test2.mod");
 	player_load_PTSong(&song);
 
+	char * samplesnare = load16bitWAV("mods/snare.wav");
+
 	syn_init(8);
 
 	Instrument ins;
