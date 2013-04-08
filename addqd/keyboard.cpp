@@ -54,9 +54,9 @@ void keys_check_transport() {
 	int jump = 32;
 
 	if (GetAsyncKeyState(VK_LEFT)) {
-		player_add_offset(-jump);
+		//player_add_offset(-jump);
 	} else if (GetAsyncKeyState(VK_RIGHT)) {
-		player_add_offset(jump);
+		//player_add_offset(jump);
 	}
 }
 

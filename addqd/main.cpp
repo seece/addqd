@@ -20,33 +20,35 @@ int main(int argc, char argv[]) {
 
 	syn_init(8);
 
-	Instrument whitenoise;
-	whitenoise.volume=0.15f;
-	whitenoise.octave=0;
-	whitenoise.waveFunc = *Oscillators::noise;
-	whitenoise.env.attack = 0.01f;
-	whitenoise.env.release = 0.01f;
+	Instrument noise;
+	noise.volume=0.15f;
+	noise.octave=0;
+	noise.waveFunc = *Oscillators::noise;
+	noise.env.attack = 0.01f;
+	noise.env.release = 0.01f;
 
 	Instrument tri;
 	tri.volume=0.2f;
 	tri.octave=-2;
 	tri.waveFunc = *Oscillators::triangle;
-	tri.env.attack = 0.05f;
-	tri.env.release = 0.1f;
+	tri.env.attack = 0.02f;
+	tri.env.release = 0.01f;
 
 	Instrument square;
 	square.volume=0.2f;
-	square.octave=-2;
+	square.octave=0;
 	square.waveFunc = *Oscillators::square;
-	square.env.attack = 0.05f;
-	square.env.release = 0.1f;
+	square.env.attack = 0.001f;
+	square.env.release = 0.001f;
 
-	syn_load_instrument(0, &whitenoise);
+	syn_load_instrument(0, &noise);
 	syn_load_instrument(1, &tri);
+	syn_load_instrument(3, &square);
+
 	syn_attach_instrument(0, 1);
 	syn_attach_instrument(1, 0);
-	syn_attach_instrument(2, 1);
-	syn_attach_instrument(3, 1);
+	syn_attach_instrument(2, 3);
+	syn_attach_instrument(3, 3);
 	syn_attach_instrument(4, 0);
 	syn_attach_instrument(5, 0);
 	syn_attach_instrument(6, 0);

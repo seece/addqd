@@ -5,6 +5,13 @@
 
 #define RAND_MAX_HALF (RAND_MAX/2)
 
+// a linear congruential generator
+int customrand(int seed)
+{
+  seed = (1103515245 * seed + 12345) % (INT_MAX);
+  return seed;
+}
+
 // by Alexander Kritov
 double Oscillators::sawsin(double x)
 {
@@ -20,6 +27,10 @@ double Oscillators::noise(double x)
    return (double)rand()/(double)RAND_MAX_HALF - 1.0;
 }
 
+double Oscillators::simplenoise(double x)
+{
+   return (double)customrand(x*1000.0)/(double)INT_MAX - 1.0;
+}
 
 double Oscillators::triangle(double x)
 {
