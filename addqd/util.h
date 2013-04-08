@@ -31,8 +31,8 @@ float fmax_func(float a, float b);
 float lerp_func(float a, float b, float dist);
 #define saturate(a) min(1.0, max(0.0, a))
 
-char * load16bitWAV(const char * path);
-uint64_t dumpArrayToDisk(uint8_t *data, uint32_t length, uint8_t *output_path);
+char * load16bitWAV(const char * path, int * length);
+uint64_t dumpArrayToDisk(char *data, int length, const char *output_path);
 long getFilesize(FILE *fp);
 
 uint8_t *intToBin(int a, uint8_t *buffer, int buf_size);

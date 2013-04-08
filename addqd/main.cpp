@@ -16,7 +16,10 @@ int main(int argc, char argv[]) {
 	PTSong song = load_PTSong("mods/daveys.mod");
 	player_load_PTSong(&song);
 
-	char * samplesnare = load16bitWAV("mods/snare.wav");
+	int samplelength=-1;
+	char * samplesnare = load16bitWAV("mods/snare.wav", &samplelength);
+	dprint(samplelength);
+	dumpArrayToDisk(samplesnare, samplelength, "output/sample.raw");
 
 	syn_init(8);
 

@@ -95,7 +95,7 @@ short swapBytes(short in) {
 	return a + b;
 }
 
-uint64_t dumpArrayToDisk(uint8_t *data, uint32_t length, char *output_path) {
+uint64_t dumpArrayToDisk(char *data, int length, const char *output_path) {
     FILE *fp;
     fp = fopen(output_path, "wb");
 
@@ -121,7 +121,7 @@ long getFilesize(FILE *fp) {
 	return sz;
 }
 
-char * load16bitWAV(const char * path) {
+char * load16bitWAV(const char * path, int * length) {
 	size_t result;
 	char * data=NULL;
 	size_t size=0;
@@ -151,6 +151,8 @@ char * load16bitWAV(const char * path) {
 	} else {
 		fprintf(stderr, "Read error with file %s.\n", path);
 	}
+
+	*length = datasize;
 
 	return data;
 }
