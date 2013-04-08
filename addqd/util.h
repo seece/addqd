@@ -9,7 +9,10 @@
 #endif
 
 #define MINUS_INFINITY INT_MIN
-#define PI 3.14159265358979323846
+
+#ifndef PI
+	#define PI 3.14159265358979323846
+#endif
 
 #define dprint(expr) printf(#expr " = %d\n", expr);
 #define dprint1f(expr) printf(#expr " = %f\n", expr);

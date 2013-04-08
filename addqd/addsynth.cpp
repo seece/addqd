@@ -6,6 +6,7 @@
 #include "util.h"
 #include "config.h"
 #include "addsynth.h"
+//#include "oscillators.h"
 
 static SynthState state;
 static Channel * channel_list;
@@ -70,16 +71,6 @@ void syn_free_instrument(Instrument * ins) {
 
 static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
 static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
-
-// by Alexander Kritov
-double sawsin(double x)
-{
-   double t = fmod(x/(2*PI),(double)1.0);
-   if (t>0.5)
-	   return -sin(x);
-   if (t<=0.5)
-	   return (double)2.0*t-1.0;
-}
 
 static double find_next_event_start(EventBuffer * eventbuffer, double start) {
 	// TODO do a binary search here?

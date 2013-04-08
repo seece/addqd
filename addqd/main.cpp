@@ -13,33 +13,40 @@
 
 int main(int argc, char argv[]) {
 	player_init();
-	PTSong song = load_PTSong("mods/test2.mod");
+	PTSong song = load_PTSong("mods/daveys.mod");
 	player_load_PTSong(&song);
 
 	char * samplesnare = load16bitWAV("mods/snare.wav");
 
 	syn_init(8);
 
-	Instrument ins;
-	ins.volume=0.15f;
-	ins.octave=0;
-	ins.waveFunc = sin;
-	ins.env.attack = 0.01f;
-	ins.env.release = 0.1f;
+	Instrument whitenoise;
+	whitenoise.volume=0.15f;
+	whitenoise.octave=0;
+	whitenoise.waveFunc = *Oscillators::noise;
+	whitenoise.env.attack = 0.01f;
+	whitenoise.env.release = 0.01f;
 
-	Instrument ins2;
-	ins2.volume=0.14f;
-	ins2.octave=0;
-	ins2.waveFunc = sin;
-	ins2.env.attack = 0.05f;
-	ins2.env.release = 0.1f;
+	Instrument tri;
+	tri.volume=0.2f;
+	tri.octave=-2;
+	tri.waveFunc = *Oscillators::triangle;
+	tri.env.attack = 0.05f;
+	tri.env.release = 0.1f;
 
-	syn_load_instrument(0, &ins);
-	syn_load_instrument(1, &ins2);
-	syn_attach_instrument(0, 0);
+	Instrument square;
+	square.volume=0.2f;
+	square.octave=-2;
+	square.waveFunc = *Oscillators::square;
+	square.env.attack = 0.05f;
+	square.env.release = 0.1f;
+
+	syn_load_instrument(0, &whitenoise);
+	syn_load_instrument(1, &tri);
+	syn_attach_instrument(0, 1);
 	syn_attach_instrument(1, 0);
-	syn_attach_instrument(2, 0);
-	syn_attach_instrument(3, 0);
+	syn_attach_instrument(2, 1);
+	syn_attach_instrument(3, 1);
 	syn_attach_instrument(4, 0);
 	syn_attach_instrument(5, 0);
 	syn_attach_instrument(6, 0);
@@ -60,7 +67,7 @@ int main(int argc, char argv[]) {
 	}
 
 	delete song.notedata;
-	syn_free_instrument(&ins);
+	//syn_free_instrument(&whitenoise);	
 	free_sound();
 
 	return 0;

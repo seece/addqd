@@ -238,9 +238,6 @@ int player_add_offset(int offset) {
 	return row_offset;
 }
 
-// time between rows in MILLISECS
-#define TEMPO 40
-
 static int push_event(EventBuffer * buffer, Event e) {
 	if (buffer->amount >= buffer->max_events) {
 		#ifdef DEBUG_EVENT_SANITY_CHECKS
@@ -262,7 +259,8 @@ static int push_event(EventBuffer * buffer, Event e) {
 
 static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecount) {
 	int speed = 4;
-	int ticklength = int((TEMPO * AUDIO_RATE*0.001)*speed);	// tick length in samples
+	int tempo = 22; // delay between rows in millisecs
+	int ticklength = int((tempo * AUDIO_RATE*0.001)*speed);	// tick length in samples
 	int channels =	song->song.channels;
 	int start_row =	player_samples/ticklength + row_offset;
 	int end_row =	(player_samples + samplecount)/ticklength + row_offset;
@@ -289,7 +287,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		for (int c=0;c<channels;c++) {
 			int note_array_offset = (current_pattern*MOD_ROWS*channels) + pattern_row*channels + c;
 			Note note = song->notedata[note_array_offset];
-			long start_samples = long(r*((TEMPO * AUDIO_RATE*0.001)*speed));
+			long start_samples = long(r*((tempo * AUDIO_RATE*0.001)*speed));
 			double start_sec = start_samples/(double)AUDIO_RATE;
 			unsigned char volume = 150;
 			int third, fifth;

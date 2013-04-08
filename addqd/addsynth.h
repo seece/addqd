@@ -13,6 +13,7 @@
 #define ADDSYNTH_H
 #include "config.h"
 #include "event.h"
+#include "oscillators.h"
 
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 
@@ -34,9 +35,6 @@ enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 //#define PI 3.14159265
 #define TAU (2*PI)
 #define NOTEFREQ(pitch) pow(NOTEMAGIC, pitch) * 440.0
-
-// A function that generates a waveform when given the phase p
-typedef double (*WaveformFunc_t)(double p);
 
 struct Spectrum {
 	char bands[SYN_PARTIAL_AMOUNT];
