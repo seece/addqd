@@ -273,7 +273,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 					sample = float(wavefunc(phase * 2.0 * PI));
 					break;
 				case INS_SAMPLER:
-					sample = (float)ins->samplerFunc(voicetime, ins->sample->data, 
+					sample = (float)ins->samplerFunc(voicetime * (f/440.0), ins->sample->data, 
 						ins->sample->length);
 					break;
 				default:
