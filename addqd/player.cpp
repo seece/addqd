@@ -271,6 +271,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		return;
 	}
 
+	// TODO implement tick-accurate player
 	for (int r=start_row;r<=end_row;r++) {
 		int pattern_row = r % 64;
 		int current_position = (r/64) % song->song.length;
@@ -287,6 +288,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		for (int c=0;c<channels;c++) {
 			int note_array_offset = (current_pattern*MOD_ROWS*channels) + pattern_row*channels + c;
 			Note note = song->notedata[note_array_offset];
+
 			long start_samples = long(r*((tempo * AUDIO_RATE*0.001)*speed));
 			double start_sec = start_samples/(double)AUDIO_RATE;
 			unsigned char volume = 150;
@@ -359,19 +361,18 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 	#endif
 
 	last_row = end_row;
-
-	//Event e = create_note_event(1.0, 0, 5);
-	//short s = (e.data[0] << 8) | e.data[1];
 }
 
 // pushes new commands to the command buffer
 // only picks commands between start_time and end_time
 void player_update(EventBuffer * buffer, long samplecount) {
-	//long time = long((double)millis/((double)AUDIO_RATE/1000.0));
 	PTSong * song = loaded_song;
 
 	if (loaded_song == NULL) {
-		fprintf(stderr, "Song not loaded, cannot play!\n");
+		#ifdef DEBUG_PLAYER_SANITY_CHECKS
+			fprintf(stderr, "Song not loaded, cannot play!\n");
+		#endif
+
 		return;
 	}
 

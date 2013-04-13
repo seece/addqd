@@ -39,9 +39,9 @@ int main(int argc, char argv[]) {
 	Instrument tri = syn_create_instrument(INS_OSC);
 	tri.volume=0.5f;
 	tri.octave=-2;
-	tri.waveFunc = *Generators::sinsquare;
-	tri.env.attack = 0.02f;
-	tri.env.release = 0.01f;
+	tri.waveFunc = *Generators::triangle;
+	tri.env.attack = 0.01f;
+	tri.env.release = 0.08f;
 
 	Instrument square = syn_create_instrument(INS_OSC);
 	square.volume=0.3f;

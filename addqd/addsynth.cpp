@@ -19,6 +19,9 @@ static Voice voice_list[SYN_MAX_VOICES];
 #define EFFECT_TEST 1
 char * effectName[] = {"no effect", "test effect"};
 
+static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
+static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
+
 static void init_effect(Effect * effect) {
 	effect->name = effectName[EFFECT_NONE];
 	effect->numParams = 0;
@@ -53,12 +56,28 @@ static void init_channel(Channel * channel) {
 	memset(channel->buffer, 0, AUDIO_BUFFERSIZE*2);
 }
 
-static void init_instrument(Instrument * ins) {
+static void syn_init_instrument(Instrument * ins) {
 	ins->volume = 1.0f;
-	ins->waveFunc = sin;
-	ins->octave=0;
-	ins->env.attack=0.1f;
-	ins->env.release=0.1f;
+	ins->waveFunc = NULL;
+	ins->octave = 0;
+	ins->env.attack = 0.05f;
+	ins->env.release = 0.1f;
+	ins->env.decay = 0.2;
+	ins->env.hold = 1.0f;
+}
+
+Instrument syn_create_instrument(InstrumentType type) {
+	Instrument ins;
+	ins.type = type;
+	ins.waveFunc = NULL;
+	ins.volume = 1.0f;
+	ins.octave = 0;
+	ins.env.attack = 0.05f;
+	ins.env.release = 0.1f;
+	ins.env.decay = 0.2;
+	ins.env.hold = 1.0f;
+	
+	return ins;
 }
 
 static void free_instrument(Instrument * ins) {
@@ -68,9 +87,6 @@ static void free_instrument(Instrument * ins) {
 void syn_free_instrument(Instrument * ins) {
 	free_instrument(ins);
 }
-
-static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
-static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
 
 static double find_next_event_start(EventBuffer * eventbuffer, double start) {
 	// TODO do a binary search here?
@@ -114,7 +130,8 @@ static void syn_process_event(Event * e) {
 			voice = syn_play_note(e->channel, pitch);
 			if (voice != NULL) {
 				vol = ((unsigned char)(e->payload[0]));
-				voice->envstate.volume = vol/255.0;
+				//voice->envstate.volume = vol/255.0;
+				voice->envstate.target_volume = vol/255.0;
 			}
 
 			break;
@@ -156,7 +173,7 @@ static void syn_process_event(Event * e) {
 
 // writes stereo samples to the given array
 // buf			sample buffer
-// length		buffer length in stereo samples
+// length		buffer length in frames
 // eventbuffer	list of note events to apply on this buffer
 // Compatible with SynthRender_t found from sound.h
 void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) {
@@ -169,7 +186,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	double next_event_time = 0.0;
 
 	if (length > AUDIO_BUFFERSIZE*2) {
-		fprintf(stderr, "Warning: Requesting too big buffersize: %d\n ", length);
+		fprintf(stderr, "Warning: Requested buffer size too big: %d\n ", length);
 	}
 
 	#ifdef DEBUG_EVENT_SANITY_CHECKS
@@ -203,6 +220,13 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		
 
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
+			Voice * voice = &voice_list[v];
+					
+			if (abs(voice->envstate.target_volume - voice->envstate.volume) > SYN_VOLUME_LERP_THRESOLD) {
+				voice->envstate.volume += 0.005f *  
+					sgn(voice->envstate.target_volume - voice->envstate.volume);
+			}
+
 			if (!voice_list[v].active) {
 				continue;
 			}
@@ -215,8 +239,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				continue;
 			}
 
-			Voice * voice = &voice_list[v];
 			Instrument * ins = voice->channel->instrument;
+			//Channel * chan = voice_list[v].channel;
 			WaveformFunc_t wavefunc = ins->waveFunc;
 
 			f = NOTEFREQ(voice_list[v].pitch+3+ins->octave*12);
@@ -265,11 +289,12 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 
 	for (int c=0;c<state.channels;c++) {
-		if (channel_list[c].volume == 0.0) {
+		if (channel_list[c].volume <= 0.0001) {
 			continue;
 		}
 
 		double volume = channel_list[c].volume;
+
 
 		for (int i=0;i<length*2;i++) {
 			// TODO panning (user proper power distribution)
@@ -303,7 +328,7 @@ EnvState constructEnvstate() {
 }
 
 // returns a pointer to the voice where the note was assigned to
-// if no suitable voices are found, returns NULL
+// if no suitable voice is found, returns NULL
 Voice * syn_play_note(int channel, int pitch) {
 	int activeVoices = 0;
 
@@ -377,6 +402,7 @@ void syn_end_all_notes(int channel) {
 }
 
 // finds all voices on the given channel and sets their volume
+// uses Channel.target_volume for smooth interpolation
 static void set_channel_volume(int channel, double volume) {
 	for (int i=0;i<SYN_MAX_VOICES;i++) {
 		Voice * v = &voice_list[i];
@@ -386,7 +412,8 @@ static void set_channel_volume(int channel, double volume) {
 		}
 
 		if (v->channel_id == channel) {
-			v->envstate.volume = volume;
+			//v->envstate.volume = volume;
+			v->envstate.target_volume = volume;
 		}
 	}
 }
@@ -457,20 +484,6 @@ void syn_free(void) {
 	}
 
 	//delete instrument_list;
-}
-
-Instrument syn_create_instrument(InstrumentType type) {
-	Instrument ins;
-	ins.type = type;
-	ins.waveFunc = NULL;
-	ins.volume = 1.0f;
-	ins.octave = 0;
-	ins.env.attack = 0.05f;
-	ins.env.release = 0.1f;
-	ins.env.decay = 0.2;
-	ins.env.hold = 1.0f;
-	
-	return ins;
 }
 
 /// Get a channel pointer.

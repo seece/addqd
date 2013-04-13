@@ -27,6 +27,9 @@ enum InstrumentType {INS_OSC, INS_SAMPLER};
 #define SYN_SINE_TABLE_SIZE 2205
 #define SYN_MAX_VOICES 64
 
+// used with Channel.target_volume
+#define SYN_VOLUME_LERP_THRESOLD (0.01f)
+
 #define SYN_UBERSAMPLE 
 
 #define INTERPOLATION_NONE 0
@@ -79,6 +82,7 @@ struct EnvState {
 	double endTime;
 	bool released;
 	double volume;	// volume set by note-on command
+	double target_volume;	// if target_volume differs from volume, volume will be interpolated smoothly to it
 };
 
 struct Parameter {
