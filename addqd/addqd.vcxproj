@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="addsynth.h" />
+    <ClInclude Include="addsynth_types.h" />
     <ClInclude Include="amigamod.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="eks_simd.h" />

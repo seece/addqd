@@ -18,7 +18,7 @@ float maxss ( float a, float b )
     return a;
 }
 
-float clamp ( float val, float minval, float maxval )
+float clampss ( float val, float minval, float maxval )
 {
     // Branchless SSE clamp.
     // return minss( maxss(val,minval), maxval );

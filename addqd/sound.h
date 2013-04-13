@@ -23,11 +23,11 @@ static HWAVEOUT	hWaveOut;
 
 static WAVEFORMATEX WaveFMT =
 {
-#ifdef FLOAT_32BIT	
-	WAVE_FORMAT_IEEE_FLOAT,
-#else
-	WAVE_FORMAT_PCM,
-#endif		
+	#ifdef FLOAT_32BIT	
+		WAVE_FORMAT_IEEE_FLOAT,
+	#else
+		WAVE_FORMAT_PCM,
+	#endif		
 	2, // channels
 	AUDIO_RATE, // samples per sec
 	AUDIO_RATE*sizeof(SAMPLE_TYPE)*2, // bytes per sec

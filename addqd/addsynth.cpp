@@ -33,6 +33,7 @@ static void init_voice(Voice * v) {
 	v->envstate.hold = false;
 	v->envstate.beginTime = 0;
 	v->envstate.volume = 1.0;
+	v->envstate.target_volume = v->envstate.volume;
 	v->pitch = 0;
 }
 
@@ -62,7 +63,7 @@ static void syn_init_instrument(Instrument * ins) {
 	ins->octave = 0;
 	ins->env.attack = 0.05f;
 	ins->env.release = 0.1f;
-	ins->env.decay = 0.2;
+	ins->env.decay = 0.2f;
 	ins->env.hold = 1.0f;
 }
 
@@ -74,7 +75,7 @@ Instrument syn_create_instrument(InstrumentType type) {
 	ins.octave = 0;
 	ins.env.attack = 0.05f;
 	ins.env.release = 0.1f;
-	ins.env.decay = 0.2;
+	ins.env.decay = 0.2f;
 	ins.env.hold = 1.0f;
 	
 	return ins;
@@ -221,10 +222,30 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
 			Voice * voice = &voice_list[v];
-					
-			if (abs(voice->envstate.target_volume - voice->envstate.volume) > SYN_VOLUME_LERP_THRESOLD) {
-				voice->envstate.volume += 0.005f *  
-					sgn(voice->envstate.target_volume - voice->envstate.volume);
+			
+			
+			// voice volume change smoothing
+			float vol = voice->envstate.volume;
+			float target = voice->envstate.target_volume;
+			if (abs(target - vol) > SYN_VOLUME_LERP_THRESOLD) {
+				//voice->envstate.volume += (target - vol) * 0.4;
+				voice->envstate.volume = voice->envstate.target_volume;
+				//voice->envstate.volume += 0.005f *  
+					//sgn(voice->envstate.target_volume - voice->envstate.volume);
+			}
+
+			if (voice->channel == NULL) {
+				continue;
+			}
+
+			Instrument * ins = voice->channel->instrument;
+
+			// voice envelope calculations will be done even to unactive channels
+			double voicetime = t-voice->envstate.beginTime;
+			envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
+
+			if (voice->envstate.released) {
+				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
 			}
 
 			if (!voice_list[v].active) {
@@ -238,18 +259,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				#endif
 				continue;
 			}
-
-			Instrument * ins = voice->channel->instrument;
+	
 			//Channel * chan = voice_list[v].channel;
 			WaveformFunc_t wavefunc = ins->waveFunc;
 
 			f = NOTEFREQ(voice_list[v].pitch+3+ins->octave*12);
-			double voicetime = t-voice->envstate.beginTime;
-			envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
-
-			if (voice->envstate.released) {
-				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
-			}
 
 			phase = voice->phase;
 			double ofs = 0.0;
@@ -259,7 +273,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 					sample = float(wavefunc(phase * 2.0 * PI));
 					break;
 				case INS_SAMPLER:
-					sample = ins->samplerFunc(voicetime, ins->sample->data, 
+					sample = (float)ins->samplerFunc(voicetime, ins->sample->data, 
 						ins->sample->length);
 					break;
 				default:
@@ -288,13 +302,23 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 
+	#ifdef DEBUG_VOICE
+	for (int v=0;v<SYN_MAX_VOICES;v++) {
+		if (!voice_list[v].active) {
+			continue;
+		}
+
+		printf("%d=%f>%f ", v, voice_list[v].envstate.volume, voice_list[v].envstate.target_volume);
+	}
+	printf("\n");
+	#endif
+
 	for (int c=0;c<state.channels;c++) {
 		if (channel_list[c].volume <= 0.0001) {
 			continue;
 		}
 
 		double volume = channel_list[c].volume;
-
 
 		for (int i=0;i<length*2;i++) {
 			// TODO panning (user proper power distribution)

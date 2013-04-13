@@ -17,11 +17,12 @@ int main(int argc, char argv[]) {
 	player_load_PTSong(&song);
 
 	int samplelength=-1;
-	char * samplesnare = load16bitWAV("mods/snare.wav", &samplelength);
-	dprint(samplelength);
+	//char * samplesnare = load16bitWAV("mods/snare.wav", &samplelength);
+	//dprint(samplelength);
 
 	Sample snare;
-	convert_sample_to_float(&snare, samplesnare, samplelength);
+	generate_noise_sample(&snare, 44100);
+	//convert_sample_to_float(&snare, samplesnare, samplelength);
 
 	//dumpArrayToDisk((char *)snare.data, snare.length*sizeof(float), "output/sample.raw");
 	//dumpArrayToDisk(samplesnare, samplelength, "output/sample2.raw");
@@ -66,10 +67,10 @@ int main(int argc, char argv[]) {
 	init_sound();
 	
 	// MUTE channels
-	//syn_get_channel(0)->volume = 0.0f;
-	syn_get_channel(1)->volume = 0.0f;
-	//syn_get_channel(2)->volume = 0.0f;
-	//syn_get_channel(3)->volume = 0.0f;
+	syn_get_channel(0)->volume = 0.0f;
+	//syn_get_channel(1)->volume = 0.0f;
+	syn_get_channel(2)->volume = 0.0f;
+	syn_get_channel(3)->volume = 0.0f;
 
 
 	int start = GetTickCount();

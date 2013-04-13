@@ -72,3 +72,13 @@ double Generators::sampler(double x, float * samplearray, int arraysize) {
 	pos = pos % arraysize;
 	return (double)samplearray[pos];
 }
+
+// length in samples
+void generate_noise_sample(Sample * sample, int length) {
+	sample->length = length;
+	sample->data = new float[length];
+
+	for (int i=0;i<length;i++) {
+		sample->data[i] = Generators::noise((double)i);
+	}
+}
