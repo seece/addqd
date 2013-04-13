@@ -13,7 +13,7 @@
 #define ADDSYNTH_H
 #include "config.h"
 #include "event.h"
-#include "oscillators.h"
+#include "generators.h"
 
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 

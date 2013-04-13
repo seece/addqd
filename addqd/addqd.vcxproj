@@ -67,7 +67,7 @@
     <ClCompile Include="addsynth.cpp" />
     <ClCompile Include="amigamod.cpp" />
     <ClCompile Include="event.cpp" />
-    <ClCompile Include="oscillators.cpp" />
+    <ClCompile Include="generators.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player.cpp" />
@@ -79,7 +79,7 @@
     <ClInclude Include="amigamod.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="event.h" />
-    <ClInclude Include="oscillators.h" />
+    <ClInclude Include="generators.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="sound.h" />

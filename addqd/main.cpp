@@ -23,29 +23,29 @@ int main(int argc, char argv[]) {
 	Sample snare;
 	convert_sample_to_float(&snare, samplesnare, samplelength);
 
-	dumpArrayToDisk((char *)snare.data, snare.length*sizeof(float), "output/sample.raw");
-	dumpArrayToDisk(samplesnare, samplelength, "output/sample2.raw");
+	//dumpArrayToDisk((char *)snare.data, snare.length*sizeof(float), "output/sample.raw");
+	//dumpArrayToDisk(samplesnare, samplelength, "output/sample2.raw");
 	//printf("%d", snare.length*sizeof(float));
 	syn_init(8);
 
 	Instrument noise;
 	noise.volume=0.15f;
 	noise.octave=0;
-	noise.waveFunc = *Oscillators::noise;
+	noise.waveFunc = *Generators::noise;
 	noise.env.attack = 0.01f;
 	noise.env.release = 0.01f;
 
 	Instrument tri;
 	tri.volume=0.5f;
 	tri.octave=-2;
-	tri.waveFunc = *Oscillators::triangle;
+	tri.waveFunc = *Generators::triangle;
 	tri.env.attack = 0.02f;
 	tri.env.release = 0.01f;
 
 	Instrument square;
 	square.volume=0.3f;
 	square.octave=0;
-	square.waveFunc = *Oscillators::square;
+	square.waveFunc = *Generators::square;
 	square.env.attack = 0.001f;
 	square.env.release = 0.001f;
 
