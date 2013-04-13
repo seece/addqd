@@ -459,8 +459,6 @@ void syn_free(void) {
 	//delete instrument_list;
 }
 
-
-
 Instrument syn_create_instrument(InstrumentType type) {
 	Instrument ins;
 	ins.type = type;
@@ -473,4 +471,17 @@ Instrument syn_create_instrument(InstrumentType type) {
 	ins.env.hold = 1.0f;
 	
 	return ins;
+}
+
+/// Get a channel pointer.
+/// num: the channel index
+Channel * syn_get_channel(int num) {
+	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+		if (num >= state.channels || num < 0) {
+			fprintf(stderr, "%s: Invalid channel num %d!\n", __FUNCTIONW__, num);
+			return NULL;
+		}
+	#endif
+
+	return &channel_list[num];
 }

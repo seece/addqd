@@ -1,7 +1,10 @@
 #include <stdlib.h>	// for rand function
 #include <cmath>
+#include <mmintrin.h>
+#include <xmmintrin.h>
 #include "util.h"
 #include "generators.h"
+
 
 #define RAND_MAX_HALF (RAND_MAX/2)
 
@@ -51,9 +54,17 @@ double Generators::square(double x)
 	if (x < PI) {
 		return 1.0;
 	} else {
-		return 0.0;
+		return -1.0;
 	}
 	
+}
+
+double Generators::sinsquare(double x)
+{
+	float val = (float)sin(x) * 10.0f;
+	_mm_store_ss( &val, _mm_min_ss( _mm_max_ss(_mm_set_ss(val),_mm_set_ss(-1.0f)), _mm_set_ss(1.0f) ) );
+	//return MAX(-0.07, MIN(0.07, sin(x)))*(1.0/0.07);
+	return (double)val;
 }
 
 double Generators::sampler(double x, float * samplearray, int arraysize) {

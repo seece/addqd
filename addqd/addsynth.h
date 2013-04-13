@@ -132,10 +132,11 @@ void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer);
 void syn_init(int channels);
 Instrument syn_create_instrument(InstrumentType type);
-Voice * syn_play_note(int channel, int pitch);	// for testing
+Voice * syn_play_note(int channel, int pitch);	
 static void set_channel_volume(int channel, double volume);
-void syn_end_note(int channel, int pitch);	// for testing
+void syn_end_note(int channel, int pitch);	
 void syn_end_all_notes(int channel);
 void syn_free();
+Channel * syn_get_channel(int num);
 
 #endif

@@ -13,6 +13,7 @@ namespace Generators {
 	double noise(double x);
 	double triangle(double x);
 	double square(double x);
+	double sinsquare(double x);
 	double sampler(double x, float * samplearray, int arraysize);
 };
 

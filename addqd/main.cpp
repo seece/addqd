@@ -34,18 +34,18 @@ int main(int argc, char argv[]) {
 	noise.samplerFunc = *Generators::sampler;
 	noise.sample = &snare;
 	noise.env.attack = 0.01f;
-	noise.env.release = 0.01f;
+	noise.env.release = 0.1f;
 
 	Instrument tri = syn_create_instrument(INS_OSC);
 	tri.volume=0.5f;
 	tri.octave=-2;
-	tri.waveFunc = *Generators::triangle;
+	tri.waveFunc = *Generators::sinsquare;
 	tri.env.attack = 0.02f;
 	tri.env.release = 0.01f;
 
 	Instrument square = syn_create_instrument(INS_OSC);
 	square.volume=0.3f;
-	square.waveFunc = *Generators::square;
+	square.waveFunc = *Generators::sinsquare;
 	square.env.attack = 0.001f;
 	square.env.release = 0.001f;
 
@@ -57,7 +57,7 @@ int main(int argc, char argv[]) {
 	syn_attach_instrument(1, 0);
 	syn_attach_instrument(2, 2);
 	syn_attach_instrument(3, 2);
-	syn_attach_instrument(4, 0);
+	syn_attach_instrument(4, 1);
 	syn_attach_instrument(5, 0);
 	syn_attach_instrument(6, 0);
 	syn_attach_instrument(7, 0);
@@ -65,6 +65,13 @@ int main(int argc, char argv[]) {
 	keys_init();
 	init_sound();
 	
+	// MUTE channels
+	//syn_get_channel(0)->volume = 0.0f;
+	syn_get_channel(1)->volume = 0.0f;
+	//syn_get_channel(2)->volume = 0.0f;
+	//syn_get_channel(3)->volume = 0.0f;
+
+
 	int start = GetTickCount();
 
 	while(!GetAsyncKeyState(VK_ESCAPE)) {

@@ -61,6 +61,8 @@ void keys_check_transport() {
 }
 
 void keys_check_presses() {
+	int channel = 4;
+
 	for (int i=KEYBOARD_BASE;i<KEYBOARD_KEYS;i++) {
 		if (keymap[i] == KEY_NULL) {
 			continue;
@@ -73,13 +75,13 @@ void keys_check_presses() {
 			
 			keys_held[i] = true;
 			
-			syn_play_note(0, keymap[i]);
+			syn_play_note(channel, keymap[i]);
 			
 			printf("key: %x\n", i);
 		} else {
 			// send the noteoff event only once
 			if (keys_held[i]) {
-				syn_end_note(0, keymap[i]);
+				syn_end_note(channel, keymap[i]);
 			}
 
 			keys_held[i] = false;

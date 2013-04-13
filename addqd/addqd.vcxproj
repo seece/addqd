@@ -66,6 +66,7 @@
   <ItemGroup>
     <ClCompile Include="addsynth.cpp" />
     <ClCompile Include="amigamod.cpp" />
+    <ClCompile Include="eks_simd.cpp" />
     <ClCompile Include="event.cpp" />
     <ClCompile Include="generators.cpp" />
     <ClCompile Include="keyboard.cpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="addsynth.h" />
     <ClInclude Include="amigamod.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="eks_simd.h" />
     <ClInclude Include="event.h" />
     <ClInclude Include="generators.h" />
     <ClInclude Include="keyboard.h" />
