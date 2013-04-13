@@ -30,29 +30,29 @@ int getModuleType(uint8_t *magic) {
 	return MODULE_TYPE_UNKNOWN;
 }
 
-int loadSampleInfo(uint8_t *moduledata, Sample *sample_info, int sample_num) {
+int loadSampleInfo(uint8_t *moduledata, PTSample *sample_info, int sample_num) {
 	int offset, i;
 	short amigaword;
 
 	for (i=0;i<sample_num;i++) {
-		offset = 20 + i*sizeof(Sample) + 0;		// name
+		offset = 20 + i*sizeof(PTSample) + 0;		// name
 		memcpy(&sample_info[i].name, &moduledata[offset], 22);
 
-		offset = 20 + i*sizeof(Sample) + 22;	// sample length
+		offset = 20 + i*sizeof(PTSample) + 22;	// sample length
 		memcpy(&amigaword, &moduledata[offset], 2);	// copy to temp variable
 		sample_info[i].length = swapBytes(amigaword);
 
-		offset = 20 + i*sizeof(Sample) + 24;	// finetune
+		offset = 20 + i*sizeof(PTSample) + 24;	// finetune
 		memcpy(&sample_info[i].finetune, &moduledata[offset], 1);
 
-		offset = 20 + i*sizeof(Sample) + 25;	// volume
+		offset = 20 + i*sizeof(PTSample) + 25;	// volume
 		memcpy(&sample_info[i].volume, &moduledata[offset], 1);
 
-		offset = 20 + i*sizeof(Sample) + 26;	// repeat
+		offset = 20 + i*sizeof(PTSample) + 26;	// repeat
 		memcpy(&amigaword, &moduledata[offset], 2);
 		sample_info[i].repeat = swapBytes(amigaword);
 
-		offset = 20 + i*sizeof(Sample) + 28;	// repeat length
+		offset = 20 + i*sizeof(PTSample) + 28;	// repeat length
 		memcpy(&amigaword, &moduledata[offset], 2);	// copy to temp variable
 		sample_info[i].repeat_length = swapBytes(amigaword);
 
@@ -262,7 +262,7 @@ void printOrderlist(uint8_t *song_order, uint8_t song_length) {
 	printf("\n");
 }
 
-void printSamples(Sample *sample_info, uint8_t sample_amount) {
+void printSamples(PTSample *sample_info, uint8_t sample_amount) {
 	uint32_t i;
 
 	printf("Samples:\n");

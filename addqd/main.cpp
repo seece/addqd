@@ -19,8 +19,12 @@ int main(int argc, char argv[]) {
 	int samplelength=-1;
 	char * samplesnare = load16bitWAV("mods/snare.wav", &samplelength);
 	dprint(samplelength);
-	dumpArrayToDisk(samplesnare, samplelength, "output/sample.raw");
 
+	Sample snare;
+	convert_sample_to_float(&snare, samplesnare, samplelength);
+
+	dumpArrayToDisk((char *)snare.data, snare.length*sizeof(float), "output/sample.raw");
+	//printf("%d", snare.length*sizeof(float));
 	syn_init(8);
 
 	Instrument noise;
@@ -31,14 +35,14 @@ int main(int argc, char argv[]) {
 	noise.env.release = 0.01f;
 
 	Instrument tri;
-	tri.volume=0.2f;
+	tri.volume=0.5f;
 	tri.octave=-2;
 	tri.waveFunc = *Oscillators::triangle;
 	tri.env.attack = 0.02f;
 	tri.env.release = 0.01f;
 
 	Instrument square;
-	square.volume=0.2f;
+	square.volume=0.3f;
 	square.octave=0;
 	square.waveFunc = *Oscillators::square;
 	square.env.attack = 0.001f;
@@ -46,12 +50,12 @@ int main(int argc, char argv[]) {
 
 	syn_load_instrument(0, &noise);
 	syn_load_instrument(1, &tri);
-	syn_load_instrument(3, &square);
+	syn_load_instrument(2, &square);
 
 	syn_attach_instrument(0, 1);
 	syn_attach_instrument(1, 0);
-	syn_attach_instrument(2, 3);
-	syn_attach_instrument(3, 3);
+	syn_attach_instrument(2, 2);
+	syn_attach_instrument(3, 2);
 	syn_attach_instrument(4, 0);
 	syn_attach_instrument(5, 0);
 	syn_attach_instrument(6, 0);

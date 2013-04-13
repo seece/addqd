@@ -19,7 +19,7 @@ static void setDefaultInstrumentValues(PTInstrument *ins) {
 	ins->volume = 64;	// 040
 }
 
-static uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments) {
+static uint32_t loadInstruments(PTSample *sample_info, Instrumentinfo *sinstruments) {
 	uint32_t i;
 
 	for (i=0;i<sinstruments->instrument_amount;i++) {
@@ -104,7 +104,7 @@ PTSong load_PTSong(const char * input_path) {
 	// load the sample information (not actual PCM audio)
 	//sinstruments.instrument_amount = sample_amount; // TODO add check to see how many instruments are actually used
 	sinstruments.instrument_amount = channels;	// HARDCODED VALUE
-	Sample * sample_info = new Sample[sample_amount];
+	PTSample * sample_info = new PTSample[sample_amount];
 	loadSampleInfo(moduledata, sample_info, sample_amount);
 	loadInstruments(sample_info, &sinstruments);
 
@@ -113,7 +113,7 @@ PTSong load_PTSong(const char * input_path) {
 	}
 
 
-	song_data_offset = 20 + sizeof(Sample) * sample_amount;
+	song_data_offset = 20 + sizeof(PTSample) * sample_amount;
 
 	memcpy(&song_length, &moduledata[song_data_offset + 0], 1);
 

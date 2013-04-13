@@ -35,10 +35,11 @@ double Oscillators::simplenoise(double x)
 double Oscillators::triangle(double x)
 {
 	// period of 2 * PI
-	if (x < PI) {
-		return x-1.0;
+	double t = fmod(x/(2*PI), (double)1.0);
+	if (t < 0.5) {
+		return t-1.0;
 	} else {
-		return 1.0-(x-PI);
+		return 1.0-(t);
 	}
 	
 }

@@ -101,6 +101,11 @@ struct Channel {
 	SAMPLE_TYPE buffer[AUDIO_BUFFERSIZE*2];
 };
 
+struct Sample {
+	float * data;
+	int length;
+};
+
 struct Voice {
 	int pitch;
 	EnvState envstate;

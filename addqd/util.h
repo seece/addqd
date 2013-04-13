@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "addsynth.h"
 
 #ifndef NULL
 	#define NULL 0
@@ -33,6 +34,7 @@ float lerp_func(float a, float b, float dist);
 
 char * load16bitWAV(const char * path, int * length);
 uint64_t dumpArrayToDisk(char *data, int length, const char *output_path);
+int convert_sample_to_float(Sample * sample, char * sampledata, int length);
 long getFilesize(FILE *fp);
 
 uint8_t *intToBin(int a, uint8_t *buffer, int buf_size);

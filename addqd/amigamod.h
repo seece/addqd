@@ -18,14 +18,14 @@
 
 #include <stdint.h>
 
-typedef struct Sample {
+typedef struct PTSample {
 	uint8_t name[22];
 	uint16_t length;	// Converted to little-endian, needs to be multiplied by two
 	int8_t finetune;
 	uint8_t volume;	// values 0-64 are used
 	uint16_t repeat;	// converted to little-endian
 	uint16_t repeat_length;	// converted to little-endian, needs to be multiplied by two
-} Sample;
+} PTSample;
 
 // not actual amiga datatypes
 typedef struct Note {
@@ -55,7 +55,7 @@ typedef struct Pattern8 {
 } Pattern8;
 
 int getModuleType(uint8_t *magic);
-int loadSampleInfo(uint8_t *moduledata, Sample *sample_info, int sample_num);	// TODO make these return the destination instead of an int
+int loadSampleInfo(uint8_t *moduledata, PTSample *sample_info, int sample_num);	// TODO make these return the destination instead of an int
 void loadOrderData(uint8_t *moduledata, uint8_t *song_order, int song_data_offset, int song_order_num);
 int getHighestOrder(uint8_t *moduledata, uint8_t *song_order, int song_order_num);
 //int dumpProtrackerSamples(uint8_t *moduledata, Sample *sample_info, int sample_data_offset);
@@ -70,6 +70,6 @@ uint8_t * loadModuleMagic(uint8_t *moduledata, uint8_t *output);
 
 uint32_t getChannelAmount(uint8_t *moduledata);
 void printOrderlist(uint8_t *song_order, uint8_t song_length);
-void printSamples(Sample *sample_info, uint8_t sample_amount);
+void printSamples(PTSample *sample_info, uint8_t sample_amount);
 
 #endif
