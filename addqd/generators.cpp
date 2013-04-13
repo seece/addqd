@@ -38,10 +38,10 @@ double Generators::triangle(double x)
 {
 	// period of 2 * PI
 	double t = fmod(x/(2*PI), (double)1.0);
-	if (t < 0.5) {
-		return t-1.0;
+	if (t > 0.5) {
+		return t*4.0-3.0;
 	} else {
-		return 1.0-(t);
+		return 1.0-(t*4.0);
 	}
 	
 }
