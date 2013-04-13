@@ -124,26 +124,23 @@ long getFilesize(FILE *fp) {
 
 // converts a 16-bit sample to a 32-bit float representation
 // a pointer to a sample struct, pointer to 16-bit integer sample data, length of data in bytes
+// returns the number of allocated bytes
 int convert_sample_to_float(Sample * sample, char * sampledata, int length) {
 	int samplecount = length/2;
-	//int fullsize = samplecount * sizeof(float);
 	sample->data = new float[samplecount];
 	int samplenum = 0;
 
 	for (int i=0;i<length;i+=2) {
-		//int s = sampledata[i];
 		char a = sampledata[i];
 		char b = sampledata[i+1];
-		//unsigned short * shortp = (unsigned short *) &sampledata[i];
 		short x = (b & 0xFF) << 8 | (a & 0xFF);
-		//short x = *shortp;
 		float f = (float)x/((float)SHRT_MAX);
-		samplenum++;
 		sample->data[samplenum] = f;
+		samplenum++;
 	}
 
 	sample->length = samplecount;
-	return samplecount;
+	return samplecount*sizeof(float);
 }
 
 char * load16bitWAV(const char * path, int * length) {

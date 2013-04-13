@@ -24,6 +24,7 @@ int main(int argc, char argv[]) {
 	convert_sample_to_float(&snare, samplesnare, samplelength);
 
 	dumpArrayToDisk((char *)snare.data, snare.length*sizeof(float), "output/sample.raw");
+	dumpArrayToDisk(samplesnare, samplelength, "output/sample2.raw");
 	//printf("%d", snare.length*sizeof(float));
 	syn_init(8);
 
