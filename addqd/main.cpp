@@ -30,7 +30,7 @@ int main(int argc, char argv[]) {
 	syn_init(8);
 
 	Instrument noise = syn_create_instrument(INS_SAMPLER);
-	noise.volume=0.8f;
+	noise.volume=0.5f;
 	//noise.waveFunc = *Generators::noise;
 	noise.octave = -3;
 	noise.samplerFunc = *Generators::sampler;
@@ -68,10 +68,10 @@ int main(int argc, char argv[]) {
 	init_sound();
 	
 	// MUTE channels
-	syn_get_channel(0)->volume = 0.0f;
+	//syn_get_channel(0)->volume = 0.0f;
 	//syn_get_channel(1)->volume = 0.0f;
-	syn_get_channel(2)->volume = 0.0f;
-	syn_get_channel(3)->volume = 0.0f;
+	//syn_get_channel(2)->volume = 0.0f;
+	//syn_get_channel(3)->volume = 0.0f;
 
 
 	int start = GetTickCount();
@@ -80,7 +80,6 @@ int main(int argc, char argv[]) {
 		int t = GetTickCount()-start;
 		keys_check_transport();
 		//keys_check_presses();
-		//play_PTSong(&song, t);
 		poll_sound(syn_render_block, player_update);
 		Sleep(10);
 	}

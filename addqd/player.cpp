@@ -214,6 +214,7 @@ PTSong load_PTSong(const char * input_path) {
 static PTSong * loaded_song;
 
 static int last_row = -1;
+static int last_tick = -1;
 static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
 static int row_offset = 0;
 
@@ -256,23 +257,30 @@ static int push_event(EventBuffer * buffer, Event e) {
 	return 0;
 }
 
-
 static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecount) {
+	int ticks_per_row = 4;
 	int speed = 4;
 	int tempo = 22; // delay between rows in millisecs
-	int ticklength = int((tempo * AUDIO_RATE*0.001)*speed);	// tick length in samples
-	int channels =	song->song.channels;
-	int start_row =	player_samples/ticklength + row_offset;
-	int end_row =	(player_samples + samplecount)/ticklength + row_offset;
+	int rowlength = int((tempo * AUDIO_RATE*0.001)*speed);	// row length in samples
+	int ticklength = int((tempo * AUDIO_RATE*0.001)*speed*(1.0/(float)ticks_per_row));
+
+	int channels =		song->song.channels;
+	int start_tick =	player_samples/ticklength;
+	int end_tick =		(player_samples + samplecount)/ticklength;
+
+	int start_row =	player_samples/rowlength + row_offset;
+	int end_row =	(player_samples + samplecount)/rowlength + row_offset;
 
 	int debug_channel_semitones[256];	// used only for printing
 
-	if (start_row == end_row) {
+	if (start_tick == end_tick) {
 		return;
 	}
 
-	// TODO implement tick-accurate player
-	for (int r=start_row;r<=end_row;r++) {
+	for (int tick=start_tick; tick<=end_tick; tick++) {
+		int local_tick = tick % ticks_per_row;	// the tick inside the current row
+		int r = tick/ticks_per_row;
+	//for (int r=start_row;r<=end_row;r++) {
 		int pattern_row = r % 64;
 		int current_position = (r/64) % song->song.length;
 		int current_pattern = song->song.orderlist[current_position];
@@ -280,6 +288,10 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		#ifdef DEBUG_PLAYER
 		printf("\tord: %d\n", current_position);
 		#endif
+
+		if (local_tick != 0) {
+			continue;
+		}
 
 		if (r == last_row) {
 			continue;
@@ -341,9 +353,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			}
 
 			debug_channel_semitones[c] = note.pitch;
-		}
-
-		
+		}	
 	}
 
 	#ifdef DEBUG_PLAYER
@@ -361,6 +371,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 	#endif
 
 	last_row = end_row;
+	last_tick = end_tick;
 }
 
 // pushes new commands to the command buffer
