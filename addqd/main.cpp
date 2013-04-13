@@ -28,23 +28,23 @@ int main(int argc, char argv[]) {
 	//printf("%d", snare.length*sizeof(float));
 	syn_init(8);
 
-	Instrument noise;
-	noise.volume=0.15f;
-	noise.octave=0;
-	noise.waveFunc = *Generators::noise;
+	Instrument noise = syn_create_instrument(INS_SAMPLER);
+	noise.volume=0.8f;
+	//noise.waveFunc = *Generators::noise;
+	noise.samplerFunc = *Generators::sampler;
+	noise.sample = &snare;
 	noise.env.attack = 0.01f;
 	noise.env.release = 0.01f;
 
-	Instrument tri;
+	Instrument tri = syn_create_instrument(INS_OSC);
 	tri.volume=0.5f;
 	tri.octave=-2;
 	tri.waveFunc = *Generators::triangle;
 	tri.env.attack = 0.02f;
 	tri.env.release = 0.01f;
 
-	Instrument square;
+	Instrument square = syn_create_instrument(INS_OSC);
 	square.volume=0.3f;
-	square.octave=0;
 	square.waveFunc = *Generators::square;
 	square.env.attack = 0.001f;
 	square.env.release = 0.001f;

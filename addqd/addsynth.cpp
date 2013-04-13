@@ -217,10 +217,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			Voice * voice = &voice_list[v];
 			Instrument * ins = voice->channel->instrument;
-			WaveformFunc_t wavefunc = voice_list[v].channel->instrument->waveFunc;
+			WaveformFunc_t wavefunc = ins->waveFunc;
 
 			f = NOTEFREQ(voice_list[v].pitch+3+ins->octave*12);
-			envelope_amp = saturate(((t-voice->envstate.beginTime)+0.00001f)/ins->env.attack);
+			double voicetime = t-voice->envstate.beginTime;
+			envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
 
 			if (voice->envstate.released) {
 				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
@@ -228,7 +229,23 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			phase = voice->phase;
 			double ofs = 0.0;
-			sample = float(wavefunc(phase * 2.0 * PI));
+
+			switch (ins->type) {
+				case INS_OSC:
+					sample = float(wavefunc(phase * 2.0 * PI));
+					break;
+				case INS_SAMPLER:
+					sample = ins->samplerFunc(voicetime, ins->sample->data, 
+						ins->sample->length);
+					break;
+				default:
+					#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS 
+						fprintf(stderr, "Invalid instrument type: 0x%x\n", ins->type);
+					#endif
+					break;
+			}
+
+			
 			voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
 			if (t-voice->envstate.endTime > ins->env.release) {
@@ -430,6 +447,7 @@ void syn_init(int channels) {
 	return;
 }
 
+
 void syn_free(void) {
 	// TODO free all channels too?
 	delete channel_list;
@@ -439,4 +457,20 @@ void syn_free(void) {
 	}
 
 	//delete instrument_list;
+}
+
+
+
+Instrument syn_create_instrument(InstrumentType type) {
+	Instrument ins;
+	ins.type = type;
+	ins.waveFunc = NULL;
+	ins.volume = 1.0f;
+	ins.octave = 0;
+	ins.env.attack = 0.05f;
+	ins.env.release = 0.1f;
+	ins.env.decay = 0.2;
+	ins.env.hold = 1.0f;
+	
+	return ins;
 }

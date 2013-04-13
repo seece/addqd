@@ -16,6 +16,7 @@
 #include "generators.h"
 
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
+enum InstrumentType {INS_OSC, INS_SAMPLER};
 
 // IL Harmor has 516 partials
 #define SYN_PARTIAL_AMOUNT 20
@@ -55,18 +56,26 @@ struct Envelope {
 	float release;
 };
 
+struct Sample {
+	float * data;
+	int length;
+};
+
 struct Instrument {
+	InstrumentType type;
 	//Spectra spectra;
 	Envelope env;
 	//char * name;
 	float volume;
 	int octave;
 	WaveformFunc_t waveFunc;
+	SamplerFunc_t samplerFunc;
+	Sample * sample;
 };
 
 struct EnvState {
 	bool hold;	// if a key is held down
-	double beginTime;
+	double beginTime;	// the moment (in seconds) when the key was repressed
 	double endTime;
 	bool released;
 	double volume;	// volume set by note-on command
@@ -101,11 +110,6 @@ struct Channel {
 	SAMPLE_TYPE buffer[AUDIO_BUFFERSIZE*2];
 };
 
-struct Sample {
-	float * data;
-	int length;
-};
-
 struct Voice {
 	int pitch;
 	EnvState envstate;
@@ -127,6 +131,7 @@ void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer);
 void syn_init(int channels);
+Instrument syn_create_instrument(InstrumentType type);
 Voice * syn_play_note(int channel, int pitch);	// for testing
 static void set_channel_volume(int channel, double volume);
 void syn_end_note(int channel, int pitch);	// for testing

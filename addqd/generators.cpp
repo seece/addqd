@@ -55,3 +55,9 @@ double Generators::square(double x)
 	}
 	
 }
+
+double Generators::sampler(double x, float * samplearray, int arraysize) {
+	int pos = x*44100.0;
+	pos = pos % arraysize;
+	return (double)samplearray[pos];
+}
