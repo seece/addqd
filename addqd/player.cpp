@@ -260,7 +260,7 @@ static int push_event(EventBuffer * buffer, Event e) {
 static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecount) {
 	int ticks_per_row = 4;
 	int speed = 4;
-	int tempo = 22; // delay between rows in millisecs
+	int tempo = 20; // delay between rows in millisecs
 	int rowlength = int((tempo * AUDIO_RATE*0.001)*speed);	// row length in samples
 	int ticklength = int((tempo * AUDIO_RATE*0.001)*speed*(1.0/(float)ticks_per_row));
 
@@ -293,9 +293,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		for (int c=0;c<channels;c++) {
 			int note_array_offset = (current_pattern*MOD_ROWS*channels) + pattern_row*channels + c;
 			Note note = song->notedata[note_array_offset];
-			int param1 = (note.parameters & 0xF0) >> 4;
-			int param2 = (note.parameters & 0x0F);
-
+			
 			//double tick_sec = start_samples/(double)AUDIO_RATE;
 			unsigned char volume = 150;
 			int third, fifth;
@@ -309,16 +307,19 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 				note.parameters = 0xC2;
 			}
 
+			int param1 = (note.parameters & 0xF0) >> 4;
+			int param2 = (note.parameters & 0x0F);
+
 			if (local_tick > 0) {
 				// tick based effects 
-				
 				switch (note.command) {
 					case 0x0E:
 						if (local_tick == param2) {
 							// note cut
 							if (param1 == 0x0C) {
 								push_event(buffer, create_end_all_event(start_sec_tick, c));
-								//fprintf(stdout, "CUT! tick: %d chn: %d row: %d \n", local_tick, c, r);
+								//push_event(buffer, create_volume_event(start_sec_tick, c, 0x00));
+								fprintf(stdout, "CUT! tick: %d chn: %d row: %d \n", local_tick, c, r);
 							}
 
 							// note delay
@@ -366,9 +367,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			}
 
 			if (note.pitch != EMPTY_NOTE_VALUE) {
-				// continue playing "arpeggio" chord
 				new_notes[0] = note.pitch;
-				//continue;
 			}
 
 			// if there's new notes on this channel, create end_all event first
