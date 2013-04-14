@@ -227,8 +227,9 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			
 			
 			// voice volume change smoothing
-			float vol = voice->envstate.volume;
-			float target = voice->envstate.target_volume;
+			// TODO implement actual interpolation
+			float vol = (float)voice->envstate.volume;
+			float target = (float)voice->envstate.target_volume;
 			if (abs(target - vol) > SYN_VOLUME_LERP_THRESOLD) {
 				//voice->envstate.volume += (target - vol) * 0.4;
 				voice->envstate.volume = voice->envstate.target_volume;

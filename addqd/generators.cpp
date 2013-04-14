@@ -68,7 +68,7 @@ double Generators::sinsquare(double x)
 }
 
 double Generators::sampler(double x, float * samplearray, int arraysize) {
-	int pos = x*44100.0;
+	int pos = (int)(x*44100.0);
 	pos = pos % arraysize;
 	return (double)samplearray[pos];
 }
@@ -79,6 +79,6 @@ void generate_noise_sample(Sample * sample, int length) {
 	sample->data = new float[length];
 
 	for (int i=0;i<length;i++) {
-		sample->data[i] = Generators::noise((double)i);
+		sample->data[i] = (float)Generators::noise((double)i);
 	}
 }
