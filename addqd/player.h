@@ -5,7 +5,7 @@
 #include "amigamod.h"	// for the Note struct
 #include "event.h"
 
-#define PATTERN_DEBUG 1
+#define PATTERN_DEBUG 0
 #define SYNTH_EMPTY_NOTE_VALUE 112	// please note that this differs from the one defined in amigamod.h
 
 struct Songinfo {

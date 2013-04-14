@@ -13,7 +13,7 @@
 
 int main(int argc, char argv[]) {
 	player_init();
-	PTSong song = load_PTSong("mods/daveys.mod");
+	PTSong song = load_PTSong("mods/cuts.mod");
 	player_load_PTSong(&song);
 
 	int samplelength=-1;
@@ -36,7 +36,7 @@ int main(int argc, char argv[]) {
 	noise.samplerFunc = *Generators::sampler;
 	noise.sample = &snare;
 	noise.env.attack = 0.01f;
-	noise.env.release = 0.1f;
+	noise.env.release = 0.01f;
 
 	Instrument tri = syn_create_instrument(INS_OSC);
 	tri.volume=0.5f;
@@ -56,7 +56,7 @@ int main(int argc, char argv[]) {
 	syn_load_instrument(2, &square);
 
 	syn_attach_instrument(0, 1);
-	syn_attach_instrument(1, 0);
+	syn_attach_instrument(1, 2);
 	syn_attach_instrument(2, 2);
 	syn_attach_instrument(3, 2);
 	syn_attach_instrument(4, 1);
@@ -68,10 +68,10 @@ int main(int argc, char argv[]) {
 	init_sound();
 	
 	// MUTE channels
-	//syn_get_channel(0)->volume = 0.0f;
+	syn_get_channel(0)->volume = 0.0f;
 	//syn_get_channel(1)->volume = 0.0f;
-	//syn_get_channel(2)->volume = 0.0f;
-	//syn_get_channel(3)->volume = 0.0f;
+	syn_get_channel(2)->volume = 0.0f;
+	syn_get_channel(3)->volume = 0.0f;
 
 
 	int start = GetTickCount();

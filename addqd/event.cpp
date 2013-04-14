@@ -7,7 +7,7 @@
 
 #ifdef DEBUG_EVENT_SANITY_CHECKS
 #define CHECK_EVENT_CHANNEL if (channel < 0 || channel > 255) { \
-		fprintf(stderr, "Invalid channel num %d in %s", channel, __FUNCTION__); \
+		fprintf(stderr, "Invalid channel num %d in %s\n", channel, __FUNCTION__); \
 	} 
 
 #else
@@ -38,7 +38,7 @@ Event create_note_event(double when, int channel, int pitch, bool state, unsigne
 	
 	#ifdef DEBUG_EVENT_SANITY_CHECKS
 	if (pitch < SHRT_MIN || pitch > SHRT_MAX) {
-		fprintf(stderr, "Invalid pitch value %d in %s", pitch, __FUNCTION__);	
+		fprintf(stderr, "Invalid pitch value %d in %s\n", pitch, __FUNCTION__);	
 	}
 	#endif
 

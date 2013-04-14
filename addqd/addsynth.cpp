@@ -186,9 +186,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	double f;
 	double next_event_time = 0.0;
 
+	#ifdef DEBUG_AUDIO_SANITY_CHECKS
 	if (length > AUDIO_BUFFERSIZE*2) {
 		fprintf(stderr, "Warning: Requested buffer size too big: %d\n ", length);
 	}
+	#endif
 
 	#ifdef DEBUG_EVENT_SANITY_CHECKS
 		double buffer_end_time = state.time+length/(float)AUDIO_RATE;
@@ -302,6 +304,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 
+	/*
 	#ifdef DEBUG_VOICE
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
 		if (!voice_list[v].active) {
@@ -312,6 +315,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	}
 	printf("\n");
 	#endif
+	*/
 
 	for (int c=0;c<state.channels;c++) {
 		if (channel_list[c].volume <= 0.0001) {

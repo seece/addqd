@@ -236,13 +236,19 @@ uint32_t getChannelAmount(uint8_t *moduledata) {
 	loadModuleMagic(moduledata, initials);
 
 	if (getModuleType(initials) == MODULE_TYPE_4CHAN) {
-		printf("Detected a 4 channel amigamod.\n");
+		#ifdef MODLOADER_VERBOSE
+			printf("Detected a 4 channel amigamod.\n");
+		#endif
 		channels = 4;
 	} else if (getModuleType(initials) == MODULE_TYPE_8CHAN) {
+		#ifdef MODLOADER_VERBOSE
 		printf("Detected a 8 channel amigamod.\n");
+		#endif
 		channels = 8;
 	} else {
+		#ifdef MODLOADER_VERBOSE
 		printf("Unknown module magic! Assuming this is a 4 channel amigamod.\n");
+		#endif
 		channels = 4;
 	}
 

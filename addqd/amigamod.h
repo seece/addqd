@@ -15,6 +15,7 @@
 #define MAX_SAMPLES 31
 
 #define EMPTY_NOTE_VALUE -999 // just a magic number I made up
+#define MODLOADER_VERBOSE
 
 #include <stdint.h>
 

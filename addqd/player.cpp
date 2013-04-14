@@ -58,7 +58,7 @@ void printPattern(Note *synthnotes, Songinfo *ssong, uint32_t pattern) {
 }
 
 PTSong load_PTSong(const char * input_path) {
-	bool flag_verbose = true;
+	bool flag_verbose = false;
 
 	PTSong song;
 	Songinfo ssong;
@@ -72,7 +72,7 @@ PTSong load_PTSong(const char * input_path) {
 	fp = fopen(input_path, "rb");
 
 	if (fp == NULL) {
-			printf("File %s not found!", input_path);
+			printf("File %s not found!\n", input_path);
 			//fclose(fp);
 			goto error;
 	}
@@ -146,15 +146,16 @@ PTSong load_PTSong(const char * input_path) {
 	uint32_t note_array_length = sizeof(Note) * channels*MOD_ROWS*pattern_amount;
 	memset(synthnotes, 9, note_array_length);
 
-	printf("Patterns:\n");
-
+	if (flag_verbose) {
+		printf("Patterns:\n");
+	}
 	// show the content of this pattern
 	int selected_pattern = 1;
 
 	// load pattern data
 	for (i=0;i<pattern_amount;i++) {
 		offset = pattern_data_offset+ i*MOD_CHANNEL_SIZE*channels;
-		for (r=0;r<64;r++) {	// loop through rows
+		for (r=0;r<64;r++) {	
 
 			for (u=0;u<channels;u++) {
 				memcpy(note_data, &moduledata[offset + u*MOD_NOTE_SIZE + r*MOD_NOTE_SIZE*channels], 4);
@@ -213,7 +214,6 @@ PTSong load_PTSong(const char * input_path) {
 
 static PTSong * loaded_song;
 
-static int last_row = -1;
 static int last_tick = -1;
 static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
 static int row_offset = 0;
@@ -242,13 +242,13 @@ int player_add_offset(int offset) {
 static int push_event(EventBuffer * buffer, Event e) {
 	if (buffer->amount >= buffer->max_events) {
 		#ifdef DEBUG_EVENT_SANITY_CHECKS
-		fprintf(stderr, "Note event stack full!");
+		fprintf(stderr, "Note event stack full!\n");
 		#endif
 		return -1;
 	} 
 
 	#ifdef DEBUG_EVENT
-	printf("Added event to slot #%d\n", buffer->amount);
+	printf("Add event #%d\n", buffer->amount);
 	#endif
 
 	buffer->event_list[buffer->amount] = e;
@@ -268,33 +268,25 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 	int start_tick =	player_samples/ticklength;
 	int end_tick =		(player_samples + samplecount)/ticklength;
 
-	int start_row =	player_samples/rowlength + row_offset;
-	int end_row =	(player_samples + samplecount)/rowlength + row_offset;
-
 	int debug_channel_semitones[256];	// used only for printing
-
-	if (start_tick == end_tick) {
-		return;
-	}
 
 	for (int tick=start_tick; tick<=end_tick; tick++) {
 		int local_tick = tick % ticks_per_row;	// the tick inside the current row
 		int r = tick/ticks_per_row;
-	//for (int r=start_row;r<=end_row;r++) {
 		int pattern_row = r % 64;
 		int current_position = (r/64) % song->song.length;
 		int current_pattern = song->song.orderlist[current_position];
 
-		long start_samples = long(r*((tempo * AUDIO_RATE*0.001)*speed));
+		// this is basically start_samples_tick = tick * ticklength
 		long start_samples_tick = long(tick*((tempo * AUDIO_RATE*0.001)*speed*(1.0/(float)ticks_per_row)));
-		double start_sec = start_samples/(double)AUDIO_RATE;
+		//double start_sec = start_samples/(double)AUDIO_RATE;
 		double start_sec_tick = start_samples_tick/(double)AUDIO_RATE;
 
 		#ifdef DEBUG_PLAYER
 		printf("\tord: %d\n", current_position);
 		#endif
 
-		if (r == last_row) {
+		if (tick == last_tick) {
 			continue;
 		}
 
@@ -311,20 +303,40 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			int new_notes[3] = {EMPTY_NOTE_VALUE, EMPTY_NOTE_VALUE, EMPTY_NOTE_VALUE};
 			debug_channel_semitones[c] = EMPTY_NOTE_VALUE;
 
-			//if (c!=3) { continue; }
+			// we'll fake volume slide with a note cut
+			if (note.command == 0x0A) {
+				note.command = 0x0E;
+				note.parameters = 0xC2;
+			}
 
-			if (local_tick != 0) {
+			if (local_tick > 0) {
 				// tick based effects 
-
+				
 				switch (note.command) {
 					case 0x0E:
-						// note cut
-						if (param1 == 0x0C && local_tick == param2) {
-							push_event(buffer, create_volume_event(start_sec_tick, c, 0x00));
+						if (local_tick == param2) {
+							// note cut
+							if (param1 == 0x0C) {
+								push_event(buffer, create_end_all_event(start_sec_tick, c));
+								//fprintf(stdout, "CUT! tick: %d chn: %d row: %d \n", local_tick, c, r);
+							}
+
+							// note delay
+							if (param1 == 0x0D) {
+								push_event(buffer, create_end_all_event(start_sec_tick, c));
+								push_event(buffer, create_note_event(start_sec_tick, c, note.pitch, true, volume));
+								//fprintf(stdout, "DELAY! tick: %d chn: %d\n", local_tick, c);
+							}
 						}
+						
+						break;
+
 				}
+
+				// we don't want to process other effects because they
+				// are taken care of on the first tick (local_tick == 0)
 				continue;
-			}
+			} 
 			
 			switch (note.command) {
 				case 0x00:
@@ -340,13 +352,21 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 					break;
 				case 0x0C:
 					volume = note.parameters*4;	// in MOD the max volume is 0x40
-					push_event(buffer, create_volume_event(start_sec, c, volume));
+					push_event(buffer, create_volume_event(start_sec_tick, c, volume));
+					break;
+				case 0x0E:
+					// if this row contains a note delay effect, don't play the note yet
+					if (param1 == 0x0D) {
+						continue;
+					}
+
 					break;
 				default:
 					break;
 			}
 
 			if (note.pitch != EMPTY_NOTE_VALUE) {
+				// continue playing "arpeggio" chord
 				new_notes[0] = note.pitch;
 				//continue;
 			}
@@ -354,17 +374,18 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			// if there's new notes on this channel, create end_all event first
 			for (int i=0;i<3;i++) {
 				if (new_notes[i] != EMPTY_NOTE_VALUE) {
-					push_event(buffer, create_end_all_event(start_sec, c));
+					push_event(buffer, create_end_all_event(start_sec_tick, c));
 					break;
 				}
 			}
 
+			// create new values for all notes (main note + arpeggio intervals)
 			for (int i=0;i<3;i++) {
 				if (new_notes[i] == EMPTY_NOTE_VALUE) {
 					continue;
 				}
 		
-				push_event(buffer, create_note_event(start_sec, c, new_notes[i], true, volume));
+				push_event(buffer, create_note_event(start_sec_tick, c, new_notes[i], true, volume));
 			}
 
 			debug_channel_semitones[c] = note.pitch;
@@ -385,7 +406,6 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 	printf("\n");
 	#endif
 
-	last_row = end_row;
 	last_tick = end_tick;
 }
 
