@@ -30,7 +30,7 @@ int main(int argc, char argv[]) {
 	syn_init(8);
 
 	Instrument noise = syn_create_instrument(INS_SAMPLER);
-	noise.volume=0.5f;
+	noise.volume=0.3f;
 	//noise.waveFunc = *Generators::noise;
 	noise.octave = -3;
 	noise.samplerFunc = *Generators::sampler;

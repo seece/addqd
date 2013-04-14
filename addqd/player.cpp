@@ -285,13 +285,14 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		int current_position = (r/64) % song->song.length;
 		int current_pattern = song->song.orderlist[current_position];
 
+		long start_samples = long(r*((tempo * AUDIO_RATE*0.001)*speed));
+		long start_samples_tick = long(tick*((tempo * AUDIO_RATE*0.001)*speed*(1.0/(float)ticks_per_row)));
+		double start_sec = start_samples/(double)AUDIO_RATE;
+		double start_sec_tick = start_samples_tick/(double)AUDIO_RATE;
+
 		#ifdef DEBUG_PLAYER
 		printf("\tord: %d\n", current_position);
 		#endif
-
-		if (local_tick != 0) {
-			continue;
-		}
 
 		if (r == last_row) {
 			continue;
@@ -300,9 +301,10 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		for (int c=0;c<channels;c++) {
 			int note_array_offset = (current_pattern*MOD_ROWS*channels) + pattern_row*channels + c;
 			Note note = song->notedata[note_array_offset];
+			int param1 = (note.parameters & 0xF0) >> 4;
+			int param2 = (note.parameters & 0x0F);
 
-			long start_samples = long(r*((tempo * AUDIO_RATE*0.001)*speed));
-			double start_sec = start_samples/(double)AUDIO_RATE;
+			//double tick_sec = start_samples/(double)AUDIO_RATE;
 			unsigned char volume = 150;
 			int third, fifth;
 			// new notes to be played on this channel
@@ -310,6 +312,19 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			debug_channel_semitones[c] = EMPTY_NOTE_VALUE;
 
 			//if (c!=3) { continue; }
+
+			if (local_tick != 0) {
+				// tick based effects 
+
+				switch (note.command) {
+					case 0x0E:
+						// note cut
+						if (param1 == 0x0C && local_tick == param2) {
+							push_event(buffer, create_volume_event(start_sec_tick, c, 0x00));
+						}
+				}
+				continue;
+			}
 			
 			switch (note.command) {
 				case 0x00:
@@ -317,8 +332,8 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 						break;
 					}
 
-					third = (note.parameters & 0xF0) >> 4;
-					fifth = (note.parameters & 0x0F);
+					third = param1;
+					fifth = param2;
 					new_notes[1] = note.pitch + third;
 					new_notes[2] = note.pitch + fifth;
 
