@@ -10,11 +10,20 @@
 #include "keyboard.h"
 #include "amigamod.h"
 #include "player.h"
+#include "serialize.h"
 
 int main(int argc, char argv[]) {
 	player_init();
 	PTSong song = load_PTSong("mods/daveys.mod");
 	player_load_PTSong(&song);
+
+	Event testevents[5];
+	testevents[0].channel = 0;
+	testevents[0].type = EVENT_NOTE_ON;
+	long fsize=-1;
+	serialize_event_array(testevents, 2, &fsize);
+	dprint(fsize);
+	return 1;
 
 	int samplelength=-1;
 	//char * samplesnare = load16bitWAV("mods/snare.wav", &samplelength);
