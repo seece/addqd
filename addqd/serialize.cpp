@@ -3,10 +3,6 @@
 #include "event.h"
 #include "util.h"
 
-int read_memdata(char * dest, const char * src, long * pos, size_t size) {
-	memcpy((dest + *pos), src, size); 
-	*pos+=size;
-}
 
 char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 	
@@ -35,12 +31,22 @@ char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 	return data;
 }
 
-Event * unserialize_event_array(const char * eventdata, int * amountp) {
+Event * deserialize_event_array(const char * eventdata, int * amountp) {
 	long pos = 0;
 	int amount = -1;
-	read_memdata((char *)&amount, eventdata, &pos, sizeof(int));
+	memcpy(&amount, eventdata, sizeof(int)); pos+=sizeof(int);
 	Event * event_array = new Event[amount];
 	*amountp = amount;
+
+	for (int i=0;i<amount;i++) {
+		Event e;
+		memcpy(&e.when, eventdata + pos, sizeof(double)); pos+=sizeof(double);
+		memcpy(&e.type, eventdata + pos, sizeof(char)); pos+=sizeof(char);
+		memcpy(&e.channel, eventdata + pos, sizeof(char)); pos+=sizeof(unsigned char);
+		memcpy(e.data, eventdata + pos, 2*sizeof(char)); pos+=2*sizeof(char);
+		memcpy(e.payload, eventdata + pos, 4*sizeof(char)); pos+=4*sizeof(unsigned char);
+		event_array[i] = e;	
+	}
 
 	return event_array;
 }

@@ -20,9 +20,19 @@ int main(int argc, char argv[]) {
 	Event testevents[5];
 	testevents[0].channel = 0;
 	testevents[0].type = EVENT_NOTE_ON;
+	testevents[1].channel = 1;
+	testevents[1].type = EVENT_NOTE_OFF;
 	long fsize=-1;
-	serialize_event_array(testevents, 2, &fsize);
+	char * eventdata = serialize_event_array(testevents, 2, &fsize);
 	dprint(fsize);
+	int eamount=-1;
+	Event * deflated_events = deserialize_event_array(eventdata, &eamount);
+	dprint(eamount);
+	dprint(deflated_events[0].channel);
+	dprint(deflated_events[0].type);
+	dprint(deflated_events[1].channel);
+	dprint(deflated_events[1].type);
+	dprint(eamount);
 	return 1;
 
 	int samplelength=-1;
