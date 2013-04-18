@@ -17,9 +17,9 @@ char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 
 	for (int i=0;i<amount;i++) {
 		Event e = event_array[i];
-		memcpy(data+pos, &e.when, sizeof(&e.when)); pos+=sizeof(double);
-		memcpy(data+pos, &e.type, sizeof(&e.type)); pos+=sizeof(char);
-		memcpy(data+pos, &e.channel, sizeof(&e.channel)); pos+=sizeof(unsigned char);
+		memcpy(data+pos, &e.when, sizeof(double)); pos+=sizeof(double);
+		memcpy(data+pos, &e.type, sizeof(char)); pos+=sizeof(char);
+		memcpy(data+pos, &e.channel, sizeof(unsigned char)); pos+=sizeof(unsigned char);
 		memcpy(data+pos, &e.data, 2*sizeof(char)); pos+=2*sizeof(char);
 		memcpy(data+pos, &e.payload, 4*sizeof(char)); pos+=4*sizeof(char);
 	}
@@ -40,11 +40,12 @@ Event * deserialize_event_array(const char * eventdata, int * amountp) {
 
 	for (int i=0;i<amount;i++) {
 		Event e;
-		memcpy(&e.when, eventdata + pos, sizeof(double)); pos+=sizeof(double);
-		memcpy(&e.type, eventdata + pos, sizeof(char)); pos+=sizeof(char);
-		memcpy(&e.channel, eventdata + pos, sizeof(char)); pos+=sizeof(unsigned char);
-		memcpy(e.data, eventdata + pos, 2*sizeof(char)); pos+=2*sizeof(char);
-		memcpy(e.payload, eventdata + pos, 4*sizeof(char)); pos+=4*sizeof(unsigned char);
+		memcpy(&e.when,		eventdata + pos, sizeof(double));	pos+=	sizeof(double);
+		memcpy(&e.type,		eventdata + pos, sizeof(char));		pos+=	sizeof(char);
+		memcpy(&e.channel,	eventdata + pos, sizeof(char));		pos+=	sizeof(unsigned char);
+		memcpy(e.data,		eventdata + pos, 2*sizeof(char));	pos+=	2*sizeof(char);
+		memcpy(e.payload,	eventdata + pos, 4*sizeof(char));	pos+=	4*sizeof(unsigned char);
+
 		event_array[i] = e;	
 	}
 

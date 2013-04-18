@@ -11,31 +11,14 @@
 #include "amigamod.h"
 #include "player.h"
 #include "serialize.h"
+#include "tests.h"
 
 int main(int argc, char argv[]) {
 	player_init();
 	PTSong song = load_PTSong("mods/daveys.mod");
 	player_load_PTSong(&song);
 
-	/*
-	Event testevents[5];
-	testevents[0].channel = 0;
-	testevents[0].type = ADQ_EVENT_NOTE_ON;
-	testevents[1].channel = 1;
-	testevents[1].type = ADQ_EVENT_NOTE_OFF;
-	long fsize=-1;
-	char * eventdata = serialize_event_array(testevents, 2, &fsize);
-	dprint(fsize);
-	int eamount=-1;
-	Event * deflated_events = deserialize_event_array(eventdata, &eamount);
-	dprint(eamount);
-	dprint(deflated_events[0].channel);
-	dprint(deflated_events[0].type);
-	dprint(deflated_events[1].channel);
-	dprint(deflated_events[1].type);
- 	dprint(eamount);
-	return 1;
-	*/
+	test_serialization();
 
 	int samplelength=-1;
 	//char * samplesnare = load16bitWAV("mods/snare.wav", &samplelength);
