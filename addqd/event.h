@@ -1,11 +1,11 @@
 #ifndef EVENT_H_
 #define EVENT_H_
 
-#define EVENT_NONE		0
-#define EVENT_NOTE_ON	1
-#define EVENT_NOTE_OFF	2
-#define EVENT_END_ALL	3
-#define EVENT_VOLUME	4
+#define ADQ_EVENT_NONE		0
+#define ADQ_EVENT_NOTE_ON	1
+#define ADQ_EVENT_NOTE_OFF	2
+#define ADQ_EVENT_END_ALL	3
+#define ADQ_EVENT_VOLUME	4
 
 struct Event {
 	double when;		// event begin time in seconds

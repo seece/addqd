@@ -21,7 +21,7 @@ Event create_volume_event(double when, int channel, int volume) {
 	Event e;
 	memset(&e, 0xFE, sizeof(e));	// for debug purposes
 	e.channel = unsigned char (channel);
-	e.type = EVENT_VOLUME;
+	e.type = ADQ_EVENT_VOLUME;
 	
 	e.data[0] =  static_cast<char>(volume);
 	//printf("vol: %d == %d\n", volume, e.data[0]);
@@ -54,9 +54,9 @@ Event create_note_event(double when, int channel, int pitch, bool state, unsigne
 	e.payload[0] = static_cast<char>(volume);
 
 	if (state) {
-		e.type = EVENT_NOTE_ON;
+		e.type = ADQ_EVENT_NOTE_ON;
 	} else {
-		e.type = EVENT_NOTE_OFF;
+		e.type = ADQ_EVENT_NOTE_OFF;
 	}
 	e.when = when;
 
@@ -69,7 +69,7 @@ Event create_end_all_event(double when, int channel) {
 	Event e;
 	memset(&e, 0xFE, sizeof(e));
 	e.channel = unsigned char (channel);
-	e.type = EVENT_END_ALL;
+	e.type = ADQ_EVENT_END_ALL;
 	e.when = when;
 
 	return e;

@@ -17,11 +17,12 @@ int main(int argc, char argv[]) {
 	PTSong song = load_PTSong("mods/daveys.mod");
 	player_load_PTSong(&song);
 
+	/*
 	Event testevents[5];
 	testevents[0].channel = 0;
-	testevents[0].type = EVENT_NOTE_ON;
+	testevents[0].type = ADQ_EVENT_NOTE_ON;
 	testevents[1].channel = 1;
-	testevents[1].type = EVENT_NOTE_OFF;
+	testevents[1].type = ADQ_EVENT_NOTE_OFF;
 	long fsize=-1;
 	char * eventdata = serialize_event_array(testevents, 2, &fsize);
 	dprint(fsize);
@@ -32,8 +33,9 @@ int main(int argc, char argv[]) {
 	dprint(deflated_events[0].type);
 	dprint(deflated_events[1].channel);
 	dprint(deflated_events[1].type);
-	dprint(eamount);
+ 	dprint(eamount);
 	return 1;
+	*/
 
 	int samplelength=-1;
 	//char * samplesnare = load16bitWAV("mods/snare.wav", &samplelength);

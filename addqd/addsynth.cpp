@@ -118,12 +118,12 @@ static void syn_process_event(Event * e) {
 	double volume;
 
 	switch (e->type) {
-		case EVENT_NONE:
+		case ADQ_EVENT_NONE:
 			#ifdef DEBUG_EVENT
 			printf("EVENT_NONE at %lf.", e->when);
 			#endif
 			break;
-		case EVENT_NOTE_ON:
+		case ADQ_EVENT_NOTE_ON:
 			#ifdef DEBUG_EVENT
 			printf("EVENT_NOTE_ON (%d) at %lf.", pitch,e->when);
 			#endif
@@ -136,21 +136,21 @@ static void syn_process_event(Event * e) {
 			}
 
 			break;
-		case EVENT_NOTE_OFF:
+		case ADQ_EVENT_NOTE_OFF:
 			#ifdef DEBUG_EVENT
 			printf("EVENT_NOTE_OFF at %lf.", e->when);
 			#endif
 
 			syn_end_note(e->channel, pitch);
 			break;
-		case EVENT_END_ALL:
+		case ADQ_EVENT_END_ALL:
 			#ifdef DEBUG_EVENT
 			printf("EVENT_END_ALL at %lf.", e->when);
 			#endif
 
 			syn_end_all_notes(e->channel);
 			break;
-		case EVENT_VOLUME:
+		case ADQ_EVENT_VOLUME:
 			vol = e->data[0];
 			volume = vol/255.0;
 			#ifdef DEBUG_EVENT
