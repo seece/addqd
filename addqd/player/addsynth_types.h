@@ -5,7 +5,8 @@
 #ifndef ADDSYNTH_TYPES_H
 #define ADDSYNTH_TYPES_H
 
-#include "generators.h"
+//#include "../generators.h"
+#include "config.h"
 
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 enum InstrumentType {INS_OSC, INS_SAMPLER};

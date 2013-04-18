@@ -5,11 +5,11 @@
 #include <cmath>
 
 #include "util.h"
-#include "sound.h"
-#include "addsynth.h"
+#include "player/sound.h"
+#include "player/addsynth.h"
 #include "keyboard.h"
 #include "amigamod.h"
-#include "player.h"
+#include "player/player.h"
 #include "serialize.h"
 #include "tests.h"
 

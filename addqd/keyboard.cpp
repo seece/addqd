@@ -1,9 +1,9 @@
 #include <cstdio>
 #include <Windows.h>
-#include "config.h"
+#include "player/config.h"
 #include "keyboard.h"
-#include "addsynth.h"
-#include "player.h"
+#include "player/addsynth.h"
+#include "player/player.h"
 
 void keys_init() {
 	for (int i=0;i<KEYBOARD_KEYS;i++) {

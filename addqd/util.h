@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "addsynth.h"
 
 #ifndef NULL
 	#define NULL 0
@@ -32,9 +31,8 @@ float fmax_func(float a, float b);
 float lerp_func(float a, float b, float dist);
 #define saturate(a) min(1.0, max(0.0, a))
 
-char * load16bitWAV(const char * path, int * length);
 uint64_t dumpArrayToDisk(char *data, int length, const char *output_path);
-int convert_sample_to_float(Sample * sample, char * sampledata, int length);
+
 long getFilesize(FILE *fp);
 
 uint8_t *intToBin(int a, uint8_t *buffer, int buf_size);

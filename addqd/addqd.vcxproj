@@ -64,31 +64,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="addsynth.cpp" />
     <ClCompile Include="amigamod.cpp" />
     <ClCompile Include="eks_simd.cpp" />
-    <ClCompile Include="event.cpp" />
-    <ClCompile Include="generators.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="player.cpp" />
+    <ClCompile Include="player\addsynth.cpp" />
+    <ClCompile Include="player\event.cpp" />
+    <ClCompile Include="player\generators.cpp" />
+    <ClCompile Include="player\player.cpp" />
+    <ClCompile Include="player\sound.cpp" />
+    <ClCompile Include="wav.cpp" />
     <ClCompile Include="serialize.cpp" />
-    <ClCompile Include="sound.cpp" />
     <ClCompile Include="tests.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="addsynth.h" />
-    <ClInclude Include="addsynth_types.h" />
     <ClInclude Include="amigamod.h" />
-    <ClInclude Include="config.h" />
     <ClInclude Include="eks_simd.h" />
-    <ClInclude Include="event.h" />
-    <ClInclude Include="generators.h" />
+    <ClInclude Include="player\config.h" />
+    <ClInclude Include="player\event.h" />
+    <ClInclude Include="player\generators.h" />
+    <ClInclude Include="player\player.h" />
+    <ClInclude Include="player\sound.h" />
+    <ClInclude Include="wav.h" />
     <ClInclude Include="keyboard.h" />
-    <ClInclude Include="player.h" />
+    <ClInclude Include="player\addsynth.h" />
+    <ClInclude Include="player\addsynth_types.h" />
     <ClInclude Include="serialize.h" />
-    <ClInclude Include="sound.h" />
     <ClInclude Include="tests.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>

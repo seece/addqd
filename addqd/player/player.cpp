@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "amigamod.h"
+#include "../amigamod.h"
 #include "player.h"
 #include "event.h"
 #include "addsynth.h"
-#include "util.h"
+#include "../util.h"
 
 static void setDefaultInstrumentValues(PTInstrument *ins) {
 	strcpy((char *) ins->name, "instrument");

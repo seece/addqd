@@ -2,7 +2,7 @@
 #include <cmath>
 #include <mmintrin.h>
 #include <xmmintrin.h>
-#include "util.h"
+#include "../util.h"
 #include "generators.h"
 
 
