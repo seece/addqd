@@ -65,8 +65,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="amigamod.cpp" />
+    <ClCompile Include="editor\keyboard.cpp" />
     <ClCompile Include="eks_simd.cpp" />
-    <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="player\addsynth.cpp" />
     <ClCompile Include="player\event.cpp" />
@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="amigamod.h" />
+    <ClInclude Include="editor\keyboard.h" />
     <ClInclude Include="eks_simd.h" />
     <ClInclude Include="player\config.h" />
     <ClInclude Include="player\event.h" />
@@ -87,7 +88,6 @@
     <ClInclude Include="player\player.h" />
     <ClInclude Include="player\sound.h" />
     <ClInclude Include="wav.h" />
-    <ClInclude Include="keyboard.h" />
     <ClInclude Include="player\addsynth.h" />
     <ClInclude Include="player\addsynth_types.h" />
     <ClInclude Include="serialize.h" />

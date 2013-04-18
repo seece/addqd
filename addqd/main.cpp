@@ -7,7 +7,7 @@
 #include "util.h"
 #include "player/sound.h"
 #include "player/addsynth.h"
-#include "keyboard.h"
+#include "editor/keyboard.h"
 #include "amigamod.h"
 #include "player/player.h"
 #include "serialize.h"
