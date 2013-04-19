@@ -116,7 +116,7 @@
     <ClCompile Include="editor\keyboard.cpp" />
     <ClCompile Include="eks_simd.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="player.cpp" />
+    <ClCompile Include="modplayer.cpp" />
     <ClCompile Include="wav.cpp" />
     <ClCompile Include="serialize.cpp" />
     <ClCompile Include="tests.cpp" />
@@ -126,7 +126,7 @@
     <ClInclude Include="amigamod.h" />
     <ClInclude Include="editor\keyboard.h" />
     <ClInclude Include="eks_simd.h" />
-    <ClInclude Include="player.h" />
+    <ClInclude Include="modplayer.h" />
     <ClInclude Include="wav.h" />
     <ClInclude Include="serialize.h" />
     <ClInclude Include="tests.h" />

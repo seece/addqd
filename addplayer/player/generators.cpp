@@ -21,7 +21,7 @@ int customrand(int seed)
 }
 
 // by Alexander Kritov
-double Generators::sawsin(double x)
+double generators::sawsin(double x)
 {
 	double t = fmod(x/(2*PI),(double)1.0);
 
@@ -32,17 +32,17 @@ double Generators::sawsin(double x)
 	}
 }
 
-double Generators::noise(double x)
+double generators::noise(double x)
 {
    return (double)rand()/(double)RAND_MAX_HALF - 1.0;
 }
 
-double Generators::simplenoise(double x)
+double generators::simplenoise(double x)
 {
    return (double)customrand((int)(x*1000.0))/(double)INT_MAX - 1.0;
 }
 
-double Generators::triangle(double x)
+double generators::triangle(double x)
 {
 	// period of 2 * PI
 	double t = fmod(x/(2*PI), (double)1.0);
@@ -54,7 +54,7 @@ double Generators::triangle(double x)
 	
 }
 
-double Generators::square(double x)
+double generators::square(double x)
 {
 	if (x < PI) {
 		return 1.0;
@@ -64,7 +64,7 @@ double Generators::square(double x)
 	
 }
 
-double Generators::sinsquare(double x)
+double generators::sinsquare(double x)
 {
 	float val = (float)sin(x) * 10.0f;
 	_mm_store_ss( &val, _mm_min_ss( _mm_max_ss(_mm_set_ss(val),_mm_set_ss(-1.0f)), _mm_set_ss(1.0f) ) );
@@ -72,7 +72,7 @@ double Generators::sinsquare(double x)
 	return (double)val;
 }
 
-double Generators::sampler(double x, float * samplearray, int arraysize) {
+double generators::sampler(double x, float * samplearray, int arraysize) {
 	int pos = (int)(x*44100.0);
 	pos = pos % arraysize;
 	return (double)samplearray[pos];
@@ -84,6 +84,6 @@ void generate_noise_sample(Sample * sample, int length) {
 	sample->data = new float[length];
 
 	for (int i=0;i<length;i++) {
-		sample->data[i] = (float)Generators::noise((double)i);
+		sample->data[i] = (float)generators::noise((double)i);
 	}
 }

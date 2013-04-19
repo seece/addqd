@@ -5,7 +5,6 @@
 #define KEYBOARD_BASE 0x30
 #define KEY_NULL -999
 
-
 static int keymap[KEYBOARD_KEYS];
 static bool keys_held[KEYBOARD_KEYS];
 void keys_init();

@@ -16,7 +16,7 @@ bool test_serialization(void) {
 	orig[0].channel = 0;
 	orig[0].data[0] = 42;
 	orig[0].data[1] = 254;
-	*(int *)(orig[0].payload) = 2<<30;	// test to fit a 32bit int to the payload field
+	*(int *)(orig[0].payload) = 2<<30;	// test fitting a 32bit int to the payload field
 
 	orig[1].when = 8.0;
 	orig[1].type = ADQ_EVENT_NOTE_OFF;

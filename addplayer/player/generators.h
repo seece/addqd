@@ -4,7 +4,7 @@
 #include "addsynth_types.h"
 
 // the oscillators assume a phase in the range of [0, 2*PI[
-namespace Generators {
+namespace generators {
 	double sawsin(double x);
 	double simplenoise(double x);
 	double noise(double x);

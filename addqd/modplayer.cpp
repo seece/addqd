@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "amigamod.h"
-#include "player.h"
+#include "modplayer.h"
 #include "event.h"
 #include "player/addsynth.h"
 #include "util.h"

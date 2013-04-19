@@ -1,5 +1,5 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef MODPLAYER_H
+#define MODPLAYER_H
 
 #include <stdint.h>
 #include "amigamod.h"	// for the Note struct
