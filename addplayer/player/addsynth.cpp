@@ -3,7 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <Windows.h>
-#include "../util.h"
+#include "../misc.h"
 #include "config.h"
 #include "addsynth.h"
 //#include "oscillators.h"

@@ -2,9 +2,14 @@
 #include <cmath>
 #include <mmintrin.h>
 #include <xmmintrin.h>
-#include "../util.h"
+#include "../misc.h"
 #include "generators.h"
 
+// returns the sign of a number
+// http://stackoverflow.com/a/4609795
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
 
 #define RAND_MAX_HALF (RAND_MAX/2)
 

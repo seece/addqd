@@ -43,10 +43,4 @@ uint8_t *charToNiceHex(uint8_t a, uint8_t *output);
 // AMIGAA
 short swapBytes(short in);
 
-// returns the sign of a number
-// http://stackoverflow.com/a/4609795
-template <typename T> int sgn(T val) {
-    return (T(0) < val) - (val < T(0));
-}
-
 #endif

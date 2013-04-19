@@ -9,7 +9,7 @@
 #include "player/addsynth.h"
 #include "editor/keyboard.h"
 #include "amigamod.h"
-#include "player/player.h"
+#include "player.h"
 #include "serialize.h"
 #include "tests.h"
 

@@ -2,7 +2,8 @@
 #define PLAYER_H
 
 #include <stdint.h>
-#include "../amigamod.h"	// for the Note struct
+#include "amigamod.h"	// for the Note struct
+#include "player/sound.h"
 #include "event.h"
 
 #define PATTERN_DEBUG 0
