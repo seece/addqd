@@ -3,4 +3,7 @@
 
 #define MAGIC
 
+void init_sound(void);
+void free_sound(void);
+
 #endif
