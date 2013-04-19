@@ -2,21 +2,28 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addqd", "addqd.vcxproj", "{B42AF0D3-AEE5-491F-A60E-D02A8E7FDB82}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E56AA4CF-0346-4E31-A26E-48973FD603E9} = {E56AA4CF-0346-4E31-A26E-48973FD603E9}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addplayer", "..\addplayer\addplayer.vcxproj", "{E56AA4CF-0346-4E31-A26E-48973FD603E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		introlib|Win32 = introlib|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B42AF0D3-AEE5-491F-A60E-D02A8E7FDB82}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B42AF0D3-AEE5-491F-A60E-D02A8E7FDB82}.Debug|Win32.Build.0 = Debug|Win32
+		{B42AF0D3-AEE5-491F-A60E-D02A8E7FDB82}.introlib|Win32.ActiveCfg = introlib|Win32
 		{B42AF0D3-AEE5-491F-A60E-D02A8E7FDB82}.Release|Win32.ActiveCfg = Release|Win32
 		{B42AF0D3-AEE5-491F-A60E-D02A8E7FDB82}.Release|Win32.Build.0 = Release|Win32
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.Debug|Win32.Build.0 = Debug|Win32
+		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.introlib|Win32.ActiveCfg = introlib|Win32
+		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.introlib|Win32.Build.0 = introlib|Win32
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.Release|Win32.ActiveCfg = Release|Win32
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
