@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addqd", "addqd.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addplayer", "..\addplayer\addplayer.vcxproj", "{E56AA4CF-0346-4E31-A26E-48973FD603E9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tester", "..\tester\tester.vcxproj", "{A483A041-5A25-4A6B-934F-BCAC6AA0F155}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E56AA4CF-0346-4E31-A26E-48973FD603E9} = {E56AA4CF-0346-4E31-A26E-48973FD603E9}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -26,6 +31,12 @@ Global
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.introlib|Win32.Build.0 = introlib|Win32
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.Release|Win32.ActiveCfg = Release|Win32
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9}.Release|Win32.Build.0 = Release|Win32
+		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.Debug|Win32.Build.0 = Debug|Win32
+		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.introlib|Win32.ActiveCfg = Release|Win32
+		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.introlib|Win32.Build.0 = Release|Win32
+		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.Release|Win32.ActiveCfg = Release|Win32
+		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

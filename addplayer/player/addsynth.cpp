@@ -500,6 +500,13 @@ void syn_init(int channels) {
 	state.time = 0.0;
 	state.samples = 0;
 
+	#ifdef INTROLIB
+		
+		while(true) {
+			printf("ERROROROOR! :D\n");
+		}
+	#endif
+
 	return;
 }
 
