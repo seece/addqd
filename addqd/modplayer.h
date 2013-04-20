@@ -52,7 +52,7 @@ PTSong load_PTSong(const char * input_path);
 void player_init();
 void player_load_PTSong(PTSong * song);
 int player_add_offset(int offset);	// applies a row offset to the player, returns new offset
-void update_player(PTSong * song, int start_time, int end_time);
+//void update_player(PTSong * song, int start_time, int end_time);
 //void setDefaultInstrumentValues(PTInstrument *ins);
 //uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments);
 void printPattern(Note *synthnotes,Songinfo *ssong, uint32_t pattern);

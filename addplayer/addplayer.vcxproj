@@ -87,7 +87,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="interface\player.h" />
     <ClInclude Include="interface\synth.h" />
     <ClInclude Include="misc.h" />
     <ClInclude Include="player\addsynth.h" />
@@ -95,14 +94,15 @@
     <ClInclude Include="player\config.h" />
     <ClInclude Include="player\event.h" />
     <ClInclude Include="player\generators.h" />
+    <ClInclude Include="player\player.h" />
     <ClInclude Include="player\sound.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="interface\player.cpp" />
     <ClCompile Include="misc.cpp" />
     <ClCompile Include="player\addsynth.cpp" />
     <ClCompile Include="player\event.cpp" />
     <ClCompile Include="player\generators.cpp" />
+    <ClCompile Include="player\player.cpp" />
     <ClCompile Include="player\sound.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

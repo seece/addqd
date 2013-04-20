@@ -8,6 +8,7 @@
 #include "util.h"
 #include "player/sound.h"
 #include "player/addsynth.h"
+#include "player/player.h"
 #include "editor/keyboard.h"
 #include "amigamod.h"
 #include "modplayer.h"
@@ -100,10 +101,14 @@ int main(int argc, char argv[]) {
 	assert(recorddata != NULL);
 	dumpArrayToDisk(recorddata, fsize, "output/notedata.dat");
 
-	WAITKEY();
+	player::init();
+	player::load_song(&newevents);
 
-	mod::player_init();
-	mod::player_load_PTSong(&song);
+	WAITKEY();
+	printf("playin' the song\n");
+
+	//mod::player_init();
+	//mod::player_load_PTSong(&song);
 	
 	// MUTE channels
 	//syn_get_channel(0)->volume = 0.0f;
@@ -118,7 +123,8 @@ int main(int argc, char argv[]) {
 		int t = GetTickCount()-start;
 		keys_check_transport();
 		//keys_check_presses();
-		poll_sound(syn_render_block, mod::player_update);
+		//poll_sound(syn_render_block, mod::player_update);
+		poll_sound(syn_render_block, player::update);
 		Sleep(10);
 	}
 

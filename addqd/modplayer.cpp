@@ -7,6 +7,15 @@
 #include "player/addsynth.h"
 #include "util.h"
 
+static PTSong * loaded_song;
+
+static int last_tick = -1;
+static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
+static int row_offset = 0;
+
+static long player_millis = 0;
+static long player_samples = 0;
+
 static void setDefaultInstrumentValues(PTInstrument *ins) {
 	strcpy((char *) ins->name, "instrument");
 	ins->envelope = 0;
@@ -212,14 +221,6 @@ PTSong mod::load_PTSong(const char * input_path) {
 	return song;
 }
 
-static PTSong * loaded_song;
-
-static int last_tick = -1;
-static int lastnote[8] = {0,0,0,0,0,0,0,0};	// TODO make this use some proper constant
-static int row_offset = 0;
-
-static long player_millis = 0;
-static long player_samples = 0;
 
 void mod::player_init() {
 	player_millis = 0;
