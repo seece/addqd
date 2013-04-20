@@ -61,15 +61,14 @@ void record_events(	PollEventCallback_t playfunc,
 
 	long samples = 0;
 	int temp_size = 1024;
-	long blocksize = 2048;	// block length in samples
-	int max_events = 1024;
-	int event_num = 0;
-
-	EventBuffer bigbuffer = {0,0,0};
-
-	bigbuffer.event_list = (Event *) malloc(sizeof(Event) * max_events);
-
+	long blocksize = 4096;	// block length in samples
 	EventBuffer tempbuffer;
+	EventBuffer * bigbuf = eventbuffer;
+
+	bigbuf->amount = 0;
+	bigbuf->max_events = 1024;
+	bigbuf->event_list = (Event *) malloc(sizeof(Event) * bigbuf->max_events);
+	
 	tempbuffer.event_list = (Event *) malloc(sizeof(Event) * temp_size);
 	tempbuffer.max_events = temp_size;
 	tempbuffer.amount = 0;
@@ -77,31 +76,28 @@ void record_events(	PollEventCallback_t playfunc,
 	while (samples < record_sample_num) {
 		playfunc(&tempbuffer, blocksize);
 
-		if (max_events <= (event_num + tempbuffer.amount)) {
+		if (bigbuf->max_events <= (bigbuf->amount + tempbuffer.amount)) {
 			// resize the buffer dynamically
-			max_events *= 2;
-			bigbuffer.event_list = (Event *) realloc(tempbuffer.event_list, sizeof(Event) * max_events);
-			assert(bigbuffer.event_list != NULL);
-			//tempbuffer.event_list = (Event *) realloc(sizeof(Event) * temp_size);
+			bigbuf->max_events *= 2;
+			bigbuf->event_list = (Event *) realloc(bigbuf->event_list, sizeof(Event) * bigbuf->max_events);
+			assert(bigbuf->event_list != NULL);
 		}
 
 		// copy the recorded events to the big event array
 		for (int i=0;i<tempbuffer.amount;i++) {
-			bigbuffer.event_list[event_num + i] = tempbuffer.event_list[i];
+			bigbuf->event_list[bigbuf->amount + i] = tempbuffer.event_list[i];
 		}
 
-		event_num += tempbuffer.amount;
+		bigbuf->amount += tempbuffer.amount;
 
 		tempbuffer.amount = 0;
 		samples += blocksize;
 	}
 
 	free(tempbuffer.event_list);
-
-	*eventbuffer = bigbuffer;
 }
 
 
-void event_to_string(Event& e, char * output, int max_length) {
-	sprintf(output, "%lf\t0x%x 0x%x 0x%x", e.when, e.channel, e.data[0], e.data[1]);
+void event_to_string(const Event& e, char * output, int max_length) {
+	sprintf_s(output, max_length, "%lf\tCHN: %d\t0x%x 0x%x", e.when, e.channel, e.data[0], e.data[1]);
 }

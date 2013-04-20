@@ -5,11 +5,12 @@
 #include "event.h"
 #include "config.h"
 
+#define EVENT_EMPTY_BYTE (0xAB)
+
 #ifdef DEBUG_EVENT_SANITY_CHECKS
 #define CHECK_EVENT_CHANNEL if (channel < 0 || channel > 255) { \
 		fprintf(stderr, "Invalid channel num %d in %s\n", channel, __FUNCTION__); \
 	} 
-
 #else
 // on release mode we don't want additional checks
 #define CHECK_EVENT_CHANNEL 
@@ -19,7 +20,7 @@ Event create_volume_event(double when, int channel, int volume) {
 	CHECK_EVENT_CHANNEL;
 
 	Event e;
-	memset(&e, 0xFE, sizeof(e));	// for debug purposes
+	memset(&e, EVENT_EMPTY_BYTE, sizeof(e));	// for debug purposes
 	e.channel = unsigned char (channel);
 	e.type = ADQ_EVENT_VOLUME;
 	
@@ -45,7 +46,7 @@ Event create_note_event(double when, int channel, int pitch, bool state, unsigne
 	short spitch = short (pitch);
 
 	Event e;
-	memset(&e, 0xFE, sizeof(e));
+	memset(&e, EVENT_EMPTY_BYTE, sizeof(e));
 
 	e.channel = unsigned char (channel);
 	e.data[0] = spitch >> 8;
@@ -67,7 +68,7 @@ Event create_end_all_event(double when, int channel) {
 	CHECK_EVENT_CHANNEL;
 
 	Event e;
-	memset(&e, 0xFE, sizeof(e));
+	memset(&e, EVENT_EMPTY_BYTE, sizeof(e));
 	e.channel = unsigned char (channel);
 	e.type = ADQ_EVENT_END_ALL;
 	e.when = when;

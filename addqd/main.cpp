@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <windows.h>
 #include <mmsystem.h>
+#include <cassert>
 #include <cmath>
 
 #include "util.h"
@@ -82,13 +83,22 @@ int main(int argc, char argv[]) {
 
 	// EXPORT TEST
 	EventBuffer newevents;
-	record_events(player_update, AUDIO_RATE*5, &newevents);
+	record_events(player_update, AUDIO_RATE*30, &newevents);
 	printf("doned!\n");
+
 	for (int i=0;i<5;i++) {
-		char estring[256];
-		event_to_string(newevents.event_list[0], estring, 256);
+		char estring[512];
+		event_to_string(newevents.event_list[i], estring, 512);
 		fprintf(stdout, "%s\n", estring);
 	}
+
+	long fsize = -1;
+	dprint(newevents.event_list[0].channel);
+	dprint(newevents.amount);
+	dprint(newevents.max_events);
+	char * recorddata = serialize_event_array(newevents.event_list, newevents.amount, &fsize);
+	assert(recorddata != NULL);
+	dumpArrayToDisk(recorddata, fsize, "output/notedata.dat");
 
 	WAITKEY();
 
