@@ -9,6 +9,8 @@
 #define PATTERN_DEBUG 0
 #define SYNTH_EMPTY_NOTE_VALUE 112	// please note that this differs from the one defined in amigamod.h
 
+
+
 struct Songinfo {
 	uint8_t name[256];
 	uint8_t bpm;
@@ -44,6 +46,8 @@ struct PTSong {
 	Note * notedata;
 };
 
+namespace mod {
+
 PTSong load_PTSong(const char * input_path);
 void player_init();
 void player_load_PTSong(PTSong * song);
@@ -55,4 +59,5 @@ void printPattern(Note *synthnotes,Songinfo *ssong, uint32_t pattern);
 void play_PTSong(PTSong * song, int time);
 void player_update(EventBuffer * buffer, long samplecount);
 
+}
 #endif

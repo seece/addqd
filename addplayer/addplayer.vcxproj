@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="interface\player.h" />
     <ClInclude Include="interface\synth.h" />
     <ClInclude Include="misc.h" />
     <ClInclude Include="player\addsynth.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="player\sound.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="interface\player.cpp" />
     <ClCompile Include="misc.cpp" />
     <ClCompile Include="player\addsynth.cpp" />
     <ClCompile Include="player\event.cpp" />

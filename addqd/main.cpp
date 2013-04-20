@@ -15,9 +15,9 @@
 #include "tests.h"
 
 int main(int argc, char argv[]) {
-	player_init();
-	PTSong song = load_PTSong("mods/daveys.mod");
-	player_load_PTSong(&song);
+	mod::player_init();
+	PTSong song = mod::load_PTSong("mods/daveys.mod");
+	mod::player_load_PTSong(&song);
 
 	test_serialization();
 
@@ -83,10 +83,10 @@ int main(int argc, char argv[]) {
 
 	// EXPORT TEST
 	EventBuffer newevents;
-	record_events(player_update, AUDIO_RATE*30, &newevents);
+	record_events(mod::player_update, AUDIO_RATE*30, &newevents);
 	printf("doned!\n");
 
-	for (int i=0;i<5;i++) {
+	for (int i=0;i<50;i++) {
 		char estring[512];
 		event_to_string(newevents.event_list[i], estring, 512);
 		fprintf(stdout, "%s\n", estring);
@@ -102,8 +102,8 @@ int main(int argc, char argv[]) {
 
 	WAITKEY();
 
-	player_init();
-	player_load_PTSong(&song);
+	mod::player_init();
+	mod::player_load_PTSong(&song);
 	
 	// MUTE channels
 	//syn_get_channel(0)->volume = 0.0f;
@@ -118,7 +118,7 @@ int main(int argc, char argv[]) {
 		int t = GetTickCount()-start;
 		keys_check_transport();
 		//keys_check_presses();
-		poll_sound(syn_render_block, player_update);
+		poll_sound(syn_render_block, mod::player_update);
 		Sleep(10);
 	}
 

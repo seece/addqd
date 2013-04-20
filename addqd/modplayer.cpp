@@ -34,7 +34,7 @@ static uint32_t loadInstruments(PTSample *sample_info, Instrumentinfo *sinstrume
 	return 0;
 }
 
-void printPattern(Note *synthnotes, Songinfo *ssong, uint32_t pattern) {
+void mod::printPattern(Note *synthnotes, Songinfo *ssong, uint32_t pattern) {
 	uint32_t p = pattern;
 	uint32_t channels = ssong->channels;
 	uint32_t r, c;
@@ -57,7 +57,7 @@ void printPattern(Note *synthnotes, Songinfo *ssong, uint32_t pattern) {
 	printf("\n");
 }
 
-PTSong load_PTSong(const char * input_path) {
+PTSong mod::load_PTSong(const char * input_path) {
 	bool flag_verbose = false;
 
 	PTSong song;
@@ -221,20 +221,20 @@ static int row_offset = 0;
 static long player_millis = 0;
 static long player_samples = 0;
 
-void player_init() {
+void mod::player_init() {
 	player_millis = 0;
 	player_samples = 0;
 	row_offset = 0;
 	loaded_song = NULL;
 }
 
-void player_load_PTSong(PTSong * song) {
+void mod::player_load_PTSong(PTSong * song) {
 	loaded_song = song;
 }
 
-void play_PTSong(PTSong * song, int time) {}
+void mod::play_PTSong(PTSong * song, int time) {}
 
-int player_add_offset(int offset) {
+int mod::player_add_offset(int offset) {
 	row_offset += offset;
 	return row_offset;
 }
@@ -410,7 +410,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 
 // pushes new commands to the command buffer
 // only picks commands between start_time and end_time
-void player_update(EventBuffer * buffer, long samplecount) {
+void mod::player_update(EventBuffer * buffer, long samplecount) {
 	PTSong * song = loaded_song;
 
 	if (loaded_song == NULL) {
