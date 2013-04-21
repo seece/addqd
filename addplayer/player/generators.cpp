@@ -68,7 +68,6 @@ double generators::sinsquare(double x)
 {
 	float val = (float)sin(x) * 10.0f;
 	_mm_store_ss( &val, _mm_min_ss( _mm_max_ss(_mm_set_ss(val),_mm_set_ss(-1.0f)), _mm_set_ss(1.0f) ) );
-	//return MAX(-0.07, MIN(0.07, sin(x)))*(1.0/0.07);
 	return (double)val;
 }
 

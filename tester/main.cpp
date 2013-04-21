@@ -13,19 +13,17 @@ int main(int argc, char * argv[]) {
 		printf("MAGIC IS REAL!\n");
 	#endif
 
-	syn_init(8);
-
-	init_sound();
 	player::init();
-	
-	// notedata_len is not needed since the amount of events
-	// is saved in the first 4 bytes of the data array
+	syn_init(8);
 	EventBuffer buf = load_serialized_song((char *)notedata);
-
 	player::load_song(&buf);
 
-	printf("event amount %d\n", buf.amount );
+	// notedata_len is not needed since the amount of events
+	// is saved in the first 4 bytes of the data array
 
+	init_sound();
+
+	printf("event amount %d\n", buf.amount );
 
 	int start = GetTickCount();
 
