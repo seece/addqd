@@ -23,7 +23,7 @@
 
 
 void create_spectrum(Spectrum * spectrum);
-void syn_load_instrument(int slot, Instrument * instrument);
+Instrument** syn_get_instrument_list_pointer();
 void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer);

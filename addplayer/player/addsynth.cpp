@@ -12,7 +12,9 @@ static SynthState state;
 static Channel * channel_list;
 // an array of instrument pointers
 // TODO get this from the outside
-static Instrument * instrument_list[SYN_MAX_INSTRUMENTS];
+//static Instrument * instrument_list[SYN_MAX_INSTRUMENTS];
+static Instrument * instrument_list = NULL;
+static int instrument_list_max_length = SYN_MAX_INSTRUMENTS;
 static Voice voice_list[SYN_MAX_VOICES];
 
 #define EFFECT_NONE 0
@@ -65,6 +67,11 @@ static void syn_init_instrument(Instrument * ins) {
 	ins->env.release = 0.1f;
 	ins->env.decay = 0.2f;
 	ins->env.hold = 1.0f;
+};
+
+// returns a pointer to the instrument list pointer
+Instrument** syn_get_instrument_list_pointer() {
+	return &instrument_list;
 }
 
 Instrument syn_create_instrument(InstrumentType type) {
@@ -186,6 +193,12 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	double f;
 	double next_event_time = 0.0;
 
+	#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS
+	if (instrument_list == NULL) {
+		fprintf(stderr, "Warning: instrument_list is NULL!\n");
+	}
+	#endif
+
 	#ifdef DEBUG_AUDIO_SANITY_CHECKS
 	if (length > AUDIO_BUFFERSIZE*2) {
 		fprintf(stderr, "Warning: Requested buffer size too big: %d\n ", length);
@@ -243,7 +256,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			Instrument * ins = voice->channel->instrument;
 
-			// voice envelope calculations will be done even to unactive channels
+			// voice envelope calculations will be done even to inactive channels
 			double voicetime = t-voice->envstate.beginTime;
 			envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
 
@@ -326,7 +339,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		double volume = channel_list[c].volume;
 
 		for (int i=0;i<length*2;i++) {
-			// TODO panning (user proper power distribution)
+			// TODO panning (use proper power distribution)
 			buf[i] += channel_list[c].buffer[i] * float(volume);
 		}
 
@@ -341,7 +354,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		printf("Warning: eventbuffer not empty: %d/%d\n", current_event, eventbuffer->amount);
 		#endif
 		eventbuffer->amount -= current_event;	// try to recover gracefully and render
-												// these on then next round
+												// these on the next round
 	} else {
 		eventbuffer->amount=0;	
 	}
@@ -447,17 +460,6 @@ static void set_channel_volume(int channel, double volume) {
 	}
 }
 
-// loads an instrument to the given slot
-void syn_load_instrument(int slot, Instrument * instrument) {
-	if (slot >= SYN_MAX_INSTRUMENTS) {
-		fprintf(stderr, "Invalid slot number %d in %s!\n", slot, __FUNCDNAME__);
-		return;
-	}
-
-	instrument_list[slot] = instrument;
-	fprintf(stdout, "Instrument pointer 0x%X loaded to slot %d\n", instrument, slot);
-}
-
 void syn_attach_instrument(int channel, int instrument_slot) {
 	if (channel >= state.channels) {
 		fprintf(stderr, "Invalid channel number %d in %s!\n", channel, __FUNCDNAME__);
@@ -467,14 +469,14 @@ void syn_attach_instrument(int channel, int instrument_slot) {
 		return;
 	}
 
-	channel_list[channel].instrument = instrument_list[instrument_slot];
+	channel_list[channel].instrument = &instrument_list[instrument_slot];
 
 	printf("Ins %d attached to channel %d.\n", instrument_slot, channel);
 }
 
 void print_instrument_pointers(void) {
 	for (int i=0;i<SYN_MAX_INSTRUMENTS;i++) {
-		printf("%d:\t%X\n", i, instrument_list[i]);
+		printf("%d:\t%X\n", i, &instrument_list[i]);
 	}
 }
 
@@ -492,7 +494,7 @@ void syn_init(int channels) {
 	}
 
 	for (int i=0;i<SYN_MAX_INSTRUMENTS;i++) {
-		instrument_list[i] = NULL;
+		//instrument_list[i] = NULL;
 		//init_instrument(&instrument_list[i]);
 	}
 

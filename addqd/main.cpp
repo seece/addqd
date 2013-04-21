@@ -35,40 +35,46 @@ int main(int argc, char argv[]) {
 	//printf("%d", snare.length*sizeof(float));
 	syn_init(8);
 
-	Instrument noise = syn_create_instrument(INS_SAMPLER);
-	noise.volume=0.3f;
+	Instrument insarr[SYN_MAX_INSTRUMENTS];	// the size of this must match the variable 
+											// instrument_list_max_length in addsynth.cpp
+
+	Instrument * noise = &insarr[0];
+	Instrument * tri = &insarr[1];
+	Instrument * square = &insarr[2];
+	Instrument * square2 = &insarr[3];
+
+	*noise = syn_create_instrument(INS_SAMPLER);
+	noise->volume=0.3f;
 	//noise.waveFunc = *Generators::noise;
-	noise.octave = -3;
-	noise.samplerFunc = *generators::sampler;
-	noise.sample = &snare;
-	noise.env.attack = 0.01f;
-	noise.env.release = 0.03f;
+	noise->octave = -3;
+	noise->samplerFunc = *generators::sampler;
+	noise->sample = &snare;
+	noise->env.attack = 0.01f;
+	noise->env.release = 0.03f;
 
-	Instrument tri = syn_create_instrument(INS_OSC);
-	tri.volume=0.5f;
-	tri.octave=-2;
-	tri.waveFunc = *generators::triangle;
-	tri.env.attack = 0.01f;
-	tri.env.release = 0.08f;
+	*tri = syn_create_instrument(INS_OSC);
+	tri->volume=0.5f;
+	tri->octave=-2;
+	tri->waveFunc = *generators::triangle;
+	tri->env.attack = 0.01f;
+	tri->env.release = 0.08f;
 
-	Instrument square = syn_create_instrument(INS_OSC);
-	square.volume=0.3f;
-	square.octave = -1;
-	square.waveFunc = *generators::sinsquare;
-	square.env.attack = 0.001f;
-	square.env.release = 0.001f;
+	*square = syn_create_instrument(INS_OSC);
+	square->volume=0.3f;
+	square->octave = -1;
+	square->waveFunc = *generators::sinsquare;
+	square->env.attack = 0.001f;
+	square->env.release = 0.001f;
 
-	Instrument square2 = syn_create_instrument(INS_OSC);
-	square2.volume=0.3f;
-	square2.octave = -1;
-	square2.waveFunc = *generators::square;
-	square2.env.attack = 0.001f;
-	square2.env.release = 0.001f;
+	*square2 = syn_create_instrument(INS_OSC);
+	square2->volume=0.3f;
+	square2->octave = -1;
+	square2->waveFunc = *generators::square;
+	square2->env.attack = 0.001f;
+	square2->env.release = 0.001f;
 
-	syn_load_instrument(0, &noise);
-	syn_load_instrument(1, &tri);
-	syn_load_instrument(2, &square2);
-	syn_load_instrument(3, &square);
+	Instrument** listpointer = syn_get_instrument_list_pointer();
+	*listpointer = (Instrument *)&insarr;
 
 	syn_attach_instrument(0, 1);
 	syn_attach_instrument(1, 0);
@@ -78,7 +84,7 @@ int main(int argc, char argv[]) {
 	syn_attach_instrument(5, 0);
 	syn_attach_instrument(6, 0);
 	syn_attach_instrument(7, 0);
-
+	
 	keys_init();
 	init_sound();
 
