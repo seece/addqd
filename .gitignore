@@ -34,3 +34,4 @@ ipch/
 mods/
 output/
 introlib/
+tester/notedata.h

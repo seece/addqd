@@ -108,7 +108,7 @@ static void syn_process_event(Event * e) {
 	}
 	#endif
 
-	#ifdef DEBUG_EVENT
+	#ifdef SYN_DEBUG_EVENT
 	printf("CHN: %2d\t", e->channel);
 	#endif
 	// used in note events
@@ -119,12 +119,12 @@ static void syn_process_event(Event * e) {
 
 	switch (e->type) {
 		case ADQ_EVENT_NONE:
-			#ifdef DEBUG_EVENT
+			#ifdef SYN_DEBUG_EVENT
 			printf("EVENT_NONE at %lf.", e->when);
 			#endif
 			break;
 		case ADQ_EVENT_NOTE_ON:
-			#ifdef DEBUG_EVENT
+			#ifdef SYN_DEBUG_EVENT
 			printf("EVENT_NOTE_ON (%d) at %lf.", pitch,e->when);
 			#endif
 
@@ -137,14 +137,14 @@ static void syn_process_event(Event * e) {
 
 			break;
 		case ADQ_EVENT_NOTE_OFF:
-			#ifdef DEBUG_EVENT
+			#ifdef SYN_DEBUG_EVENT
 			printf("EVENT_NOTE_OFF at %lf.", e->when);
 			#endif
 
 			syn_end_note(e->channel, pitch);
 			break;
 		case ADQ_EVENT_END_ALL:
-			#ifdef DEBUG_EVENT
+			#ifdef SYN_DEBUG_EVENT
 			printf("EVENT_END_ALL at %lf.", e->when);
 			#endif
 
@@ -153,21 +153,21 @@ static void syn_process_event(Event * e) {
 		case ADQ_EVENT_VOLUME:
 			vol = e->data[0];
 			volume = vol/255.0;
-			#ifdef DEBUG_EVENT
+			#ifdef SYN_DEBUG_EVENT
 			printf("EVENT_VOLUME %d (%lf) at %lf.", vol, volume, e->when);
 			#endif
 
 			set_channel_volume(e->channel, volume);
 			break;
 		default:
-			#ifdef DEBUG_EVENT
+			#ifdef SYN_DEBUG_EVENT
 			fprintf(stderr, "Invalid event type %d on channel %d.\n", e->type, e->channel);
 			#endif
 
 			return;
 	}
 
-	#ifdef DEBUG_EVENT
+	#ifdef SYN_DEBUG_EVENT
 	printf("\n");
 	#endif
 }
@@ -499,13 +499,6 @@ void syn_init(int channels) {
 	state.channels = channels;
 	state.time = 0.0;
 	state.samples = 0;
-
-	#ifdef INTROLIB
-		
-		while(true) {
-			printf("ERROROROOR! :D\n");
-		}
-	#endif
 
 	return;
 }

@@ -9,6 +9,27 @@ static long player_samples = 0;
 static int last_event = 0;
 static EventBuffer * loaded_song = NULL;
 
+Event * deserialize_event_array(const char * eventdata, int * amountp) {
+	long pos = 0;
+	int amount = -1;
+	memcpy(&amount, eventdata, sizeof(int)); pos+=sizeof(int);
+	Event * event_array = new Event[amount];
+	*amountp = amount;
+
+	for (int i=0;i<amount;i++) {
+		Event e;
+		memcpy(&e.when,		eventdata + pos, sizeof(double));	pos+=	sizeof(double);
+		memcpy(&e.type,		eventdata + pos, sizeof(char));		pos+=	sizeof(char);
+		memcpy(&e.channel,	eventdata + pos, sizeof(char));		pos+=	sizeof(unsigned char);
+		memcpy(e.data,		eventdata + pos, 2*sizeof(char));	pos+=	2*sizeof(char);
+		memcpy(e.payload,	eventdata + pos, 4*sizeof(char));	pos+=	4*sizeof(unsigned char);
+
+		event_array[i] = e;	
+	}
+
+	return event_array;
+}
+
 void player::init() {
 	last_event = 0;
 	player_samples = 0;
@@ -21,13 +42,12 @@ bool player::load_song(EventBuffer * song) {
 }
 
 void player::update(EventBuffer * buffer, long samplecount) {
+	#ifdef DEBUG_PLAYER_SANITY_CHECKS
 	if (loaded_song == NULL) {
-		#ifdef DEBUG_PLAYER_SANITY_CHECKS
-			fprintf(stderr, "Song not loaded, cannot play!\n");
-		#endif
-
+		fprintf(stderr, "Song not loaded, cannot play!\n");
 		return;
 	}
+	#endif 
 
 	double time = (double)player_samples/(double)AUDIO_RATE;
 	double endtime = (double)(player_samples+samplecount)/(double)AUDIO_RATE;

@@ -84,7 +84,7 @@ int main(int argc, char argv[]) {
 
 	// EXPORT TEST
 	EventBuffer newevents;
-	record_events(mod::player_update, AUDIO_RATE*30, &newevents);
+	record_events(mod::player_update, AUDIO_RATE*60, &newevents);
 	printf("doned!\n");
 
 	for (int i=0;i<50;i++) {

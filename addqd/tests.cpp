@@ -1,6 +1,7 @@
 
 #include <cassert>
 #include "serialize.h"
+#include "player/player.h"
 #include "util.h"
 
 bool test_serialization(void) {
