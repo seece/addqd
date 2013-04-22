@@ -9,7 +9,7 @@
 #include "config.h"
 
 enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
-enum InstrumentType {INS_OSC, INS_SAMPLER};
+enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
 
 // IL Harmor has 516 partials
 #define SYN_PARTIAL_AMOUNT 20
@@ -30,6 +30,8 @@ enum InstrumentType {INS_OSC, INS_SAMPLER};
 
 // a pointer to a function that generates a waveform when given the phase p
 typedef double (*WaveformFunc_t)(double p);
+//typedef double (*FMFunc_1op_t)(double p, double a);
+typedef double (*FMFunc_2op_t)(double p, double a, double b);
 typedef double (*SamplerFunc_t)(double time, float * samplearray, int arraysize);
 
 struct Spectrum {
@@ -65,6 +67,7 @@ struct Instrument {
 	int octave;
 	WaveformFunc_t waveFunc;
 	SamplerFunc_t samplerFunc;
+	FMFunc_2op_t fmFunc;
 	Sample * sample;
 };
 

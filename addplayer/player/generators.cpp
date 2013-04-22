@@ -77,6 +77,14 @@ double generators::sampler(double x, float * samplearray, int arraysize) {
 	return (double)samplearray[pos];
 }
 
+// this is actually "phase distortion", similiar to casio CZ series algorithm
+// a: the "resonance" amount
+// b: ignored
+double generators::resonant_fm(double x, double a, double b) {
+	double phase = fmod(x, 2.0*PI);
+	return sin(phase * a) *  (1.0- (phase/(2.0*PI)));
+}
+
 // length in samples
 void generate_noise_sample(Sample * sample, int length) {
 	sample->length = length;
@@ -86,3 +94,4 @@ void generate_noise_sample(Sample * sample, int length) {
 		sample->data[i] = (float)generators::noise((double)i);
 	}
 }
+

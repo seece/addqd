@@ -52,10 +52,10 @@ int main(int argc, char argv[]) {
 	noise->env.attack = 0.01f;
 	noise->env.release = 0.03f;
 
-	*tri = syn_create_instrument(INS_OSC);
+	*tri = syn_create_instrument(INS_FM_TWO_OP);
 	tri->volume=0.5f;
 	tri->octave=-2;
-	tri->waveFunc = *generators::triangle;
+	tri->fmFunc = *generators::resonant_fm;
 	tri->env.attack = 0.01f;
 	tri->env.release = 0.08f;
 
@@ -88,6 +88,7 @@ int main(int argc, char argv[]) {
 	keys_init();
 	init_sound();
 
+	/*
 	// EXPORT TEST
 	EventBuffer newevents;
 	record_events(mod::player_update, AUDIO_RATE*60, &newevents);
@@ -112,9 +113,11 @@ int main(int argc, char argv[]) {
 
 	WAITKEY();
 	printf("playin' the song\n");
+	
+	*/
 
-	//mod::player_init();
-	//mod::player_load_PTSong(&song);
+	mod::player_init();
+	mod::player_load_PTSong(&song);
 	
 	// MUTE channels
 	//syn_get_channel(0)->volume = 0.0f;
@@ -122,15 +125,14 @@ int main(int argc, char argv[]) {
 	//syn_get_channel(2)->volume = 0.0f;
 	//syn_get_channel(3)->volume = 0.0f;
 
-
 	int start = GetTickCount();
 
 	while(!GetAsyncKeyState(VK_ESCAPE)) {
 		int t = GetTickCount()-start;
 		keys_check_transport();
 		//keys_check_presses();
-		//poll_sound(syn_render_block, mod::player_update);
-		poll_sound(syn_render_block, player::update);
+		poll_sound(syn_render_block, mod::player_update);
+		//poll_sound(syn_render_block, player::update);
 		Sleep(10);
 	}
 

@@ -12,6 +12,7 @@ namespace generators {
 	double square(double x);
 	double sinsquare(double x);
 	double sampler(double x, float * samplearray, int arraysize);
+	double resonant_fm(double x, double a, double b);
 };
 
 void generate_noise_sample(Sample * sample, int length);

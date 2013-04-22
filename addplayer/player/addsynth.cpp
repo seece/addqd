@@ -238,7 +238,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
 			Voice * voice = &voice_list[v];
 			
-			
 			// voice volume change smoothing
 			// TODO implement actual interpolation
 			float vol = (float)voice->envstate.volume;
@@ -286,7 +285,10 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			switch (ins->type) {
 				case INS_OSC:
-					sample = float(wavefunc(phase * 2.0 * PI));
+					sample = (float)wavefunc(phase * 2.0 * PI);
+					break;
+				case INS_FM_TWO_OP:
+					sample = (float)ins->fmFunc(phase * 2.0 * PI, 2.0 + voicetime * 10.0, 0.0);
 					break;
 				case INS_SAMPLER:
 					sample = (float)ins->samplerFunc(voicetime * (f/440.0), ins->sample->data, 
