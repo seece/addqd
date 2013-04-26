@@ -8,3 +8,7 @@ http://www.pouet.net/prod.php?which=54089 (Namesia by Komplex)
 
 käännetään staattiseksi libiksi lopullista introa varten käytön helpottamiseksi? 
 http://msdn.microsoft.com/en-us/library/vstudio/ms235627.aspx#createlibproject
+
+
+https://play.spotify.com/track/4eyZlJ2EKby3sF3KXwEDuP (Isao Tomita - Suite Bergamansque: Calir de Lune, No. 3)
+lopun tremolopiano
