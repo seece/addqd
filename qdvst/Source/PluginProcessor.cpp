@@ -1,12 +1,7 @@
-/*
-  ==============================================================================
+#pragma warning( disable : 4100 ) // disable "unreferenced formal parameter" warning
 
-    This file was auto-generated!
-
-    It contains the basic startup code for a Juce application.
-
-  ==============================================================================
-*/
+#include <cmath>
+#include <cassert>
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -15,6 +10,7 @@
 //==============================================================================
 QdvstAudioProcessor::QdvstAudioProcessor()
 {
+	blockSize = -1;
 }
 
 QdvstAudioProcessor::~QdvstAudioProcessor()
@@ -123,8 +119,10 @@ void QdvstAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void QdvstAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    this->blockSize = samplesPerBlock;
+	this->rate = (int)sampleRate;
+
+	assert(rate == 44100);	// lazy input value checking
 }
 
 void QdvstAudioProcessor::releaseResources()
@@ -135,14 +133,30 @@ void QdvstAudioProcessor::releaseResources()
 
 void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
+	
+	//int num = midiMessages.getNumEvents();
+	//printf("events: %d\n", num);
+	MidiBuffer::Iterator * iter = new MidiBuffer::Iterator(midiMessages);
+
+	const uint8 * mididata;
+	int mididata_length;
+	int sample_pos;
+
+	for (int i=0;iter->getNextEvent(mididata, mididata_length, sample_pos);) {
+		printf("%d: %d, %d\n", mididata_length, sample_pos);
+	}
+	
+
     for (int channel = 0; channel < getNumInputChannels(); ++channel)
     {
         float* channelData = buffer.getSampleData (channel);
 
-        // ..do something to the data...
+		for (int i=0;i<blockSize;i++) {
+			channelData[i] = sinf(440.0 * 2 * 3.14159265 * i * 1.0/(double)rate) * 0.8f;
+		}
     }
+
+	delete iter;
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't

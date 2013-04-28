@@ -12,3 +12,5 @@ http://msdn.microsoft.com/en-us/library/vstudio/ms235627.aspx#createlibproject
 
 https://play.spotify.com/track/4eyZlJ2EKby3sF3KXwEDuP (Isao Tomita - Suite Bergamansque: Calir de Lune, No. 3)
 lopun tremolopiano
+
+joku helppo gabber-soundi: https://soundcloud.com/nextcyclone/the-melodyst-you-dont-know

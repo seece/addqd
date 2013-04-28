@@ -30,10 +30,18 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 	#endif
 
     setSize (640, 480);
+	testknob = new Slider ("scale");
+	testknob->setBounds(10, 100, 150, 32);
+	testknob->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+	testknob->addListener(this);
+	addAndMakeVisible(testknob);
+	
 }
 
 QdvstAudioProcessorEditor::~QdvstAudioProcessorEditor()
 {
+	deleteAllChildren();
+
 	#ifdef DEBUG
 	FreeConsole();
 	#endif
@@ -48,4 +56,13 @@ void QdvstAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText ("PEISIK ADDQD VST",
                       0, 0, getWidth(), getHeight(),
                       Justification::topLeft, 1);
+
+
+}
+
+void QdvstAudioProcessorEditor::sliderValueChanged(Slider* slider) 
+{
+	#ifdef DEBUG
+	printf("slider value changse! %lf\n", slider->getValue());
+	#endif
 }

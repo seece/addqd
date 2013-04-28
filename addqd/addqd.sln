@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tester", "..\tester\tester.
 		{E56AA4CF-0346-4E31-A26E-48973FD603E9} = {E56AA4CF-0346-4E31-A26E-48973FD603E9}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qdvst", "..\qdvst\Builds\VisualStudio2010\qdvst.vcxproj", "{F7255370-90D5-D001-26C3-77163BFB392A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -37,6 +39,12 @@ Global
 		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.introlib|Win32.Build.0 = Release|Win32
 		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.Release|Win32.ActiveCfg = Release|Win32
 		{A483A041-5A25-4A6B-934F-BCAC6AA0F155}.Release|Win32.Build.0 = Release|Win32
+		{F7255370-90D5-D001-26C3-77163BFB392A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F7255370-90D5-D001-26C3-77163BFB392A}.Debug|Win32.Build.0 = Debug|Win32
+		{F7255370-90D5-D001-26C3-77163BFB392A}.introlib|Win32.ActiveCfg = Release|Win32
+		{F7255370-90D5-D001-26C3-77163BFB392A}.introlib|Win32.Build.0 = Release|Win32
+		{F7255370-90D5-D001-26C3-77163BFB392A}.Release|Win32.ActiveCfg = Release|Win32
+		{F7255370-90D5-D001-26C3-77163BFB392A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,9 @@
 #include "sound.h"
 #include "event.h"
 
+#define CHECK_WAVEOUT_ERROR if (result != MMSYSERR_NOERROR) { fprintf(stderr, "Audio error at %d! Error code: %d\n", __LINE__ , result); }
+#define SAFE_WAVEOUT_ACTION(sta) result = sta; CHECK_WAVEOUT_ERROR
+
 static Event event_array[AUDIO_MAX_EVENTS];
 static EventBuffer event_buffer;
 

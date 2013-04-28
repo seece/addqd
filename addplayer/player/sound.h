@@ -16,8 +16,6 @@
 
 #define AUDIO_MAX_EVENTS 16384
 
-#define CHECK_WAVEOUT_ERROR if (result != MMSYSERR_NOERROR) { fprintf(stderr, "Audio error at %d! Error code: %d\n", __LINE__ , result); }
-#define SAFE_WAVEOUT_ACTION(sta) result = sta; CHECK_WAVEOUT_ERROR
 
 static HWAVEOUT	hWaveOut;
 

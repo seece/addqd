@@ -18,7 +18,8 @@
 //==============================================================================
 /**
 */
-class QdvstAudioProcessorEditor  : public AudioProcessorEditor
+class QdvstAudioProcessorEditor  :	public AudioProcessorEditor,
+									public SliderListener									
 {
 public:
     QdvstAudioProcessorEditor (QdvstAudioProcessor* ownerFilter);
@@ -27,6 +28,9 @@ public:
     //==============================================================================
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
+	void sliderValueChanged(Slider* slider);
+
+	juce::Slider * testknob;
 };
 
 
