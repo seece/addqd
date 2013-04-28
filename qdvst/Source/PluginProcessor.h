@@ -12,6 +12,11 @@
 #define __PLUGINPROCESSOR_H_6F279363__
 
 #include "../JuceLibraryCode/JuceHeader.h"
+;
+
+struct PluginSettings {
+	int channels;
+};
 
 
 //==============================================================================
@@ -73,6 +78,7 @@ private:
 
 	int blockSize;	// buffer size
 	int rate;		// samplerate, must be 44100
+	PluginSettings settings;
 };
 
 #endif  // __PLUGINPROCESSOR_H_6F279363__

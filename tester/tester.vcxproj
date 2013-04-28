@@ -37,16 +37,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>E:\dev\visualstudio\addqd\addplayer\interface;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cdev\addqd\addplayer\interface;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>E:\dev\visualstudio\addqd\addqd\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\cdev\addqd\addqd\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>E:\dev\visualstudio\addqd\addplayer\interface;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cdev\addqd\addplayer\interface;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>E:\dev\visualstudio\addqd\addqd\introlib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\cdev\addqd\addqd\introlib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

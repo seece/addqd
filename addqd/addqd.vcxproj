@@ -50,25 +50,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>E:\dev\visualstudio\addqd\addplayer;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cdev\addqd\addplayer;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <SourcePath>E:\dev\visualstudio\addqd\addplayer;$(SourcePath)</SourcePath>
-    <LibraryPath>E:\dev\visualstudio\addqd\addqd\Debug;$(LibraryPath)</LibraryPath>
+    <SourcePath>C:\cdev\addqd\addplayer;$(SourcePath)</SourcePath>
+    <LibraryPath>C:\cdev\addqd\addqd\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>E:\dev\visualstudio\addqd\addplayer;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cdev\addqd\addplayer;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='introlib|Win32'">
-    <IncludePath>E:\dev\visualstudio\addqd\addplayer;$(IncludePath)</IncludePath>
+    <IncludePath>C:\cdev\addqd\addplayer;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <SourcePath>E:\dev\visualstudio\addqd\addplayer;$(SourcePath)</SourcePath>
-    <LibraryPath>E:\dev\visualstudio\addqd\addqd\Release;$(LibraryPath)</LibraryPath>
+    <SourcePath>C:\cdev\addqd\addplayer;$(SourcePath)</SourcePath>
+    <LibraryPath>C:\cdev\addqd\addqd\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='introlib|Win32'">
-    <SourcePath>E:\dev\visualstudio\addqd\addplayer;$(SourcePath)</SourcePath>
-    <LibraryPath>E:\dev\visualstudio\addqd\addqd\Release;$(LibraryPath)</LibraryPath>
+    <SourcePath>C:\cdev\addqd\addplayer;$(SourcePath)</SourcePath>
+    <LibraryPath>C:\cdev\addqd\addqd\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

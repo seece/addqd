@@ -5,16 +5,22 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "player/addsynth.h"
+
 
 
 //==============================================================================
 QdvstAudioProcessor::QdvstAudioProcessor()
 {
 	blockSize = -1;
+	this->settings.channels = 8;
+	syn_init(this->settings.channels);
+
 }
 
 QdvstAudioProcessor::~QdvstAudioProcessor()
 {
+	syn_free();
 }
 
 //==============================================================================
