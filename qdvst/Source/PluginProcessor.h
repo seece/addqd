@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 ;
+#include "player/addsynth.h"
 
 struct PluginSettings {
 	int channels;
@@ -79,6 +80,8 @@ private:
 	int blockSize;	// buffer size
 	int rate;		// samplerate, must be 44100
 	PluginSettings settings;
+	Instrument insarr[SYN_MAX_INSTRUMENTS];
+	Instrument** listpointer;
 };
 
 #endif  // __PLUGINPROCESSOR_H_6F279363__

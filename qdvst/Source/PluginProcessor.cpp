@@ -16,6 +16,18 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	this->settings.channels = 8;
 	syn_init(this->settings.channels);
 
+	Instrument * tri = &insarr[0];
+
+	*tri = syn_create_instrument(INS_FM_TWO_OP);
+	tri->volume=0.5f;
+	tri->octave=-2;
+	tri->fmFunc = *generators::resonant_fm;
+	tri->env.attack = 0.01f;
+	tri->env.release = 0.08f;
+
+	listpointer = syn_get_instrument_list_pointer();
+	*listpointer = (Instrument *)&insarr;
+
 }
 
 QdvstAudioProcessor::~QdvstAudioProcessor()
