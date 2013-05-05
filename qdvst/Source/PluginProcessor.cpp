@@ -28,6 +28,12 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;
 
+	sampleTime = 0;
+
+	addqd::EventBuffer synthEvents;
+	synthEvents.amount = 0;
+	synthEvents.max_events = 4096;	
+	synthEvents.event_list = new addqd::Event[synthEvents.amount];
 }
 
 QdvstAudioProcessor::~QdvstAudioProcessor()
@@ -149,32 +155,43 @@ void QdvstAudioProcessor::releaseResources()
     // spare memory, etc.
 }
 
-void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
-{
-
-	//int num = midiMessages.getNumEvents();
-	//printf("events: %d\n", num);
+void convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents) {
 	MidiBuffer::Iterator * iter = new MidiBuffer::Iterator(midiMessages);
+
+	int num = midiMessages.getNumEvents();
+
+	if (num > 0) {
+		printf("events: %d\n", num);
+	}
 
 	const uint8 * mididata;
 	int mididata_length;
 	int sample_pos;
 
 	for (int i=0;iter->getNextEvent(mididata, mididata_length, sample_pos);) {
-		printf("%d: %d, %d\n", mididata_length, sample_pos);
+		unsigned char chan = (mididata[0]) & 0x0F; 
+		unsigned char msg = (mididata[0] >> 4) & 0x0F; 
+		unsigned char id = (mididata[1]); 
+		unsigned char velocity = (mididata[1]); 
+		printf("chn:\t%d %#x: %d, %d, %d\n", chan, msg, mididata_length, sample_pos, id);
 	}
 	
+	delete iter;
+}
+
+void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
+{
+	synthEvents.amount = 0;
+	convertMidiEvents(midiMessages, synthEvents);
 
     for (int channel = 0; channel < getNumInputChannels(); ++channel)
     {
         float* channelData = buffer.getSampleData (channel);
 
 		for (int i=0;i<blockSize;i++) {
-			channelData[i] = sinf(440.0 * 2 * 3.14159265 * i * 1.0/(double)rate) * 0.8f;
+			channelData[i] = 0.0f * sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
 		}
     }
-
-	delete iter;
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't
@@ -183,6 +200,8 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
+
+	sampleTime += blockSize;
 }
 
 //==============================================================================

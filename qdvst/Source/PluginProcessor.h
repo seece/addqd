@@ -79,9 +79,11 @@ private:
 
 	int blockSize;	// buffer size
 	int rate;		// samplerate, must be 44100
+	long sampleTime;	// time in audio frames
 	PluginSettings settings;
 	Instrument insarr[SYN_MAX_INSTRUMENTS];
 	Instrument** listpointer;
+	addqd::EventBuffer synthEvents; // temporary synth events
 };
 
 #endif  // __PLUGINPROCESSOR_H_6F279363__
