@@ -57,7 +57,7 @@ int player_add_offset(int offset);	// applies a row offset to the player, return
 //uint32_t loadInstruments(Sample *sample_info, Instrumentinfo *sinstruments);
 void printPattern(Note *synthnotes,Songinfo *ssong, uint32_t pattern);
 void play_PTSong(PTSong * song, int time);
-void player_update(EventBuffer * buffer, long samplecount);
+void player_update(addqd::EventBuffer * buffer, long samplecount);
 
 }
 #endif

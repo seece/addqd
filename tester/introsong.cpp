@@ -2,6 +2,8 @@
 #include "synth.h"
 #include "../player/addsynth.h"
 
+using namespace addqd;
+
 Instrument insarr[SYN_MAX_INSTRUMENTS];	// the size of this must match the variable 
 											// instrument_list_max_length in addsynth.cpp
 

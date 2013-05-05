@@ -54,9 +54,9 @@ struct Buffer {
 static Buffer buffers[AUDIO_BUFFERS];
 static int renderpos = 0;	// rendering position in lpBuffer in stereo samples
 
-typedef void (*SynthRender_t)(SAMPLE_TYPE *, int, EventBuffer *);
+typedef void (*SynthRender_t)(SAMPLE_TYPE *, int, addqd::EventBuffer *);
 // void update_player(PTSong * song, int start_time, int end_time)
-typedef void (*PollEventCallback_t)(EventBuffer * buffer, long samplecount);
+typedef void (*PollEventCallback_t)(addqd::EventBuffer * buffer, long samplecount);
 
 void init_sound(void);
 void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer);

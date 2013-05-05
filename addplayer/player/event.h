@@ -7,22 +7,25 @@
 #define ADQ_EVENT_END_ALL	3
 #define ADQ_EVENT_VOLUME	4
 
-struct Event {
-	double when;		// event begin time in seconds
-	char type;			// see the EVENT_ defines
-	unsigned char channel;	// channel num
-	char data[2];		// primary data
-	char payload[4];	// secondary data
-};
+namespace addqd {
+	struct Event {
+		double when;		// event begin time in seconds
+		char type;			// see the EVENT_ defines
+		unsigned char channel;	// channel num
+		char data[2];		// primary data
+		char payload[4];	// secondary data
+	};
 
-// The event stack
-struct EventBuffer {
-	Event * event_list;	// pointer to the event array
-	int amount;		// how many events does the buffer currently hold
-	int max_events;	// the size of the stack
-};
+	// The event stack
+	struct EventBuffer {
+		Event * event_list;	// pointer to the event array
+		int amount;		// how many events does the buffer currently hold
+		int max_events;	// the size of the stack
+	};
 
-Event create_volume_event(double when, int channel, int volume);
-Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume=200);
-Event create_end_all_event(double when, int channel);
+}
+
+addqd::Event create_volume_event(double when, int channel, int volume);
+addqd::Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume=200);
+addqd::Event create_end_all_event(double when, int channel);
 #endif

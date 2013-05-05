@@ -7,6 +7,8 @@
 #include "player/addsynth.h"
 #include "util.h"
 
+using namespace addqd;
+
 static PTSong * loaded_song;
 
 static int last_tick = -1;

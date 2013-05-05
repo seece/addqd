@@ -26,7 +26,7 @@ void create_spectrum(Spectrum * spectrum);
 Instrument** syn_get_instrument_list_pointer();
 void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
-void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer);
+void syn_render_block(SAMPLE_TYPE * buf, int length, addqd::EventBuffer * eventbuffer);
 void syn_init(int channels);
 Instrument syn_create_instrument(InstrumentType type);
 Voice * syn_play_note(int channel, int pitch);	

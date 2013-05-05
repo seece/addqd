@@ -4,6 +4,8 @@
 #include "player/event.h"
 #include "util.h"
 
+using namespace addqd;
+
 
 char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 	

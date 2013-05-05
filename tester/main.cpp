@@ -7,6 +7,7 @@
 #include "introsong.h"
 #include "notedata.h"
 
+using namespace addqd;
 
 int main(int argc, char * argv[]) {
 	#ifdef MAGIC

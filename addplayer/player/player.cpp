@@ -5,6 +5,8 @@
 #include "event.h"
 #include "player.h"
 
+using namespace addqd;
+
 static long player_samples = 0;
 static int last_event = 0;
 static EventBuffer * loaded_song = NULL;

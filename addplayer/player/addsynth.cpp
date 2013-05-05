@@ -8,6 +8,8 @@
 #include "addsynth.h"
 //#include "oscillators.h"
 
+using namespace addqd;
+
 static SynthState state;
 static Channel * channel_list;
 // an array of instrument pointers

@@ -16,10 +16,10 @@
 #define CHECK_EVENT_CHANNEL 
 #endif
 
-Event create_volume_event(double when, int channel, int volume) {
+addqd::Event create_volume_event(double when, int channel, int volume) {
 	CHECK_EVENT_CHANNEL;
 
-	Event e;
+	addqd::Event e;
 	memset(&e, EVENT_EMPTY_BYTE, sizeof(e));	// for debug purposes
 	e.channel = unsigned char (channel);
 	e.type = ADQ_EVENT_VOLUME;
@@ -33,7 +33,7 @@ Event create_volume_event(double when, int channel, int volume) {
 
 // creates a note on/note off event
 // outcome depends on the flag
-Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume) {
+addqd::Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume) {
 	
 	CHECK_EVENT_CHANNEL;
 	
@@ -45,7 +45,7 @@ Event create_note_event(double when, int channel, int pitch, bool state, unsigne
 
 	short spitch = short (pitch);
 
-	Event e;
+	addqd::Event e;
 	memset(&e, EVENT_EMPTY_BYTE, sizeof(e));
 
 	e.channel = unsigned char (channel);
@@ -64,10 +64,10 @@ Event create_note_event(double when, int channel, int pitch, bool state, unsigne
 	return e;
 }
 
-Event create_end_all_event(double when, int channel) {
+addqd::Event create_end_all_event(double when, int channel) {
 	CHECK_EVENT_CHANNEL;
 
-	Event e;
+	addqd::Event e;
 	memset(&e, EVENT_EMPTY_BYTE, sizeof(e));
 	e.channel = unsigned char (channel);
 	e.type = ADQ_EVENT_END_ALL;

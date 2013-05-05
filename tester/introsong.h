@@ -2,6 +2,6 @@
 #define INTROSONG_H
 #include "synth.h"
 
-EventBuffer load_serialized_song(char * eventdata);
+addqd::EventBuffer load_serialized_song(char * eventdata);
 
 #endif

@@ -17,13 +17,13 @@ void init_sound(void);
 void poll_sound(SynthRender_t synthRender, PollEventCallback_t updatePlayer);
 void free_sound(void);
 
-Event * deserialize_event_array(const char * eventdata, int * amountp);
-void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer);
+addqd::Event * deserialize_event_array(const char * eventdata, int * amountp);
+void syn_render_block(SAMPLE_TYPE * buf, int length, addqd::EventBuffer * eventbuffer);
 
 namespace player {
 	void init();
-	bool load_song(EventBuffer * song);
-	void update(EventBuffer * buffer, long samplecount);
+	bool load_song(addqd::EventBuffer * song);
+	void update(addqd::EventBuffer * buffer, long samplecount);
 }
 
 #endif

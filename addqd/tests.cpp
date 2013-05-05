@@ -4,6 +4,8 @@
 #include "player/player.h"
 #include "util.h"
 
+using namespace addqd;
+
 bool test_serialization(void) {
 	double thresold = 0.001;
 	long fsize=-1;	

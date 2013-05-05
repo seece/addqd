@@ -151,7 +151,7 @@ void QdvstAudioProcessor::releaseResources()
 
 void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-	
+
 	//int num = midiMessages.getNumEvents();
 	//printf("events: %d\n", num);
 	MidiBuffer::Iterator * iter = new MidiBuffer::Iterator(midiMessages);
