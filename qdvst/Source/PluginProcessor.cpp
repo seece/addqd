@@ -6,7 +6,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "player/addsynth.h"
-
+#include "addqd_midi.h"
 
 
 //==============================================================================
@@ -173,6 +173,12 @@ void convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents
 		unsigned char msg = (mididata[0] >> 4) & 0x0F; 
 		unsigned char id = (mididata[1]); 
 		unsigned char velocity = (mididata[1]); 
+
+		if (msg == MIDI::COMMAND_NOTE_ON || msg == MIDI::COMMAND_NOTE_OFF) {
+			int key = MIDI::convertMidiNotePitch(id);
+			printf("key: %d\n", key);
+		}
+		
 		printf("chn:\t%d %#x: %d, %d, %d\n", chan, msg, mididata_length, sample_pos, id);
 	}
 	
