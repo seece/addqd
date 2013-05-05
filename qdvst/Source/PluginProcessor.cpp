@@ -30,15 +30,21 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 
 	sampleTime = 0;
 
-	addqd::EventBuffer synthEvents;
 	synthEvents.amount = 0;
 	synthEvents.max_events = 4096;	
-	synthEvents.event_list = new addqd::Event[synthEvents.amount];
+	synthEvents.event_list = new addqd::Event[synthEvents.max_events];
+	tempAudioBuffer = NULL;
 }
 
 QdvstAudioProcessor::~QdvstAudioProcessor()
 {
 	syn_free();
+
+	if (tempAudioBuffer != NULL) {
+		delete tempAudioBuffer;
+	}
+
+	delete synthEvents.event_list;
 }
 
 //==============================================================================
@@ -146,6 +152,17 @@ void QdvstAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     this->blockSize = samplesPerBlock;
 	this->rate = (int)sampleRate;
 
+	if (tempAudioBuffer != NULL) {
+		delete tempAudioBuffer;
+	}
+
+	tempAudioBuffer = new float[samplesPerBlock*2];
+	
+
+	#ifdef _DEBUG
+		//printf("buffersize: %d, rate: %d\n", blockSize, rate);
+	#endif
+
 	assert(rate == 44100);	// lazy input value checking
 }
 
@@ -163,12 +180,12 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 	if (num > 0) {
 		printf("events: %d\n", num);
 	}
-
+	
 	const uint8 * mididata;
 	int mididata_length;
 	int sample_pos;
 
-	for (int i=0;iter.getNextEvent(mididata, mididata_length, sample_pos);i++) {
+	while (iter.getNextEvent(mididata, mididata_length, sample_pos)) {
 		unsigned char chan = (mididata[0]) & 0x0F; 
 		unsigned char msg = (mididata[0] >> 4) & 0x0F; 
 		unsigned char id = (mididata[1]); 
@@ -191,10 +208,10 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 					break;
 			}
 
-			//synthEvents.event_list[synthEvents.amount] = e;
-			//synthEvents.amount++;
+			synthEvents.event_list[0] = e;
+			synthEvents.amount++;
 
-			//assert(synthEvents.amount < synthEvents.max_events);
+			assert(synthEvents.amount < synthEvents.max_events);
 		}
 
 		if (msg == MIDI::COMMAND_NOTE_ON || msg == MIDI::COMMAND_NOTE_OFF) {
@@ -210,17 +227,21 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 {
 	synthEvents.amount = 0;
 	convertMidiEvents(midiMessages, synthEvents);
+		
+	//renderStart = GetTickCount();
+	syn_render_block(tempAudioBuffer, blockSize, &synthEvents);
+	//printf("buffersize: %d, rate: %d\n", blockSize, rate);
 
-	
+	float* leftChannelData = buffer.getSampleData(0);
+	float* rightChannelData = buffer.getSampleData(1);
 
-    for (int channel = 0; channel < getNumInputChannels(); ++channel)
-    {
-        float* channelData = buffer.getSampleData (channel);
+    for (int i=0;i<blockSize;i++) {
+		leftChannelData[i] = tempAudioBuffer[i*2];
+		rightChannelData[i] = tempAudioBuffer[i*2+1];
+	}
 
-		for (int i=0;i<blockSize;i++) {
-			channelData[i] = sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
-		}
-    }
+	//channelData[i] = sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
+    
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't

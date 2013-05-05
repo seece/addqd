@@ -84,6 +84,7 @@ private:
 	Instrument insarr[SYN_MAX_INSTRUMENTS];
 	Instrument** listpointer;
 	addqd::EventBuffer synthEvents; // temporary synth events
+	float * tempAudioBuffer;	// synth renders interlaced audio here first
 
 	void convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents);
 
