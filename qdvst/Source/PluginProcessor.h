@@ -75,7 +75,7 @@ public:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (QdvstAudioProcessor);
+   
 
 	int blockSize;	// buffer size
 	int rate;		// samplerate, must be 44100
@@ -84,6 +84,11 @@ private:
 	Instrument insarr[SYN_MAX_INSTRUMENTS];
 	Instrument** listpointer;
 	addqd::EventBuffer synthEvents; // temporary synth events
+
+	void convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents);
+
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (QdvstAudioProcessor);
 };
 
 #endif  // __PLUGINPROCESSOR_H_6F279363__

@@ -155,8 +155,8 @@ void QdvstAudioProcessor::releaseResources()
     // spare memory, etc.
 }
 
-void convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents) {
-	MidiBuffer::Iterator * iter = new MidiBuffer::Iterator(midiMessages);
+void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents) {
+	MidiBuffer::Iterator iter(midiMessages);
 
 	int num = midiMessages.getNumEvents();
 
@@ -168,11 +168,34 @@ void convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents
 	int mididata_length;
 	int sample_pos;
 
-	for (int i=0;iter->getNextEvent(mididata, mididata_length, sample_pos);) {
+	for (int i=0;iter.getNextEvent(mididata, mididata_length, sample_pos);i++) {
 		unsigned char chan = (mididata[0]) & 0x0F; 
 		unsigned char msg = (mididata[0] >> 4) & 0x0F; 
 		unsigned char id = (mididata[1]); 
 		unsigned char velocity = (mididata[1]); 
+
+		if (MIDI::isValidEvent(msg)) {
+			addqd::Event e;
+			e.channel = chan;
+			e.when = (double)sampleTime/(double)rate;
+
+			switch (msg) {
+				case MIDI::COMMAND_NOTE_ON:
+					e.type = ADQ_EVENT_NOTE_ON;
+					break;
+				case MIDI::COMMAND_NOTE_OFF:
+					e.type = ADQ_EVENT_NOTE_OFF;
+					break;
+				default:
+					e.type = ADQ_EVENT_NONE;
+					break;
+			}
+
+			//synthEvents.event_list[synthEvents.amount] = e;
+			//synthEvents.amount++;
+
+			//assert(synthEvents.amount < synthEvents.max_events);
+		}
 
 		if (msg == MIDI::COMMAND_NOTE_ON || msg == MIDI::COMMAND_NOTE_OFF) {
 			int key = MIDI::convertMidiNotePitch(id);
@@ -181,8 +204,6 @@ void convertMidiEvents(MidiBuffer& midiMessages, addqd::EventBuffer& synthEvents
 		
 		printf("chn:\t%d %#x: %d, %d, %d\n", chan, msg, mididata_length, sample_pos, id);
 	}
-	
-	delete iter;
 }
 
 void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
@@ -190,12 +211,14 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 	synthEvents.amount = 0;
 	convertMidiEvents(midiMessages, synthEvents);
 
+	
+
     for (int channel = 0; channel < getNumInputChannels(); ++channel)
     {
         float* channelData = buffer.getSampleData (channel);
 
 		for (int i=0;i<blockSize;i++) {
-			channelData[i] = 0.0f * sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
+			channelData[i] = sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
 		}
     }
 

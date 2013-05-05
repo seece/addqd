@@ -9,8 +9,8 @@
 
 namespace addqd {
 	struct Event {
-		double when;		// event begin time in seconds
-		char type;			// see the EVENT_ defines
+		double when;		// event start time in seconds
+		char type;			// see the ADQ_EVENT_ defines
 		unsigned char channel;	// channel num
 		char data[2];		// primary data
 		char payload[4];	// secondary data
