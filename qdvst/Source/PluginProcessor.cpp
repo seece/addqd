@@ -14,6 +14,15 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 {
 	blockSize = -1;
 	this->settings.channels = 8;
+	maxSamplesPerBlock = 44100;	// maximum length of the temp internal buffer
+
+	sampleTime = 0;
+
+	synthEvents.amount = 0;
+	synthEvents.max_events = 4096;	
+	synthEvents.event_list = new addqd::Event[synthEvents.max_events];
+	tempAudioBuffer = NULL;
+
 	syn_init(this->settings.channels);
 
 	Instrument * tri = &insarr[0];
@@ -27,13 +36,6 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 
 	listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;
-
-	sampleTime = 0;
-
-	synthEvents.amount = 0;
-	synthEvents.max_events = 4096;	
-	synthEvents.event_list = new addqd::Event[synthEvents.max_events];
-	tempAudioBuffer = NULL;
 }
 
 QdvstAudioProcessor::~QdvstAudioProcessor()
@@ -156,7 +158,7 @@ void QdvstAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 		delete tempAudioBuffer;
 	}
 
-	tempAudioBuffer = new float[samplesPerBlock*2];
+	tempAudioBuffer = new float[maxSamplesPerBlock*2];
 	
 
 	#ifdef _DEBUG
@@ -194,7 +196,7 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 		if (MIDI::isValidEvent(msg)) {
 			addqd::Event e;
 			e.channel = chan;
-			e.when = (double)sampleTime/(double)rate;
+			e.when = (double)(sampleTime + sample_pos)/(double)rate;
 
 			switch (msg) {
 				case MIDI::COMMAND_NOTE_ON:
@@ -228,16 +230,25 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 	synthEvents.amount = 0;
 	convertMidiEvents(midiMessages, synthEvents);
 		
-	//renderStart = GetTickCount();
-	syn_render_block(tempAudioBuffer, blockSize, &synthEvents);
-	//printf("buffersize: %d, rate: %d\n", blockSize, rate);
+	int length = buffer.getNumSamples();
 
+	if (length > maxSamplesPerBlock) {
+		printf("VST: Warning blocksize too big: %d\n", length);
+	}
+
+	//renderStart = GetTickCount();
+	if (sampleTime > 44100*2) {
+		syn_render_block(tempAudioBuffer, length, &synthEvents);
+	}
+
+	printf("%ld:\tbuffersize: %d\n", sampleTime, length);
+	
 	float* leftChannelData = buffer.getSampleData(0);
 	float* rightChannelData = buffer.getSampleData(1);
 
-    for (int i=0;i<blockSize;i++) {
-		leftChannelData[i] = tempAudioBuffer[i*2];
-		rightChannelData[i] = tempAudioBuffer[i*2+1];
+    for (int i=0;i<length;i++) {
+		//leftChannelData[i] = tempAudioBuffer[i*2];
+		//rightChannelData[i] = tempAudioBuffer[i*2+1];
 	}
 
 	//channelData[i] = sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;

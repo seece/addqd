@@ -106,7 +106,7 @@ struct Channel {
 	float volume;
 	float pan;
 	EffectChain chain;
-	SAMPLE_TYPE buffer[AUDIO_BUFFERSIZE*2];
+	SAMPLE_TYPE * buffer;
 };
 
 struct Voice {
@@ -122,7 +122,9 @@ struct SynthState {
 	double time;
 	int samples;
 	int channels;
+	int blocksize;
 };
+
 
 
 #endif

@@ -77,9 +77,10 @@ private:
     //==============================================================================
    
 
-	int blockSize;	// buffer size
-	int rate;		// samplerate, must be 44100
-	long sampleTime;	// time in audio frames
+	int blockSize;			// buffer size
+	int rate;				// samplerate, must be 44100
+	long sampleTime;		// time in audio frames
+	long maxSamplesPerBlock;// maximum length of the temp internal buffer (audio frames)
 	PluginSettings settings;
 	Instrument insarr[SYN_MAX_INSTRUMENTS];
 	Instrument** listpointer;

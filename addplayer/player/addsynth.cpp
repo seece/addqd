@@ -19,16 +19,26 @@ static Instrument * instrument_list = NULL;
 static int instrument_list_max_length = SYN_MAX_INSTRUMENTS;
 static Voice voice_list[SYN_MAX_VOICES];
 
+// The size of the internal mixer buffer, the buffer size
+// requested by the host shouldn't exceed this value.
+// The size is in audio frames (stereo samples).
+// SYN_AUDIO_SANITY_CHECKS toggles the error checks for this value.
+#define SYN_MAX_BUFFER_SIZE 44100
+
 #define EFFECT_NONE 0
 #define EFFECT_TEST 1
 char * effectName[] = {"no effect", "test effect"};
 
-static SAMPLE_TYPE temp_array[AUDIO_BUFFERSIZE*2];
+static SAMPLE_TYPE * temp_array;
 static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
 
 static void init_effect(Effect * effect) {
 	effect->name = effectName[EFFECT_NONE];
 	effect->numParams = 0;
+}
+
+static void free_effect(Effect * effect) {
+
 }
 
 static void init_voice(Voice * v) {
@@ -58,7 +68,17 @@ static void init_channel(Channel * channel) {
 		init_effect(&channel->chain.effects[i]);
 	}
 
-	memset(channel->buffer, 0, AUDIO_BUFFERSIZE*2);
+	channel->buffer = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
+	memset(channel->buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(float));
+}
+
+static void free_channel(Channel * channel) {
+	delete channel->buffer;
+	channel->buffer = NULL;
+
+	for (int i=0;i<SYN_MAX_EFFECTS;i++) {
+		free_effect(&channel->chain.effects[i]);
+	}
 }
 
 static void syn_init_instrument(Instrument * ins) {
@@ -195,6 +215,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	double f;
 	double next_event_time = 0.0;
 
+	state.blocksize = length;
+
 	#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS
 	if (instrument_list == NULL) {
 		fprintf(stderr, "Warning: instrument_list is NULL!\n");
@@ -202,7 +224,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	#endif
 
 	#ifdef DEBUG_AUDIO_SANITY_CHECKS
-	if (length > AUDIO_BUFFERSIZE*2) {
+	if (length > SYN_MAX_BUFFER_SIZE) {
 		fprintf(stderr, "Warning: Requested buffer size too big: %d\n ", length);
 	}
 	#endif
@@ -236,7 +258,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			current_event++;
 		}
 		
-
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
 			Voice * voice = &voice_list[v];
 			
@@ -302,8 +323,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 					#endif
 					break;
 			}
-
-			
+	
 			voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
 			if (t-voice->envstate.endTime > ins->env.release) {
@@ -322,19 +342,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 
-	/*
-	#ifdef DEBUG_VOICE
-	for (int v=0;v<SYN_MAX_VOICES;v++) {
-		if (!voice_list[v].active) {
-			continue;
-		}
-
-		printf("%d=%f>%f ", v, voice_list[v].envstate.volume, voice_list[v].envstate.target_volume);
-	}
-	printf("\n");
-	#endif
-	*/
-
 	for (int c=0;c<state.channels;c++) {
 		if (channel_list[c].volume <= 0.0001) {
 			continue;
@@ -347,11 +354,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			buf[i] += channel_list[c].buffer[i] * float(volume);
 		}
 
-		memset(&channel_list[c].buffer, 0, AUDIO_BUFFERSIZE*2*sizeof(SAMPLE_TYPE));
+		memset(channel_list[c].buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(SAMPLE_TYPE));
 	}
 
-	state.time += length/(double)AUDIO_RATE;
 	state.samples = state.samples + length;
+	state.time = state.samples/(double)AUDIO_RATE;
 
 	if (eventbuffer->amount > current_event) {
 		#ifdef DEBUG_EVENT_SANITY_CHECKS
@@ -488,6 +495,20 @@ void create_spectrum(Spectrum * spectrum) {
 	ZeroMemory(spectrum->bands, SYN_PARTIAL_AMOUNT);
 }
 
+/// Get a channel pointer.
+/// num: the channel index
+Channel * syn_get_channel(int num) {
+	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+		if (num >= state.channels || num < 0) {
+			fprintf(stderr, "%s: Invalid channel num %d!\n", __FUNCTIONW__, num);
+			return NULL;
+		}
+	#endif
+
+	return &channel_list[num];
+}
+
+
 void syn_init(int channels) {
 	channel_list = new Channel[channels];
 
@@ -505,13 +526,20 @@ void syn_init(int channels) {
 	state.channels = channels;
 	state.time = 0.0;
 	state.samples = 0;
+	state.blocksize = -1;
+
+	temp_array = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 
 	return;
 }
 
 
 void syn_free(void) {
-	// TODO free all channels too?
+	
+	for (int c=0;c<state.channels;c++) {
+		free_channel(&channel_list[c]);
+	}
+
 	delete channel_list;
 
 	for (int i=0;i<SYN_MAX_INSTRUMENTS;i++) {
@@ -519,17 +547,6 @@ void syn_free(void) {
 	}
 
 	//delete instrument_list;
-}
 
-/// Get a channel pointer.
-/// num: the channel index
-Channel * syn_get_channel(int num) {
-	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
-		if (num >= state.channels || num < 0) {
-			fprintf(stderr, "%s: Invalid channel num %d!\n", __FUNCTIONW__, num);
-			return NULL;
-		}
-	#endif
-
-	return &channel_list[num];
+	delete temp_array;
 }

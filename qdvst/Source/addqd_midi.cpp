@@ -1,7 +1,7 @@
 #include "addqd_midi.h"
 
 int MIDI::convertMidiNotePitch(unsigned char midiNote) {
-	return (int)midiNote - 69;
+	return (int)midiNote - 69 -3;
 }
 
 bool MIDI::isValidEvent(unsigned char eventMsg) {
