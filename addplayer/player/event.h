@@ -9,7 +9,7 @@
 
 namespace addqd {
 	struct Event {
-		double when;		// event start time in seconds
+		long when;		// event start time in millisecs
 		char type;			// see the ADQ_EVENT_ defines
 		unsigned char channel;	// channel num
 		char data[2];		// primary data
@@ -25,9 +25,9 @@ namespace addqd {
 
 }
 
-addqd::Event create_volume_event(double when, int channel, int volume);
-addqd::Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume=200);
-addqd::Event create_end_all_event(double when, int channel);
+addqd::Event create_volume_event(long when, int channel, int volume);
+addqd::Event create_note_event(long when, int channel, int pitch, bool state, unsigned char volume=200);
+addqd::Event create_end_all_event(long when, int channel);
 
 #ifndef INTROLIB
 void print_event(addqd::Event& e);

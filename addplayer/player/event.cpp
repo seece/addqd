@@ -16,7 +16,7 @@
 #define CHECK_EVENT_CHANNEL 
 #endif
 
-addqd::Event create_volume_event(double when, int channel, int volume) {
+addqd::Event create_volume_event(long when, int channel, int volume) {
 	CHECK_EVENT_CHANNEL;
 
 	addqd::Event e;
@@ -33,7 +33,7 @@ addqd::Event create_volume_event(double when, int channel, int volume) {
 
 // creates a note on/note off event
 // outcome depends on the flag
-addqd::Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume) {
+addqd::Event create_note_event(long when, int channel, int pitch, bool state, unsigned char volume) {
 	
 	CHECK_EVENT_CHANNEL;
 	
@@ -64,7 +64,7 @@ addqd::Event create_note_event(double when, int channel, int pitch, bool state, 
 	return e;
 }
 
-addqd::Event create_end_all_event(double when, int channel) {
+addqd::Event create_end_all_event(long when, int channel) {
 	CHECK_EVENT_CHANNEL;
 
 	addqd::Event e;
@@ -78,6 +78,6 @@ addqd::Event create_end_all_event(double when, int channel) {
 
 #ifndef INTROLIB
 	void print_event(addqd::Event& e) {
-		printf("Event: %d %lf\t%#x %#x \n", e.channel, e.when, e.data[0], e.data[1]);
+		printf("Event: %d %ld\t%#x %#x \n", e.channel, e.when, e.data[0], e.data[1]);
 	}
 #endif

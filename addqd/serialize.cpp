@@ -9,7 +9,7 @@ using namespace addqd;
 
 char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 	
-	long eventsize = sizeof(double) + sizeof(char)*8;
+	long eventsize = sizeof(long) + sizeof(char)*8;
 	// header + eventdata
 	long totalsize = 4 + eventsize * amount;
 	long pos = 0;
@@ -20,7 +20,7 @@ char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 
 	for (int i=0;i<amount;i++) {
 		Event e = event_array[i];
-		memcpy(data+pos, &e.when, sizeof(double)); pos+=sizeof(double);
+		memcpy(data+pos, &e.when, sizeof(long)); pos+=sizeof(long);
 		memcpy(data+pos, &e.type, sizeof(char)); pos+=sizeof(char);
 		memcpy(data+pos, &e.channel, sizeof(unsigned char)); pos+=sizeof(unsigned char);
 		memcpy(data+pos, &e.data, 2*sizeof(char)); pos+=2*sizeof(char);
@@ -43,7 +43,8 @@ void record_events(	PollEventCallback_t playfunc,
 
 	long samples = 0;
 	int temp_size = 1024;
-	long blocksize = 4096;	// block length in samples
+	long blocksize = 4096;	// Block length in frames, used when requesting samples from the 
+							// rendering function.
 	EventBuffer tempbuffer;
 	EventBuffer * bigbuf = eventbuffer;
 

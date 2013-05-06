@@ -14,14 +14,14 @@ bool test_serialization(void) {
 	Event * res;
 
 	Event orig[5];
-	orig[0].when = 5.125;
+	orig[0].when = 5125;
 	orig[0].type = ADQ_EVENT_NOTE_ON;
 	orig[0].channel = 0;
 	orig[0].data[0] = 42;
 	orig[0].data[1] = 254;
 	*(int *)(orig[0].payload) = 2<<30;	// test fitting a 32bit int to the payload field
 
-	orig[1].when = 8.0;
+	orig[1].when = 8000;
 	orig[1].type = ADQ_EVENT_NOTE_OFF;
 	orig[1].channel = 1;
 	orig[1].data[0] = 32;

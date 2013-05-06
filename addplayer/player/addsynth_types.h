@@ -73,8 +73,8 @@ struct Instrument {
 
 struct EnvState {
 	bool hold;	// if a key is held down
-	double beginTime;	// the moment (in seconds) when the key was repressed
-	double endTime;
+	long beginTime;		// the moment in millisecs when the key was repressed
+	long endTime;
 	bool released;
 	double volume;	// volume set by note-on command
 	double target_volume;	// if target_volume differs from volume, volume will be interpolated smoothly to it
@@ -120,6 +120,7 @@ struct Voice {
 
 struct SynthState {
 	double time;
+	long time_ms;	
 	int samples;
 	int channels;
 	int blocksize;

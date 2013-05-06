@@ -20,7 +20,7 @@ Event * deserialize_event_array(const char * eventdata, int * amountp) {
 
 	for (int i=0;i<amount;i++) {
 		Event e;
-		memcpy(&e.when,		eventdata + pos, sizeof(double));	pos+=	sizeof(double);
+		memcpy(&e.when,		eventdata + pos, sizeof(long));		pos+=	sizeof(long);
 		memcpy(&e.type,		eventdata + pos, sizeof(char));		pos+=	sizeof(char);
 		memcpy(&e.channel,	eventdata + pos, sizeof(char));		pos+=	sizeof(unsigned char);
 		memcpy(e.data,		eventdata + pos, 2*sizeof(char));	pos+=	2*sizeof(char);
