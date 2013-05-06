@@ -212,6 +212,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	float bonus = 0.0;
 	float sample = 0.0;
 	double t;
+	long t_ms;
 	double phase;
 	double envelope_amp;
 	double f;
@@ -232,7 +233,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	#endif
 
 	#ifdef DEBUG_EVENT_SANITY_CHECKS
-		double buffer_end_time = state.time+length/(float)AUDIO_RATE;
+		long buffer_end_time = (long)(state.time_ms+length/44.1);
 		for (int u=0;u<eventbuffer->amount;u++) {
 			if (eventbuffer->event_list[u].when > buffer_end_time) {
 				fprintf(stderr, "Warning: trying to render future note events (diff:%lf)!\n", 
@@ -249,8 +250,9 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 	for (int i=0;i<length;i++) {
 		t = state.time + (double)i/rate;
+		t_ms = long((state.samples + i)/44.1);
 
-		while(eventbuffer->event_list[current_event].when <= t) {
+		while(eventbuffer->event_list[current_event].when <= t_ms) {
 			if (current_event >= eventbuffer->amount) {
 				break;
 			}	
@@ -361,6 +363,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 	state.samples = state.samples + length;
 	state.time = state.samples/(double)AUDIO_RATE;
+	state.time_ms = (long)(state.samples/44.1);
 
 	if (eventbuffer->amount > current_event) {
 		#ifdef DEBUG_EVENT_SANITY_CHECKS
@@ -527,6 +530,7 @@ void syn_init(int channels) {
 
 	state.channels = channels;
 	state.time = 0.0;
+	state.time_ms = 0L;
 	state.samples = 0;
 	state.blocksize = -1;
 

@@ -32,7 +32,7 @@ addqd::Event create_volume_event(long when, int channel, int volume) {
 }
 
 // creates a note on/note off event
-// outcome depends on the flag
+// outcome depends on the state flag
 addqd::Event create_note_event(long when, int channel, int pitch, bool state, unsigned char volume) {
 	
 	CHECK_EVENT_CHANNEL;
