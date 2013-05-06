@@ -28,4 +28,8 @@ namespace addqd {
 addqd::Event create_volume_event(double when, int channel, int volume);
 addqd::Event create_note_event(double when, int channel, int pitch, bool state, unsigned char volume=200);
 addqd::Event create_end_all_event(double when, int channel);
+
+#ifndef INTROLIB
+void print_event(addqd::Event& e);
+#endif
 #endif

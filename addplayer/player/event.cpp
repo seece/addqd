@@ -76,3 +76,8 @@ addqd::Event create_end_all_event(double when, int channel) {
 	return e;
 }
 
+#ifndef INTROLIB
+	void print_event(addqd::Event& e) {
+		printf("Event: %d %lf\t%#x %#x \n", e.channel, e.when, e.data[0], e.data[1]);
+	}
+#endif

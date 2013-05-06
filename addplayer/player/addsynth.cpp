@@ -138,7 +138,8 @@ static void syn_process_event(Event * e) {
 	#endif
 
 	#ifdef SYN_DEBUG_EVENT
-	printf("CHN: %2d\t", e->channel);
+	//printf("CHN: %2d\t", e->channel);
+	print_event(*e);
 	#endif
 	// used in note events
 	int pitch = e->data[0] << 8 | e->data[1];	
@@ -149,12 +150,12 @@ static void syn_process_event(Event * e) {
 	switch (e->type) {
 		case ADQ_EVENT_NONE:
 			#ifdef SYN_DEBUG_EVENT
-			printf("EVENT_NONE at %lf.", e->when);
+			printf("EVENT_NONE at %lf.\n", e->when);
 			#endif
 			break;
 		case ADQ_EVENT_NOTE_ON:
 			#ifdef SYN_DEBUG_EVENT
-			printf("EVENT_NOTE_ON (%d) at %lf.", pitch,e->when);
+			printf("EVENT_NOTE_ON (%d) at %lf.\n", pitch,e->when);
 			#endif
 
 			voice = syn_play_note(e->channel, pitch);
@@ -167,14 +168,14 @@ static void syn_process_event(Event * e) {
 			break;
 		case ADQ_EVENT_NOTE_OFF:
 			#ifdef SYN_DEBUG_EVENT
-			printf("EVENT_NOTE_OFF at %lf.", e->when);
+			printf("EVENT_NOTE_OFF at %lf.\n", e->when);
 			#endif
 
 			syn_end_note(e->channel, pitch);
 			break;
 		case ADQ_EVENT_END_ALL:
 			#ifdef SYN_DEBUG_EVENT
-			printf("EVENT_END_ALL at %lf.", e->when);
+			printf("EVENT_END_ALL at %lf.\n", e->when);
 			#endif
 
 			syn_end_all_notes(e->channel);
@@ -183,7 +184,7 @@ static void syn_process_event(Event * e) {
 			vol = e->data[0];
 			volume = vol/255.0;
 			#ifdef SYN_DEBUG_EVENT
-			printf("EVENT_VOLUME %d (%lf) at %lf.", vol, volume, e->when);
+			printf("EVENT_VOLUME %d (%lf) at %lf.\n", vol, volume, e->when);
 			#endif
 
 			set_channel_volume(e->channel, volume);
@@ -197,7 +198,8 @@ static void syn_process_event(Event * e) {
 	}
 
 	#ifdef SYN_DEBUG_EVENT
-	printf("\n");
+	//printf("\n");
+	printf("DONE\n");
 	#endif
 }
 

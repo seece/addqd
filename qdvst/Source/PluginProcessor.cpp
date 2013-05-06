@@ -210,8 +210,10 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 					break;
 			}
 
-			synthEvents.event_list[0] = e;
-			synthEvents.amount++;
+			if (e.type != ADQ_EVENT_NONE) {
+				synthEvents.event_list[0] = e;
+				synthEvents.amount++;
+			}
 
 			assert(synthEvents.amount < synthEvents.max_events);
 		}
@@ -237,18 +239,18 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 	}
 
 	//renderStart = GetTickCount();
-	if (sampleTime > 44100*2) {
+	//if (sampleTime > 44100*2) {
 		syn_render_block(tempAudioBuffer, length, &synthEvents);
-	}
+	//}
 
-	printf("%ld:\tbuffersize: %d\n", sampleTime, length);
+	//printf("%ld:\tbuffersize: %d\n", sampleTime, length);
 	
 	float* leftChannelData = buffer.getSampleData(0);
 	float* rightChannelData = buffer.getSampleData(1);
 
     for (int i=0;i<length;i++) {
-		//leftChannelData[i] = tempAudioBuffer[i*2];
-		//rightChannelData[i] = tempAudioBuffer[i*2+1];
+		leftChannelData[i] = tempAudioBuffer[i*2];
+		rightChannelData[i] = tempAudioBuffer[i*2+1];
 	}
 
 	//channelData[i] = sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
