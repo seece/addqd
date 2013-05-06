@@ -372,7 +372,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 }
 
 
-EnvState constructEnvstate() {
+EnvState init_envstate() {
 	EnvState s;
 	s.hold = true;
 	s.beginTime = state.time;
@@ -397,7 +397,7 @@ Voice * syn_play_note(int channel, int pitch) {
 		voice->active = true;
 		voice->channel = &channel_list[channel];
 		voice->channel_id = channel;
-		voice->envstate = constructEnvstate();
+		voice->envstate = init_envstate();
 		voice->pitch = pitch;
 
 		#ifdef DEBUG_VOICE
