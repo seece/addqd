@@ -28,6 +28,7 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	Instrument * tri = &insarr[0];
 
 	*tri = syn_create_instrument(INS_FM_TWO_OP);
+	tri->type = INS_FM_TWO_OP;
 	tri->volume=0.5f;
 	tri->octave=-2;
 	tri->fmFunc = *generators::resonant_fm;
@@ -36,6 +37,10 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 
 	listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;
+	//syn_set_instrument_list_pointer(insarr);
+
+	syn_attach_instrument(0, 0);
+
 }
 
 QdvstAudioProcessor::~QdvstAudioProcessor()
@@ -196,7 +201,7 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 		if (MIDI::isValidEvent(msg)) {
 			addqd::Event e;
 			e.channel = chan;
-			e.when = (double)(sampleTime + sample_pos)/(double)rate;
+			e.when = (long)((sampleTime + sample_pos)/(44.1));
 
 			switch (msg) {
 				case MIDI::COMMAND_NOTE_ON:
@@ -211,8 +216,11 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 			}
 
 			if (e.type != ADQ_EVENT_NONE) {
-				synthEvents.event_list[0] = e;
+				synthEvents.event_list[synthEvents.amount] = e;
 				synthEvents.amount++;
+
+				printf("VST: ");
+				print_event(e);
 			}
 
 			assert(synthEvents.amount < synthEvents.max_events);
@@ -243,7 +251,7 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 		syn_render_block(tempAudioBuffer, length, &synthEvents);
 	//}
 
-	//printf("%ld:\tbuffersize: %d\n", sampleTime, length);
+	printf("%ld:\tbuffersize: %d\n", sampleTime, length);
 	
 	float* leftChannelData = buffer.getSampleData(0);
 	float* rightChannelData = buffer.getSampleData(1);
@@ -253,6 +261,8 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 		rightChannelData[i] = tempAudioBuffer[i*2+1];
 	}
 
+
+	//printf("type 0: %d\n", (*listpointer)[0].type); 
 	//channelData[i] = sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
     
 

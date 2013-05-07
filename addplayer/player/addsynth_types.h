@@ -18,7 +18,7 @@ enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
 #define SYN_MAX_INSTRUMENTS 8
 #define SYN_PARTIAL_HIGH_CUT 17500.0
 #define SYN_SINE_TABLE_SIZE 2205
-#define SYN_MAX_VOICES 64
+#define SYN_MAX_VOICES 32
 
 // used with Channel.target_volume
 #define SYN_VOLUME_LERP_THRESOLD (0.01f)

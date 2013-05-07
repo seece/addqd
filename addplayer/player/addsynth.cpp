@@ -13,8 +13,7 @@ using namespace addqd;
 static SynthState state;
 static Channel * channel_list;
 // an array of instrument pointers
-// TODO get this from the outside
-//static Instrument * instrument_list[SYN_MAX_INSTRUMENTS];
+
 static Instrument * instrument_list = NULL;
 static int instrument_list_max_length = SYN_MAX_INSTRUMENTS;
 static Voice voice_list[SYN_MAX_VOICES];
@@ -94,6 +93,10 @@ static void syn_init_instrument(Instrument * ins) {
 // returns a pointer to the instrument list pointer
 Instrument** syn_get_instrument_list_pointer() {
 	return &instrument_list;
+}
+
+void syn_set_instrument_list_pointer(Instrument * listpointer) {
+	instrument_list = listpointer;
 }
 
 Instrument syn_create_instrument(InstrumentType type) {
@@ -251,14 +254,22 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		t = state.time + (double)i/rate;
 		t_ms = long((state.samples + i)/44.1);
 
+		//printf("events: now\n");
+		
+
 		while(eventbuffer->event_list[current_event].when <= t_ms) {
 			if (current_event >= eventbuffer->amount) {
 				break;
 			}	
 
+			// TODO FIX CORRUPTED EVENT DATA
+			Event testevent = eventbuffer->event_list[current_event];
+
 			syn_process_event(&eventbuffer->event_list[current_event]);
 			current_event++;
 		}
+
+		//printf("events done\n");
 		
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
 			Voice * voice = &voice_list[v];
@@ -282,10 +293,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			// voice envelope calculations will be done even to inactive channels
 			double voicetime = t-voice->envstate.beginTime;
-			envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
+			//envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
+			envelope_amp = 0.9f;
 
 			if (voice->envstate.released) {
-				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
+				//envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
 			}
 
 			if (!voice_list[v].active) {
@@ -294,7 +306,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			if (voice_list[v].channel->instrument == NULL) {
 				#ifdef DEBUG_INSTRUMENTS
-					fprintf(stderr, "Warning: NULL instrument on active voice %d\n", 
+					fprintf(stderr, "Warning: NULL instrument on active voice. Channel: %d\n", 
 						voice_list[v].channel_id);
 				#endif
 				continue;
@@ -321,6 +333,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 					break;
 				default:
 					#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS 
+
 						fprintf(stderr, "Invalid instrument type: 0x%x\n", ins->type);
 					#endif
 					break;
@@ -341,6 +354,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			voice_list[v].channel->buffer[i*2+1] += sample;
 		}
 	}	
+
+	printf("processing done\n");
 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 
@@ -550,7 +565,7 @@ void syn_free(void) {
 		//free_instrument(instrument_list[i]);
 	}
 
-	//delete instrument_list;
+	// the instrument list is allocated on the outside, so we don't worry about that
 
 	delete temp_array;
 }
