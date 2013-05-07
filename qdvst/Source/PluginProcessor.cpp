@@ -202,14 +202,16 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 			addqd::Event e;
 			e.channel = chan;
 			e.when = (long)((sampleTime + sample_pos)/(44.1));
+			e.velocity = velocity;
 
 			switch (msg) {
 				case MIDI::COMMAND_NOTE_ON:
 					e.type = ADQ_EVENT_NOTE_ON;
-					
+					e.note = MIDI::convertMidiNotePitch(id);
 					break;
 				case MIDI::COMMAND_NOTE_OFF:
 					e.type = ADQ_EVENT_NOTE_OFF;
+					e.note = MIDI::convertMidiNotePitch(id);
 					break;
 				default:
 					e.type = ADQ_EVENT_NONE;

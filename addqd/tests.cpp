@@ -45,7 +45,5 @@ bool test_serialization(void) {
 	assert(res[1].note		==	orig[1].note);
 	assert(*(int *)(res[1].payload)	== 2<<29);
 
-
-	
 	return true;
 }

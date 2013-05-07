@@ -78,6 +78,6 @@ addqd::Event create_end_all_event(long when, int channel) {
 
 #ifndef INTROLIB
 	void print_event(addqd::Event& e) {
-		printf("Event: %d %ld\t%#x %#x \n", e.channel, e.when, e.note, e.velocity);
+		printf("Event: C:%d W:%ld\tN:%#x VEL:%#x \n", e.channel, e.when, e.note, e.velocity);
 	}
 #endif
