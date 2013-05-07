@@ -206,6 +206,7 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 			switch (msg) {
 				case MIDI::COMMAND_NOTE_ON:
 					e.type = ADQ_EVENT_NOTE_ON;
+					
 					break;
 				case MIDI::COMMAND_NOTE_OFF:
 					e.type = ADQ_EVENT_NOTE_OFF;

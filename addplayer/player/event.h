@@ -12,8 +12,9 @@ namespace addqd {
 		long when;		// event start time in millisecs
 		char type;			// see the ADQ_EVENT_ defines
 		unsigned char channel;	// channel num
-		char data[2];		// primary data
-		char payload[4];	// secondary data
+		char note;
+		unsigned char velocity;
+		char payload[2];	// secondary data
 	};
 
 	// The event stack

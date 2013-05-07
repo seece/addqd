@@ -24,7 +24,7 @@ addqd::Event create_volume_event(long when, int channel, int volume) {
 	e.channel = unsigned char (channel);
 	e.type = ADQ_EVENT_VOLUME;
 	
-	e.data[0] =  static_cast<char>(volume);
+	e.velocity =  static_cast<char>(volume);
 	//printf("vol: %d == %d\n", volume, e.data[0]);
 	e.when = when;
 
@@ -49,10 +49,10 @@ addqd::Event create_note_event(long when, int channel, int pitch, bool state, un
 	memset(&e, EVENT_EMPTY_BYTE, sizeof(e));
 
 	e.channel = unsigned char (channel);
-	e.data[0] = spitch >> 8;
-	e.data[1] = spitch & 0x00FF;
-
-	e.payload[0] = static_cast<char>(volume);
+	e.note = pitch;
+	e.velocity = volume;
+	//e.data[0] = spitch >> 8;
+	//e.data[1] = spitch & 0x00FF;
 
 	if (state) {
 		e.type = ADQ_EVENT_NOTE_ON;
@@ -78,6 +78,6 @@ addqd::Event create_end_all_event(long when, int channel) {
 
 #ifndef INTROLIB
 	void print_event(addqd::Event& e) {
-		printf("Event: %d %ld\t%#x %#x \n", e.channel, e.when, e.data[0], e.data[1]);
+		printf("Event: %d %ld\t%#x %#x \n", e.channel, e.when, e.note, e.velocity);
 	}
 #endif

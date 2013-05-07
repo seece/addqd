@@ -145,7 +145,7 @@ static void syn_process_event(Event * e) {
 	print_event(*e);
 	#endif
 	// used in note events
-	int pitch = e->data[0] << 8 | e->data[1];	
+	int pitch = e->note;
 	Voice * voice = NULL;
 	unsigned char vol;
 	double volume;
@@ -163,7 +163,7 @@ static void syn_process_event(Event * e) {
 
 			voice = syn_play_note(e->channel, pitch);
 			if (voice != NULL) {
-				vol = ((unsigned char)(e->payload[0]));
+				vol = e->velocity;
 				//voice->envstate.volume = vol/255.0;
 				voice->envstate.target_volume = vol/255.0;
 			}
@@ -184,7 +184,7 @@ static void syn_process_event(Event * e) {
 			syn_end_all_notes(e->channel);
 			break;
 		case ADQ_EVENT_VOLUME:
-			vol = e->data[0];
+			vol = e->velocity;
 			volume = vol/255.0;
 			#ifdef SYN_DEBUG_EVENT
 			printf("EVENT_VOLUME %d (%lf) at %%ld.\n", vol, volume, e->when);

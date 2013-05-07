@@ -9,7 +9,7 @@ using namespace addqd;
 
 char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 	
-	long eventsize = sizeof(long) + sizeof(char)*8;
+	long eventsize = sizeof(long) + sizeof(char)*5;
 	// header + eventdata
 	long totalsize = 4 + eventsize * amount;
 	long pos = 0;
@@ -23,8 +23,8 @@ char * serialize_event_array(Event event_array[], int amount, long * filesize) {
 		memcpy(data+pos, &e.when, sizeof(long)); pos+=sizeof(long);
 		memcpy(data+pos, &e.type, sizeof(char)); pos+=sizeof(char);
 		memcpy(data+pos, &e.channel, sizeof(unsigned char)); pos+=sizeof(unsigned char);
-		memcpy(data+pos, &e.data, 2*sizeof(char)); pos+=2*sizeof(char);
-		memcpy(data+pos, &e.payload, 4*sizeof(char)); pos+=4*sizeof(char);
+		memcpy(data+pos, &e.note, sizeof(char)); pos+=sizeof(char);
+		memcpy(data+pos, &e.payload, 2*sizeof(char)); pos+=2*sizeof(char);
 	}
 
 	dprint(pos);
@@ -82,5 +82,5 @@ void record_events(	PollEventCallback_t playfunc,
 
 
 void event_to_string(const Event& e, char * output, int max_length) {
-	sprintf_s(output, max_length, "%lf\tCHN: %d\t0x%x 0x%x", e.when, e.channel, e.data[0], e.data[1]);
+	sprintf_s(output, max_length, "%lf\tCHN: %d\t0x%x 0x%x", e.when, e.channel, e.note, e.velocity);
 }

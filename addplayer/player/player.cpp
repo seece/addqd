@@ -23,8 +23,8 @@ Event * deserialize_event_array(const char * eventdata, int * amountp) {
 		memcpy(&e.when,		eventdata + pos, sizeof(long));		pos+=	sizeof(long);
 		memcpy(&e.type,		eventdata + pos, sizeof(char));		pos+=	sizeof(char);
 		memcpy(&e.channel,	eventdata + pos, sizeof(char));		pos+=	sizeof(unsigned char);
-		memcpy(e.data,		eventdata + pos, 2*sizeof(char));	pos+=	2*sizeof(char);
-		memcpy(e.payload,	eventdata + pos, 4*sizeof(char));	pos+=	4*sizeof(unsigned char);
+		memcpy(&e.note,		eventdata + pos, 1*sizeof(char));	pos+=	1*sizeof(char);
+		memcpy(e.payload,	eventdata + pos, 2*sizeof(char));	pos+=	2*sizeof(unsigned char);
 
 		event_array[i] = e;	
 	}
