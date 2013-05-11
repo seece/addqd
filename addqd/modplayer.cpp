@@ -282,8 +282,6 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 
 		// this is basically start_samples_tick = tick * ticklength
 		long start_samples_tick = long(tick*((tempo * AUDIO_RATE*0.001)*speed*(1.0/(float)ticks_per_row)));
-		//double start_sec = start_samples/(double)AUDIO_RATE;
-		//long start_msec_tick = (long)(start_samples_tick/44.1);	// row time in millisecs
 
 		#ifdef DEBUG_PLAYER
 		printf("\tord: %d\n", current_position);
@@ -297,7 +295,6 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			int note_array_offset = (current_pattern*MOD_ROWS*channels) + pattern_row*channels + c;
 			Note note = song->notedata[note_array_offset];
 			
-			//double tick_sec = start_samples/(double)AUDIO_RATE;
 			unsigned char volume = 150;
 			int third, fifth;
 			// new notes to be played on this channel

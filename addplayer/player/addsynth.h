@@ -19,7 +19,7 @@
 #define NOTEMAGIC 1.059460646483
 //#define PI 3.14159265
 #define TAU (2*PI)
-#define NOTEFREQ(pitch) pow(NOTEMAGIC, pitch) * 440.0
+#define NOTEFREQ(pitch) (pow(NOTEMAGIC, pitch) * 440.0)
 
 
 void create_spectrum(Spectrum * spectrum);

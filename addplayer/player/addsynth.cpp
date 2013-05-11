@@ -220,8 +220,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	double f;
 	double next_event_time = 0.0;
 
-	state.blocksize = length;
-
 	#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS
 	if (instrument_list == NULL) {
 		fprintf(stderr, "Warning: instrument_list is NULL!\n");
@@ -255,23 +253,16 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		t = state.time + (double)i/rate;	// time in seconds
 		t_samples = state.samples + i;
 		//t_ms = long((state.samples + i)/44.1);
-		//printf("events: now\n");
 
-		//printf("DIFF: %ld \n", eventbuffer->event_list[current_event].when - state.samples);
-		
 		while(eventbuffer->event_list[current_event].when <= t_samples) {
 			if (current_event >= eventbuffer->amount) {
 				break;
 			}	
 		
-			Event testevent = eventbuffer->event_list[current_event];
-
 			syn_process_event(&eventbuffer->event_list[current_event]);
 			current_event++;
 		}
 
-		//printf("events done\n");
-		
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
 			Voice * voice = &voice_list[v];
 			
@@ -294,11 +285,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			// voice envelope calculations will be done even to inactive channels
 			double voicetime = t-voice->envstate.beginTime;
-			//envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
+			envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
 			envelope_amp = 0.9f;
 
 			if (voice->envstate.released) {
-				//envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
+				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
 			}
 
 			if (!voice_list[v].active) {
@@ -546,7 +537,6 @@ void syn_init(int channels) {
 	state.time = 0.0;
 	state.time_ms = 0L;
 	state.samples = 0;
-	state.blocksize = -1;
 
 	temp_array = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 

@@ -54,29 +54,29 @@ struct Envelope {
 };
 
 struct Sample {
-	float * data;
-	int length;
+	float * data;	// pointer to sample data
+	int length;		// amount of samples in data
 };
 
 struct Instrument {
 	InstrumentType type;
 	//Spectra spectra;
-	Envelope env;
+	Envelope env;				
 	//char * name;
-	float volume;
-	int octave;
-	WaveformFunc_t waveFunc;
-	SamplerFunc_t samplerFunc;
-	FMFunc_2op_t fmFunc;
-	Sample * sample;
+	float volume;				// volume in [0.0, 1.0]
+	int octave;					// octave, 0 = C4
+	WaveformFunc_t waveFunc;	// oscillator function
+	SamplerFunc_t samplerFunc;	// sampler function
+	FMFunc_2op_t fmFunc;		// any two-op generator function
+	Sample * sample;			// Sample pointer for samplerFunc
 };
 
 struct EnvState {
-	bool hold;	// if a key is held down
-	long beginTime;		// the moment in millisecs when the key was repressed
-	long endTime;
+	bool hold;				// if a key is held down
+	long beginTime;			// the moment in samples when the key was repressed
+	long endTime;	
 	bool released;
-	double volume;	// volume set by note-on command
+	double volume;			// volume set by note-on command
 	double target_volume;	// if target_volume differs from volume, volume will be interpolated smoothly to it
 };
 
@@ -106,7 +106,7 @@ struct Channel {
 	float volume;
 	float pan;
 	EffectChain chain;
-	SAMPLE_TYPE * buffer;
+	SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
 };
 
 struct Voice {
@@ -119,11 +119,10 @@ struct Voice {
 };
 
 struct SynthState {
-	double time;
-	long time_ms;	
-	int samples;
-	int channels;
-	int blocksize;
+	double time;		// play time in seconds
+	long time_ms;		// play time in milliseconds
+	long samples;		// play time in samples
+	int channels;		// instrument channel amount
 };
 
 
