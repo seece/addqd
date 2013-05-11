@@ -231,10 +231,10 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 
 		if (msg == MIDI::COMMAND_NOTE_ON || msg == MIDI::COMMAND_NOTE_OFF) {
 			int key = MIDI::convertMidiNotePitch(id);
-			printf("key: %d\n", key);
+			//printf("key: %d\n", key);
 		}
 		
-		printf("chn:\t%d %#x: %d, %d, %d\n", chan, msg, mididata_length, sample_pos, id);
+		//printf("chn:\t%d %#x: %d, %d, %d\n", chan, msg, mididata_length, sample_pos, id);
 	}
 }
 
