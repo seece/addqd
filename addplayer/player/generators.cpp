@@ -44,7 +44,7 @@ double generators::simplenoise(double x)
 
 double generators::triangle(double x)
 {
-	// period of 2 * PI
+	// a period of 2 * PI
 	double t = fmod(x/(2*PI), (double)1.0);
 	if (t > 0.5) {
 		return t*4.0-3.0;
@@ -77,15 +77,16 @@ double generators::sampler(double x, float * samplearray, int arraysize) {
 	return (double)samplearray[pos];
 }
 
-// this is actually "phase distortion", similiar to casio CZ series algorithm
+// this is actually "phase distortion", similiar to casio CZ-series algorithm
 // a: the "resonance" amount
 // b: ignored
+// compatible with OscFunc_2op_t
 double generators::resonant_fm(double x, double a, double b) {
 	double phase = fmod(x, 2.0*PI);
 	return sin(phase * a) *  (1.0- (phase/(2.0*PI)));
 }
 
-// length in samples
+// length: sample length in samples
 void generate_noise_sample(Sample * sample, int length) {
 	sample->length = length;
 	sample->data = new float[length];

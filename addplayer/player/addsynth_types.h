@@ -31,7 +31,8 @@ enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
 // a pointer to a function that generates a waveform when given the phase p
 typedef double (*WaveformFunc_t)(double p);
 //typedef double (*FMFunc_1op_t)(double p, double a);
-typedef double (*FMFunc_2op_t)(double p, double a, double b);
+//typedef double (*FMFunc_2op_t)(double p, double a, double b);
+typedef double (*OscFunc_2op_t)(double p, double a, double b);
 typedef double (*SamplerFunc_t)(double time, float * samplearray, int arraysize);
 
 struct Spectrum {
@@ -67,7 +68,7 @@ struct Instrument {
 	int octave;					// octave, 0 = C4
 	WaveformFunc_t waveFunc;	// oscillator function
 	SamplerFunc_t samplerFunc;	// sampler function
-	FMFunc_2op_t fmFunc;		// any two-op generator function
+	OscFunc_2op_t fmFunc;		// any two-op generator function
 	Sample * sample;			// Sample pointer for samplerFunc
 };
 
@@ -104,7 +105,7 @@ struct EffectChain {
 struct Channel {
 	Instrument * instrument;
 	float volume;
-	float pan;
+	float pan;					// channel pan, between [-1.0, 1.0]
 	EffectChain chain;
 	SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
 };
