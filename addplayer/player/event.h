@@ -9,7 +9,7 @@
 
 namespace addqd {
 	struct Event {
-		long when;		// event start time in millisecs
+		long when;		// event start time in samples
 		char type;			// see the ADQ_EVENT_ defines
 		unsigned char channel;	// channel num
 		char note;

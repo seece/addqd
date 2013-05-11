@@ -283,7 +283,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 		// this is basically start_samples_tick = tick * ticklength
 		long start_samples_tick = long(tick*((tempo * AUDIO_RATE*0.001)*speed*(1.0/(float)ticks_per_row)));
 		//double start_sec = start_samples/(double)AUDIO_RATE;
-		long start_msec_tick = (long)(start_samples_tick/44.1);	// row time in millisecs
+		//long start_msec_tick = (long)(start_samples_tick/44.1);	// row time in millisecs
 
 		#ifdef DEBUG_PLAYER
 		printf("\tord: %d\n", current_position);
@@ -320,15 +320,15 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 						if (local_tick == param2) {
 							// note cut
 							if (param1 == 0x0C) {
-								push_event(buffer, create_end_all_event(start_msec_tick, c));
+								push_event(buffer, create_end_all_event(start_samples_tick, c));
 								//push_event(buffer, create_volume_event(start_sec_tick, c, 0x00));
 								fprintf(stdout, "CUT! tick: %d chn: %d row: %d \n", local_tick, c, r);
 							}
 
 							// note delay
 							if (param1 == 0x0D) {
-								push_event(buffer, create_end_all_event(start_msec_tick, c));
-								push_event(buffer, create_note_event(start_msec_tick, c, note.pitch, true, volume));
+								push_event(buffer, create_end_all_event(start_samples_tick, c));
+								push_event(buffer, create_note_event(start_samples_tick, c, note.pitch, true, volume));
 								//fprintf(stdout, "DELAY! tick: %d chn: %d\n", local_tick, c);
 							}
 						}
@@ -356,7 +356,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 					break;
 				case 0x0C:
 					volume = note.parameters*4;	// in MOD the max volume is 0x40
-					push_event(buffer, create_volume_event(start_msec_tick, c, volume));
+					push_event(buffer, create_volume_event(start_samples_tick, c, volume));
 					break;
 				case 0x0E:
 					// if this row contains a note delay effect, don't play the note yet
@@ -376,7 +376,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 			// if there's new notes on this channel, create end_all event first
 			for (int i=0;i<3;i++) {
 				if (new_notes[i] != EMPTY_NOTE_VALUE) {
-					push_event(buffer, create_end_all_event(start_msec_tick, c));
+					push_event(buffer, create_end_all_event(start_samples_tick, c));
 					break;
 				}
 			}
@@ -387,7 +387,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 					continue;
 				}
 		
-				push_event(buffer, create_note_event(start_msec_tick, c, new_notes[i], true, volume));
+				push_event(buffer, create_note_event(start_samples_tick, c, new_notes[i], true, volume));
 			}
 
 			debug_channel_semitones[c] = note.pitch;

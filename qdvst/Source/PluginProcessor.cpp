@@ -201,7 +201,7 @@ void QdvstAudioProcessor::convertMidiEvents(MidiBuffer& midiMessages, addqd::Eve
 		if (MIDI::isValidEvent(msg)) {
 			addqd::Event e;
 			e.channel = chan;
-			e.when = (long)((sampleTime + sample_pos)/(44.1));
+			e.when = sampleTime + sample_pos;
 			e.velocity = velocity;
 
 			switch (msg) {
@@ -254,7 +254,7 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 		syn_render_block(tempAudioBuffer, length, &synthEvents);
 	//}
 
-	printf("%ld:\tbuffersize: %d\n", sampleTime, length);
+	//printf("%ld:\tbuffersize: %d\n", sampleTime, length);
 	
 	float* leftChannelData = buffer.getSampleData(0);
 	float* rightChannelData = buffer.getSampleData(1);

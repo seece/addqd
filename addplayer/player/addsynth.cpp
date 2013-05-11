@@ -214,7 +214,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	float bonus = 0.0;
 	float sample = 0.0;
 	double t;
-	long t_ms;
+	long t_samples;
 	double phase;
 	double envelope_amp;
 	double f;
@@ -235,7 +235,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	#endif
 
 	#ifdef DEBUG_EVENT_SANITY_CHECKS
-		long buffer_end_time = (long)(state.time_ms+length/44.1);
+		long buffer_end_time = (long)(state.samples+length);
+
 		for (int u=0;u<eventbuffer->amount;u++) {
 			if (eventbuffer->event_list[u].when > buffer_end_time) {
 				fprintf(stderr, "Warning: trying to render future note events (diff:%lf)!\n", 
@@ -251,18 +252,18 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	int current_event = 0;
 
 	for (int i=0;i<length;i++) {
-		t = state.time + (double)i/rate;
-		t_ms = long((state.samples + i)/44.1);
-
+		t = state.time + (double)i/rate;	// time in seconds
+		t_samples = state.samples + i;
+		//t_ms = long((state.samples + i)/44.1);
 		//printf("events: now\n");
-		
 
-		while(eventbuffer->event_list[current_event].when <= t_ms) {
+		//printf("DIFF: %ld \n", eventbuffer->event_list[current_event].when - state.samples);
+		
+		while(eventbuffer->event_list[current_event].when <= t_samples) {
 			if (current_event >= eventbuffer->amount) {
 				break;
 			}	
-
-			// TODO FIX CORRUPTED EVENT DATA
+		
 			Event testevent = eventbuffer->event_list[current_event];
 
 			syn_process_event(&eventbuffer->event_list[current_event]);
@@ -355,7 +356,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		}
 	}	
 
-	printf("processing done\n");
+	//printf("processing done\n");
 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 
