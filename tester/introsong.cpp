@@ -14,28 +14,28 @@ static void init_loaded_song() {
 	Instrument * square = &insarr[2];
 	Instrument * square2 = &insarr[3];
 
-	*noise = syn_create_instrument(INS_OSC);
+	*noise = syn_init_instrument(INS_OSC);
 	noise->volume=0.3f;
 	noise->waveFunc = *generators::noise;
 	noise->octave = -3;
 	noise->env.attack = 0.01f;
 	noise->env.release = 0.03f;
 
-	*tri = syn_create_instrument(INS_OSC);
+	*tri = syn_init_instrument(INS_OSC);
 	tri->volume=0.5f;
 	tri->octave=-2;
 	tri->waveFunc = *generators::triangle;
 	tri->env.attack = 0.01f;
 	tri->env.release = 0.08f;
 
-	*square = syn_create_instrument(INS_OSC);
+	*square = syn_init_instrument(INS_OSC);
 	square->volume=0.3f;
 	square->octave = -1;
 	square->waveFunc = *generators::sinsquare;
 	square->env.attack = 0.001f;
 	square->env.release = 0.001f;
 
-	*square2 = syn_create_instrument(INS_OSC);
+	*square2 = syn_init_instrument(INS_OSC);
 	square2->volume=0.3f;
 	square2->octave = -1;
 	square2->waveFunc = *generators::square;

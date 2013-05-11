@@ -27,7 +27,7 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 
 	Instrument * tri = &insarr[0];
 
-	*tri = syn_create_instrument(INS_FM_TWO_OP);
+	*tri = syn_init_instrument(INS_FM_TWO_OP);
 	tri->type = INS_FM_TWO_OP;
 	tri->volume=0.5f;
 	tri->octave=-2;

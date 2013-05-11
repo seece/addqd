@@ -370,7 +370,7 @@ static void traverse_module(EventBuffer * buffer, PTSong * song, long samplecoun
 				new_notes[0] = note.pitch;
 			}
 
-			// if there's new notes on this channel, create end_all event first
+			// if there are new notes on this channel, create end_all event first
 			for (int i=0;i<3;i++) {
 				if (new_notes[i] != EMPTY_NOTE_VALUE) {
 					push_event(buffer, create_end_all_event(start_samples_tick, c));

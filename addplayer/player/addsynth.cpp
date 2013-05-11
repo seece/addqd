@@ -99,7 +99,7 @@ void syn_set_instrument_list_pointer(Instrument * listpointer) {
 	instrument_list = listpointer;
 }
 
-Instrument syn_create_instrument(InstrumentType type) {
+Instrument syn_init_instrument(InstrumentType type) {
 	Instrument ins;
 	ins.type = type;
 	ins.waveFunc = NULL;
@@ -346,8 +346,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			voice_list[v].channel->buffer[i*2+1] += sample;
 		}
 	}	
-
-	//printf("processing done\n");
 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 

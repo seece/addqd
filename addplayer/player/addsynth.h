@@ -29,7 +29,7 @@ void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length, addqd::EventBuffer * eventbuffer);
 void syn_init(int channels);
-Instrument syn_create_instrument(InstrumentType type);
+Instrument syn_init_instrument(InstrumentType type);
 Voice * syn_play_note(int channel, int pitch);	
 static void set_channel_volume(int channel, double volume);
 void syn_end_note(int channel, int pitch);	
