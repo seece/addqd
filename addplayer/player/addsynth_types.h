@@ -7,20 +7,9 @@
 
 //#include "../generators.h"
 #include "config.h"
+#include "effect.h"
 
-enum ParameterType {TYPE_FLOAT, TYPE_BOOL, TYPE_STEP12};
 enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
-
-// IL Harmor has 516 partials
-#define SYN_PARTIAL_AMOUNT 20
-#define SYN_MAX_EFFECTS 10
-#define SYN_MAX_PARAMETERS 8
-#define SYN_MAX_INSTRUMENTS 8
-#define SYN_PARTIAL_HIGH_CUT 17500.0
-#define SYN_SINE_TABLE_SIZE 2205
-#define SYN_MAX_VOICES 32
-#define SYN_CHN_ENV_AMOUNT 2
-#define SYN_CHN_LFO_AMOUNT 2
 
 // used with Channel.target_volume
 #define SYN_VOLUME_LERP_THRESOLD (0.01f)
@@ -97,26 +86,7 @@ struct EnvState {
 	double target_volume;	// if target_volume differs from volume, volume will be interpolated smoothly to it
 };
 
-struct Parameter {
-	ParameterType type;
-	union {
-		int ivalue;
-		float fvalue;
-		int bvalue;
-	} value;
-	char * name;
-};
 
-struct Effect {
-	char * name;
-	int numParams;
-	Parameter params[SYN_MAX_PARAMETERS];
-};
-
-struct EffectChain {
-	int numberOfEffects;
-	Effect effects[SYN_MAX_EFFECTS];
-};
 
 struct Channel {
 	Instrument * instrument;

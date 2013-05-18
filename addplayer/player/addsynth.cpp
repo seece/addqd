@@ -6,7 +6,13 @@
 #include "../misc.h"
 #include "config.h"
 #include "addsynth.h"
-//#include "oscillators.h"
+#include "effect.h"
+
+// The size of the internal mixer buffer, the buffer size
+// requested by the host shouldn't exceed this value.
+// The size is in audio frames (stereo samples).
+// SYN_AUDIO_SANITY_CHECKS toggles the error checks for this value.
+#define SYN_MAX_BUFFER_SIZE 44100
 
 using namespace addqd;
 
@@ -18,27 +24,8 @@ static Instrument * instrument_list = NULL;
 static int instrument_list_max_length = SYN_MAX_INSTRUMENTS;
 static Voice voice_list[SYN_MAX_VOICES];
 
-// The size of the internal mixer buffer, the buffer size
-// requested by the host shouldn't exceed this value.
-// The size is in audio frames (stereo samples).
-// SYN_AUDIO_SANITY_CHECKS toggles the error checks for this value.
-#define SYN_MAX_BUFFER_SIZE 44100
-
-#define EFFECT_NONE 0
-#define EFFECT_TEST 1
-char * effectName[] = {"no effect", "test effect"};
-
 static SAMPLE_TYPE * temp_array;
 static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
-
-static void init_effect(Effect * effect) {
-	effect->name = effectName[EFFECT_NONE];
-	effect->numParams = 0;
-}
-
-static void free_effect(Effect * effect) {
-
-}
 
 static void init_voice(Voice * v) {
 	v->active = false;
