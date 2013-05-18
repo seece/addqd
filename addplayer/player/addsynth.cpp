@@ -251,9 +251,10 @@ static void process_channel_modulation(Channel* channelp) {
 
 		double phase = channelp->lfostate->phase;
 		double f = channelp->instrument->lfo[i].frequency;
+		double gain = channelp->instrument->lfo[i].gain;
 
 		channelp->lfostate[i].phase = fmod(phase + ((f/(double)AUDIO_RATE)), 1.0);
-		channelp->mod_signals.lfo[i] = channelp->instrument->lfo[i].wavefunc(phase * 2.0 * PI); 
+		channelp->mod_signals.lfo[i] = gain * channelp->instrument->lfo[i].wavefunc(phase * 2.0 * PI); 
 	}
 }
 
@@ -331,6 +332,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			current_event++;
 		}
 
+		// Calculate LFO states.
 		for (int c=0;c<state.channels;c++) {
 			process_channel_modulation(&channel_list[c]);
 		}
@@ -354,12 +356,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			}
 
 			Instrument * ins = voice->channel->instrument;
-
 			process_voice_envelope(&voice_list[v], t);
-
-			/*
-			
-			*/
 
 			if (!voice_list[v].active) {
 				continue;
