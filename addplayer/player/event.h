@@ -30,6 +30,7 @@ addqd::Event create_volume_event(long when, int channel, int volume);
 addqd::Event create_note_event(long when, int channel, int pitch, bool state, unsigned char volume=200);
 addqd::Event create_end_all_event(long when, int channel);
 
+
 #ifndef INTROLIB
 void print_event(addqd::Event& e);
 #endif

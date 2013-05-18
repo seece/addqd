@@ -139,7 +139,8 @@ void syn_free_instrument(Instrument * ins) {
 	free_instrument(ins);
 }
 
-static double find_next_event_start(EventBuffer * eventbuffer, double start) {
+/// Finds the next event start time from the given eventbuffer.
+long find_next_event_start(EventBuffer * eventbuffer, long start) {
 	// TODO do a binary search here?
 	for (int i=0;i<eventbuffer->amount;i++) {
 		if (eventbuffer->event_list[i].when >= start) {
@@ -147,7 +148,7 @@ static double find_next_event_start(EventBuffer * eventbuffer, double start) {
 		}
 	}
 
-	return -1.0;
+	return -1;
 }
 
 static void syn_process_event(Event * e) {
@@ -285,7 +286,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	double t;
 	long t_samples;
 	double phase;
-	double envelope_amp;
 	double f;
 	double next_event_time = 0.0;
 
