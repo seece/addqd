@@ -5,6 +5,7 @@
 
 // the oscillators assume a phase in the range of [0, 2*PI[
 namespace generators {
+	double sine(double x);
 	double sawsin(double x);
 	double simplenoise(double x);
 	double noise(double x);

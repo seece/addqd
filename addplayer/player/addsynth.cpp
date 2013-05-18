@@ -1,3 +1,9 @@
+/// Core synth implementation.
+///
+/// All phases are stored as a value in range [0, 1]. The actual
+/// phase is determined when rendering, and the phase variable
+/// is multiplied with 2*PI.
+
 
 #include <cstdio>
 #include <cmath>
@@ -54,6 +60,10 @@ static void init_channel(Channel * channel) {
 		init_effect(&channel->chain.effects[i]);
 	}
 
+	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
+		channel->lfostate[i].phase = 0.0;
+	}	
+
 	channel->buffer = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 	memset(channel->buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(float));
 }
@@ -67,14 +77,31 @@ static void free_channel(Channel * channel) {
 	}
 }
 
+static void init_envelope(Envelope* envp) {
+	envp->attack = 0.05f;
+	envp->release = 0.1f;
+	envp->decay = 0.2f;
+	envp->hold = 1.0f;
+}
+
+static void init_lfo(LFO* lfop) {
+	lfop->frequency = 1.0f;
+	lfop->gain = 1.0f;
+	lfop->wavefunc = generators::sine;
+}
+
 static void syn_init_instrument(Instrument * ins) {
 	ins->volume = 1.0f;
 	ins->waveFunc = NULL;
 	ins->octave = 0;
-	ins->env[0].attack = 0.05f;
-	ins->env[0].release = 0.1f;
-	ins->env[0].decay = 0.2f;
-	ins->env[0].hold = 1.0f;
+
+	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
+		init_envelope(&ins->env[i]);
+	}
+
+	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
+		init_lfo(&ins->lfo[i]);
+	}
 };
 
 // returns a pointer to the instrument list pointer
@@ -92,11 +119,15 @@ Instrument syn_init_instrument(InstrumentType type) {
 	ins.waveFunc = NULL;
 	ins.volume = 1.0f;
 	ins.octave = 0;
-	ins.env[0].attack = 0.05f;
-	ins.env[0].release = 0.1f;
-	ins.env[0].decay = 0.2f;
-	ins.env[0].hold = 1.0f;
-	
+
+	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
+		init_envelope(&ins.env[i]);
+	}
+
+	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
+		init_lfo(&ins.lfo[i]);
+	}
+
 	return ins;
 }
 
@@ -192,6 +223,40 @@ static void syn_process_event(Event * e) {
 	#endif
 }
 
+
+static void process_channel_modulation(Channel* channelp) {
+	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+		if (channelp == NULL) {
+			fprintf(stderr, "Warning: trying to process NULL channel modulation!\n");
+			return;
+		}
+
+		if (channelp->instrument == NULL) {
+			fprintf(stderr, "Warning: instrument is NULL in channel modulation!\n");
+			return;
+		}
+	#endif
+
+	if (channelp->instrument == NULL) {
+		return;
+	}
+
+	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
+		#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+			if (channelp->instrument->lfo[i].wavefunc == NULL) {
+				fprintf(stderr, "Warning: LFO wavefunc is NULL!\n");
+				return;
+			}
+		#endif
+
+		double phase = channelp->lfostate->phase;
+		double f = channelp->instrument->lfo[i].frequency;
+
+		channelp->lfostate[i].phase = fmod(phase + ((f/(double)AUDIO_RATE)), 1.0);
+		channelp->mod_signals.lfo[i] = channelp->instrument->lfo[i].wavefunc(phase * 2.0 * PI); 
+	}
+}
+
 // writes stereo samples to the given array
 // buf			sample buffer
 // length		buffer length in frames
@@ -248,6 +313,10 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 		
 			syn_process_event(&eventbuffer->event_list[current_event]);
 			current_event++;
+		}
+
+		for (int c=0;c<state.channels;c++) {
+			process_channel_modulation(&channel_list[c]);
 		}
 
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
@@ -541,7 +610,7 @@ void syn_free(void) {
 		//free_instrument(instrument_list[i]);
 	}
 
-	// the instrument list is allocated on the outside, so we don't worry about that
+	// the instrument list is allocated in outer scope, so we don't worry about that
 
 	delete temp_array;
 }

@@ -20,6 +20,11 @@ int customrand(int seed)
   return seed;
 }
 
+double generators::sine(double x)
+{
+	return sin(x);
+}
+
 // by Alexander Kritov
 double generators::sawsin(double x)
 {

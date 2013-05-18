@@ -58,6 +58,12 @@ struct Envelope {
 struct LFO {
 	float frequency;
 	float gain;
+	WaveformFunc_t wavefunc;	// oscillator function
+};
+
+/// State of an LFO stored in a channel.
+struct LFOState {
+	double phase;
 };
 
 struct Sample {
@@ -89,6 +95,7 @@ struct ModMatrix {
 	ModRoute routes[SYN_CHN_MOD_AMOUNT];
 };
 
+/// An instrument descriptor. Doesn't hold any instrument state.
 struct Instrument {
 	InstrumentType type;
 	//Spectra spectra;
@@ -120,7 +127,8 @@ struct Channel {
 	float pan;					// channel pan, between [-1.0, 1.0]
 	EffectChain chain;
 	SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
-	ModSource mod;				// mod source signals
+	ModSource mod_signals;		// mod source signals
+	LFOState lfostate[SYN_CHN_LFO_AMOUNT];
 };
 
 struct Voice {
