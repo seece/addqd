@@ -14,3 +14,11 @@ https://play.spotify.com/track/4eyZlJ2EKby3sF3KXwEDuP (Isao Tomita - Suite Berga
 lopun tremolopiano
 
 joku helppo gabber-soundi: https://soundcloud.com/nextcyclone/the-melodyst-you-dont-know
+
+Signal sources:
+	envelope generators
+	LFO's
+	note pitch
+	note velocity
+	(other channel's output)
+		--> sidechain
