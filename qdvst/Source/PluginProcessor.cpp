@@ -32,8 +32,8 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	tri->volume=0.5f;
 	tri->octave=-2;
 	tri->fmFunc = *generators::resonant_fm;
-	tri->env.attack = 0.01f;
-	tri->env.release = 0.08f;
+	tri->env[0].attack = 0.01f;
+	tri->env[0].release = 0.08f;
 
 	listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;

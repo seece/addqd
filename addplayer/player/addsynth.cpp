@@ -12,8 +12,8 @@ using namespace addqd;
 
 static SynthState state;
 static Channel * channel_list;
-// an array of instrument pointers
 
+// an array of instrument pointers
 static Instrument * instrument_list = NULL;
 static int instrument_list_max_length = SYN_MAX_INSTRUMENTS;
 static Voice voice_list[SYN_MAX_VOICES];
@@ -84,10 +84,10 @@ static void syn_init_instrument(Instrument * ins) {
 	ins->volume = 1.0f;
 	ins->waveFunc = NULL;
 	ins->octave = 0;
-	ins->env.attack = 0.05f;
-	ins->env.release = 0.1f;
-	ins->env.decay = 0.2f;
-	ins->env.hold = 1.0f;
+	ins->env[0].attack = 0.05f;
+	ins->env[0].release = 0.1f;
+	ins->env[0].decay = 0.2f;
+	ins->env[0].hold = 1.0f;
 };
 
 // returns a pointer to the instrument list pointer
@@ -105,10 +105,10 @@ Instrument syn_init_instrument(InstrumentType type) {
 	ins.waveFunc = NULL;
 	ins.volume = 1.0f;
 	ins.octave = 0;
-	ins.env.attack = 0.05f;
-	ins.env.release = 0.1f;
-	ins.env.decay = 0.2f;
-	ins.env.hold = 1.0f;
+	ins.env[0].attack = 0.05f;
+	ins.env[0].release = 0.1f;
+	ins.env[0].decay = 0.2f;
+	ins.env[0].hold = 1.0f;
 	
 	return ins;
 }
@@ -285,11 +285,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			// voice envelope calculations will be done even to inactive channels
 			double voicetime = t-voice->envstate.beginTime;
-			envelope_amp = saturate(((voicetime+0.00001f))/ins->env.attack);
+			envelope_amp = saturate(((voicetime+0.00001f))/ins->env[0].attack);
 			envelope_amp = 0.9f;
 
 			if (voice->envstate.released) {
-				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env.release);
+				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env[0].release);
 			}
 
 			if (!voice_list[v].active) {
@@ -333,7 +333,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	
 			voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
-			if (t-voice->envstate.endTime > ins->env.release) {
+			if (t-voice->envstate.endTime > ins->env[0].release) {
 				
 				if (voice->envstate.released) {
 					voice->active=false;

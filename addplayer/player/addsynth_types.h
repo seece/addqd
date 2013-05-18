@@ -19,6 +19,8 @@ enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
 #define SYN_PARTIAL_HIGH_CUT 17500.0
 #define SYN_SINE_TABLE_SIZE 2205
 #define SYN_MAX_VOICES 32
+#define SYN_CHN_ENV_AMOUNT 2
+#define SYN_CHN_LFO_AMOUNT 2
 
 // used with Channel.target_volume
 #define SYN_VOLUME_LERP_THRESOLD (0.01f)
@@ -54,15 +56,28 @@ struct Envelope {
 	float release;
 };
 
+struct LFO {
+	float frequency;
+	float gain;
+};
+
 struct Sample {
 	float * data;	// pointer to sample data
 	int length;		// amount of samples in data
 };
 
+/// Channel modulation source container. All generated mod
+/// signals are saved here on regular interval.
+struct ModSource {
+	float env[SYN_CHN_ENV_AMOUNT];
+	float lfo[SYN_CHN_LFO_AMOUNT];
+};
+
 struct Instrument {
 	InstrumentType type;
 	//Spectra spectra;
-	Envelope env;				
+	Envelope env[SYN_CHN_ENV_AMOUNT];				
+	LFO lfo[SYN_CHN_LFO_AMOUNT];
 	//char * name;
 	float volume;				// volume in [0.0, 1.0]
 	int octave;					// octave, 0 = C4
@@ -70,6 +85,7 @@ struct Instrument {
 	SamplerFunc_t samplerFunc;	// sampler function
 	OscFunc_2op_t fmFunc;		// any two-op generator function
 	Sample * sample;			// Sample pointer for samplerFunc
+
 };
 
 struct EnvState {
@@ -108,6 +124,7 @@ struct Channel {
 	float pan;					// channel pan, between [-1.0, 1.0]
 	EffectChain chain;
 	SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
+	ModSource mod;				// mod source signals
 };
 
 struct Voice {
@@ -125,7 +142,5 @@ struct SynthState {
 	long samples;		// play time in samples
 	int channels;		// instrument channel amount
 };
-
-
 
 #endif
