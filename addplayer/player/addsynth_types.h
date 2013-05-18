@@ -1,5 +1,5 @@
 /* 
-* This file contains all datatypes used by the synthesizer.
+* This file datatypes used by the synthesizer.
 */
 
 #ifndef ADDSYNTH_TYPES_H
@@ -10,6 +10,9 @@
 #include "effect.h"
 
 enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
+enum ModulationSignal {MOD_ENV1, MOD_ENV2, MOD_LFO1, MOD_LFO2};
+// Used in ModTarget
+enum ModTargetDevice {MOD_DEVICE_LOCAL, MOD_DEVICE_EFFECT};
 
 // used with Channel.target_volume
 #define SYN_VOLUME_LERP_THRESOLD (0.01f)
@@ -62,6 +65,23 @@ struct ModSource {
 	float lfo[SYN_CHN_LFO_AMOUNT];
 };
 
+struct ModTarget {
+	bool local;	
+	ModTargetDevice device;	// instrument or effect parameter
+	int param_index;		// identifies the parameter
+};
+
+struct ModRoute {
+	bool enabled;
+	ModulationSignal source;
+	ModTarget target;
+	float amount;
+};
+
+struct ModMatrix {
+	ModRoute routes[SYN_CHN_MOD_AMOUNT];
+};
+
 struct Instrument {
 	InstrumentType type;
 	//Spectra spectra;
@@ -85,7 +105,6 @@ struct EnvState {
 	double volume;			// volume set by note-on command
 	double target_volume;	// if target_volume differs from volume, volume will be interpolated smoothly to it
 };
-
 
 
 struct Channel {

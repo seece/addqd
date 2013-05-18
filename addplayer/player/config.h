@@ -35,5 +35,6 @@
 #define SYN_MAX_VOICES 32
 #define SYN_CHN_ENV_AMOUNT 2
 #define SYN_CHN_LFO_AMOUNT 2
+#define SYN_CHN_MOD_AMOUNT 8	// how many modulation matrix entries are allowed
 
 #endif
