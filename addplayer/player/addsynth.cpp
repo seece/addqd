@@ -257,6 +257,22 @@ static void process_channel_modulation(Channel* channelp) {
 	}
 }
 
+/// Calculates voice envelopes and stores them in the channel signal array.
+static void process_voice_envelope(Voice* voicep, double t) {
+	Instrument * ins = voicep->channel->instrument;
+	double voicetime = t - voicep->envstate.beginTime;
+
+	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
+		float envelope_amp = saturate(((voicetime+0.00001f))/ins->env[i].attack);
+
+		if (voicep->envstate.released) {
+			envelope_amp *= saturate(1.0f-(t-voicep->envstate.endTime)/ins->env[i].release);
+		}
+
+		voicep->channel->mod_signals.env[i] = envelope_amp;
+	}
+}
+
 // writes stereo samples to the given array
 // buf			sample buffer
 // length		buffer length in frames
@@ -339,14 +355,11 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			Instrument * ins = voice->channel->instrument;
 
-			// voice envelope calculations will be done even to inactive channels
-			double voicetime = t-voice->envstate.beginTime;
-			envelope_amp = saturate(((voicetime+0.00001f))/ins->env[0].attack);
-			envelope_amp = 0.9f;
+			process_voice_envelope(&voice_list[v], t);
 
-			if (voice->envstate.released) {
-				envelope_amp *= saturate(1.0f-(t-voice->envstate.endTime)/ins->env[0].release);
-			}
+			/*
+			
+			*/
 
 			if (!voice_list[v].active) {
 				continue;
@@ -373,10 +386,12 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 					sample = (float)wavefunc(phase * 2.0 * PI);
 					break;
 				case INS_FM_TWO_OP:
-					sample = (float)ins->fmFunc(phase * 2.0 * PI, 10.0 - voicetime * 20.0, 0.0);
+					sample = (float)ins->fmFunc(phase * 2.0 * PI, 1.0, 0.0);
 					break;
 				case INS_SAMPLER:
-					sample = (float)ins->samplerFunc(voicetime * (f/440.0), ins->sample->data, 
+					sample = (float)ins->samplerFunc(
+						t - voice->envstate.beginTime * (f/440.0), 
+						ins->sample->data, 
 						ins->sample->length);
 					break;
 				default:
@@ -396,7 +411,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				}
 			}
 
-			sample *= ins->volume * float(envelope_amp) * float(voice->envstate.volume);
+			sample *= ins->volume;
+			//sample *= ins->volume * float(envelope_amp) * float(voice->envstate.volume);
 
 			voice_list[v].channel->buffer[i*2] += sample;
 			voice_list[v].channel->buffer[i*2+1] += sample;
