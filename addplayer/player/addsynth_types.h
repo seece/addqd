@@ -14,6 +14,13 @@ enum ModulationSignal {MOD_ENV1, MOD_ENV2, MOD_LFO1, MOD_LFO2};
 // Used in ModTarget
 enum ModTargetDevice {MOD_DEVICE_LOCAL, MOD_DEVICE_EFFECT};
 
+// These values are used in ModTarget.param_index when 
+// ModTarget.device == MOD_DEVICE_LOCAL
+enum ModParamLocal {
+	PARAM_VOLUME = 0, 
+	PARAM_PAN = 1
+}; 
+
 // used with Channel.target_volume
 #define SYN_VOLUME_LERP_THRESOLD (0.01f)
 
@@ -68,7 +75,7 @@ struct ModSource {
 struct ModTarget {
 	bool local;	
 	ModTargetDevice device;	// instrument or effect parameter
-	int param_index;		// identifies the parameter
+	int param_index;		// identifies the parameter. See ModParamLocal
 };
 
 struct ModRoute {
