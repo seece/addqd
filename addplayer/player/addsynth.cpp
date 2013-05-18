@@ -4,10 +4,13 @@
 /// phase is determined when rendering, and the phase variable
 /// is multiplied with 2*PI.
 
+#define VC_EXTRALEAN
+#define WIN32_LEAN_AND_MEAN
 
 #include <cstdio>
 #include <cmath>
 #include <limits>
+#include <cstdlib>
 #include <Windows.h>
 #include "../misc.h"
 #include "config.h"
@@ -90,6 +93,14 @@ static void init_lfo(LFO* lfop) {
 	lfop->wavefunc = generators::sine;
 }
 
+static void init_route(ModRoute* routep) {
+	routep->amount=1.0;
+	routep->enabled=false;
+	routep->source = MOD_NONE;
+	routep->target.device = MOD_DEVICE_NONE;
+	routep->target.param_index = 0;
+}
+
 static void syn_init_instrument(Instrument * ins) {
 	ins->volume = 1.0f;
 	ins->waveFunc = NULL;
@@ -101,6 +112,10 @@ static void syn_init_instrument(Instrument * ins) {
 
 	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
 		init_lfo(&ins->lfo[i]);
+	}
+
+	for (int i=0;i<SYN_CHN_MOD_AMOUNT;i++) {
+		init_route(&ins->matrix.routes[i]);
 	}
 };
 
@@ -242,6 +257,10 @@ static void process_channel_modulation(Channel* channelp) {
 		return;
 	}
 
+	ModMatrix* matrix = &channelp->instrument->matrix;
+
+	// Process LFOs
+
 	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
 		#ifdef DEBUG_CHANNEL_SANITY_CHECKS
 			if (channelp->instrument->lfo[i].wavefunc == NULL) {
@@ -256,6 +275,62 @@ static void process_channel_modulation(Channel* channelp) {
 
 		channelp->lfostate[i].phase = fmod(phase + ((f/(double)AUDIO_RATE)), 1.0);
 		channelp->mod_signals.lfo[i] = gain * channelp->instrument->lfo[i].wavefunc(phase * 2.0 * PI); 
+	}
+
+	// Process modulation routing
+	
+	for (int i=0;i<SYN_CHN_MOD_AMOUNT;i++) {
+		float signal = 0.0;
+		
+		if (!matrix->routes[i].enabled) {
+			continue;
+		}
+
+		if (matrix->routes[i].source == MOD_DEVICE_NONE) {
+			continue;
+		}
+
+		switch (matrix->routes[i].source) {
+			case MOD_ENV1:
+				signal = channelp->mod_signals.env[0];
+				break;
+			case MOD_ENV2:
+				signal = channelp->mod_signals.env[1];
+				break;
+			default:
+			#ifdef DEBUG_MODULATION_SANITY_CHECKS
+				fprintf(stderr, "Invalid mod source %d on channel pointer %p!\n",
+					matrix->routes[i].source,
+					channelp);
+			#endif
+			continue;
+		}
+
+		if (matrix->routes[i].target.device != MOD_DEVICE_LOCAL) {
+			// Currently effect parameter modulation is unsupported.
+			#ifdef DEBUG_MODULATION_SANITY_CHECKS
+				fprintf(stderr, "Invalid target device %d, skipping\n", 
+					matrix->routes[i].target.device);
+			#endif
+			continue;
+		}
+
+		switch (matrix->routes[i].target.param_index) {
+			case PARAM_VOLUME:
+			break;
+
+			case PARAM_PAN:
+			break;
+
+			default:
+			#ifdef DEBUG_MODULATION_SANITY_CHECKS
+				fprintf(stderr, "Invalid mod target param_index %d on channel pointer %p!\n",
+					matrix->routes[i].target.param_index,
+					channelp);
+			#endif
+			continue;
+		}
+		
 	}
 }
 
@@ -273,6 +348,11 @@ static void process_voice_envelope(Voice* voicep, double t) {
 
 		voicep->channel->mod_signals.env[i] = envelope_amp;
 	}
+}
+
+static void process_voice_modulation(Voice* voicep) {
+	Instrument* ins = voicep->channel->instrument;
+	ModMatrix* matrix = &voicep->channel->instrument->matrix;
 }
 
 // writes stereo samples to the given array
@@ -315,12 +395,20 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	int active = 0;
 
 	float rate = (float)AUDIO_RATE;
-	double addition = (double)1.0/(double)rate;
 	int current_event = 0;
-
+	
 	for (int i=0;i<length;i++) {
+		bool env_counter_hit = false;
+
 		t = state.time + (double)i/rate;	// time in seconds
 		t_samples = state.samples + i;
+		state.env_counter--;
+
+		if (state.env_counter <= 0) {
+			env_counter_hit = true;
+			state.env_counter = SYN_ENVELOPE_JITTER;
+		}
+
 		//t_ms = long((state.samples + i)/44.1);
 
 		while(eventbuffer->event_list[current_event].when <= t_samples) {
@@ -332,9 +420,10 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			current_event++;
 		}
 
-		// Calculate LFO states.
-		for (int c=0;c<state.channels;c++) {
-			process_channel_modulation(&channel_list[c]);
+		if (env_counter_hit) {
+			for (int c=0;c<state.channels;c++) {
+				process_channel_modulation(&channel_list[c]);
+			}
 		}
 
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
@@ -357,6 +446,10 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 
 			Instrument * ins = voice->channel->instrument;
 			process_voice_envelope(&voice_list[v], t);
+
+			if (env_counter_hit) {
+				//process_voice_modulation(&voice_list[v]);
+			}
 
 			if (!voice_list[v].active) {
 				continue;
@@ -603,7 +696,8 @@ void syn_init(int channels) {
 	state.channels = channels;
 	state.time = 0.0;
 	state.time_ms = 0L;
-	state.samples = 0;
+	state.samples = 0L;
+	state.env_counter = 0L;
 
 	temp_array = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 

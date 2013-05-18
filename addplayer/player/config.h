@@ -19,6 +19,7 @@
 #define DEBUG_CHANNEL_SANITY_CHECKS
 #define DEBUG_AUDIO_SANITY_CHECKS
 #define DEBUG_PLAYER_SANITY_CHECKS
+#define DEBUG_MODULATION_SANITY_CHECKS
 #define DEBUG_INSTRUMENTS
 #define DEBUG_VOICE
 //#define DEBUG_PLAYER
@@ -27,6 +28,7 @@
 
 // IL Harmor has 516 partials
 #define SYN_PARTIAL_AMOUNT 20
+#define SYN_ENVELOPE_JITTER 441	// envelope processing delay in frames 
 #define SYN_MAX_EFFECTS 10
 #define SYN_MAX_PARAMETERS 8
 #define SYN_MAX_INSTRUMENTS 16

@@ -10,9 +10,9 @@
 #include "effect.h"
 
 enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
-enum ModulationSignal {MOD_ENV1, MOD_ENV2, MOD_LFO1, MOD_LFO2};
+enum ModulationSignal {MOD_NONE, MOD_ENV1, MOD_ENV2, MOD_LFO1, MOD_LFO2};
 // Used in ModTarget
-enum ModTargetDevice {MOD_DEVICE_LOCAL, MOD_DEVICE_EFFECT};
+enum ModTargetDevice {MOD_DEVICE_NONE, MOD_DEVICE_LOCAL, MOD_DEVICE_EFFECT};
 
 // These values are used in ModTarget.param_index when 
 // ModTarget.device == MOD_DEVICE_LOCAL
@@ -79,8 +79,7 @@ struct ModSource {
 };
 
 struct ModTarget {
-	bool local;	
-	ModTargetDevice device;	// instrument or effect parameter
+	ModTargetDevice device;	// target device
 	int param_index;		// identifies the parameter. See ModParamLocal
 };
 
@@ -108,6 +107,7 @@ struct Instrument {
 	SamplerFunc_t samplerFunc;	// sampler function
 	OscFunc_2op_t fmFunc;		// any two-op generator function
 	Sample * sample;			// Sample pointer for samplerFunc
+	ModMatrix matrix;			// modulation matrix
 
 };
 
@@ -145,6 +145,7 @@ struct SynthState {
 	long time_ms;		// play time in milliseconds
 	long samples;		// play time in samples
 	int channels;		// instrument channel amount
+	long env_counter;	// envelope processor timeout counter in samples
 };
 
 #endif
