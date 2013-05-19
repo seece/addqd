@@ -23,4 +23,6 @@ Signal sources:
 	(other channel's output)
 		--> sidechain
 		
-laita envelopet voicekohtaisiksi!
+TODO:		
+
+signaalin clamppaus process_voice_modulation funktioon?

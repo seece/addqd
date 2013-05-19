@@ -56,27 +56,28 @@ int main(int argc, char argv[]) {
 	tri->volume=0.5f;
 	tri->octave=-2;
 	tri->fmFunc = *generators::resonant_fm;
-	tri->env[0].attack = 0.01f;
-	tri->env[0].release = 0.08f;
+	tri->env[0].attack = 0.1f;
+	tri->env[0].release = 0.8f;
+	//tri->env[0].decay = 0.5f;
+
+	tri->matrix.routes[0].enabled = true;
+	tri->matrix.routes[0].source = MOD_ENV1;
+	tri->matrix.routes[0].target.device = MOD_DEVICE_LOCAL;
+	tri->matrix.routes[0].target.param_index = PARAM_VOLUME;
 
 	*square = syn_init_instrument(INS_OSC);
 	square->volume=0.3f;
 	square->octave = -1;
 	square->waveFunc = *generators::sinsquare;
 	square->env[0].attack = 0.001f;
-	square->env[0].release = 0.001f;
-
-	square->matrix.routes[0].enabled = true;
-	square->matrix.routes[0].source = MOD_ENV1;
-	square->matrix.routes[0].target.device = MOD_DEVICE_LOCAL;
-	square->matrix.routes[0].target.param_index = PARAM_VOLUME;
+	square->env[0].release = 0.1f;
 
 	*square2 = syn_init_instrument(INS_OSC);
 	square2->volume=0.3f;
 	square2->octave = -1;
 	square2->waveFunc = *generators::square;
 	square2->env[0].attack = 0.001f;
-	square2->env[0].release = 0.001f;
+	square2->env[0].release = 0.1f;
 
 	Instrument** listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;

@@ -36,6 +36,12 @@ static Voice voice_list[SYN_MAX_VOICES];
 static SAMPLE_TYPE * temp_array;
 static SAMPLE_TYPE sine_LUT[SYN_SINE_TABLE_SIZE];
 
+/// Initializes a voice state to its default values.
+static void init_voice_state(VoiceState* vstatep) {
+	vstatep->pan = 0.0f;
+	vstatep->vol = 1.0f;
+}
+
 static void init_voice(Voice * v) {
 	v->active = false;
 	v->channel = NULL;
@@ -45,8 +51,8 @@ static void init_voice(Voice * v) {
 	v->envstate.target_volume = v->envstate.volume;
 	v->pitch = 0;
 
-	v->state.pan = 0.0f;
-	v->state.vol = 1.0f;
+	init_voice_state(&v->state);
+
 	memset(v->state.params, 0, sizeof(Parameter)*SYN_MAX_PARAMETERS);
 	memset(v->state.mod_signals.env, 0, sizeof(float)*SYN_CHN_ENV_AMOUNT);
 	memset(v->state.mod_signals.lfo, 0, sizeof(float)*SYN_CHN_LFO_AMOUNT);
@@ -316,6 +322,8 @@ static void process_voice_modulation(Voice* voicep, double t) {
 			continue;
 		}
 
+		signal *= matrix->routes[i].amount;
+
 		switch (matrix->routes[i].target.param_index) {
 			case PARAM_VOLUME:
 			voicep->state.vol = signal;
@@ -427,7 +435,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			}
 
 			Instrument * ins = voice->channel->instrument;
-			//process_voice_envelope(&voice_list[v], t);
 
 			if (env_counter_hit) {
 				process_voice_modulation(&voice_list[v], t);
@@ -551,6 +558,9 @@ Voice * syn_play_note(int channel, int pitch) {
 		voice->channel_id = channel;
 		voice->envstate = init_envstate();
 		voice->pitch = pitch;
+
+		init_voice_state(&voice->state);
+		process_voice_modulation(voice, state.time); // FIXME use interbuffer time
 
 		#ifdef DEBUG_VOICE
 		printf("new voice %d on chn %d!\n", v, voice->channel_id);
