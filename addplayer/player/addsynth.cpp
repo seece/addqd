@@ -264,14 +264,19 @@ static void process_channel_modulation(Channel* channelp) {
 static void process_voice_envelope(Voice* voicep, double t) {
 	Instrument * ins = voicep->channel->instrument;
 	
-	double voicetime = t - voicep->envstate.beginTime;
+	// envstate.beginTime and .endTime are in samples 
+	// but all other envestate values are in seconds (double)
+	// so we have to convert the values first
+
+	double voicetime = t - voicep->envstate.beginTime/(double)AUDIO_RATE;
+	double endtime = voicep->envstate.endTime/(double)AUDIO_RATE;
 
 	// Calculate envelopes
 	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
 		float envelope_amp = saturate(((voicetime+0.00001f))/ins->env[i].attack);
 
 		if (voicep->envstate.released) {
-			envelope_amp *= saturate(1.0f-(t-voicep->envstate.endTime)/ins->env[i].release);
+			envelope_amp *= saturate(1.0f-(t - endtime)/ins->env[i].release);
 		}
 
 		voicep->state.mod_signals.env[i] = envelope_amp;
@@ -316,7 +321,7 @@ static void process_voice_modulation(Voice* voicep, double t) {
 		if (matrix->routes[i].target.device != MOD_DEVICE_LOCAL) {
 			// Currently effect parameter modulation is unsupported.
 			#ifdef DEBUG_MODULATION_SANITY_CHECKS
-				fprintf(stderr, "Invalid target device %d, skipping\n", 
+				fprintf(stderr, "Invalid target device %d, skipping...\n", 
 					matrix->routes[i].target.device);
 			#endif
 			continue;
@@ -469,7 +474,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 					break;
 				case INS_SAMPLER:
 					sample = (float)ins->samplerFunc(
-						t - voice->envstate.beginTime * (f/440.0), 
+						t - voice->envstate.beginTime/(double)AUDIO_RATE * (f/440.0), 
 						ins->sample->data, 
 						ins->sample->length);
 					break;
@@ -483,7 +488,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	
 			voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
-			if (t-voice->envstate.endTime > ins->env[0].release) {
+			if (t_samples - voice->envstate.endTime > ins->env[0].release*1000) {
 				
 				if (voice->envstate.released) {
 					voice->active=false;
@@ -534,7 +539,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 EnvState init_envstate() {
 	EnvState s;
 	s.hold = true;
-	s.beginTime = state.time;
+	s.beginTime = state.samples;
 	s.released = false;
 	return s;
 }
@@ -595,7 +600,7 @@ void syn_end_note(int channel, int pitch) {
 
 		//voice_list[v].active = false;
 		voice_list[v].envstate.released = true;
-		voice_list[v].envstate.endTime = state.time;
+		voice_list[v].envstate.endTime = state.samples;
 	}
 }
 
@@ -611,13 +616,12 @@ void syn_end_all_notes(int channel) {
 
 		if (voice_list[v].channel_id == channel) {
 			voice_list[v].envstate.released = true;
-			voice_list[v].envstate.endTime = state.time;
+			voice_list[v].envstate.endTime = state.samples;
 		}
 	}
 }
 
 // finds all voices on the given channel and sets their volume
-// uses Channel.target_volume for smooth interpolation
 static void set_channel_volume(int channel, double volume) {
 	for (int i=0;i<SYN_MAX_VOICES;i++) {
 		Voice * v = &voice_list[i];
@@ -627,7 +631,6 @@ static void set_channel_volume(int channel, double volume) {
 		}
 
 		if (v->channel_id == channel) {
-			//v->envstate.volume = volume;
 			v->envstate.target_volume = volume;
 		}
 	}

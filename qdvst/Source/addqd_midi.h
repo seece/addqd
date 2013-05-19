@@ -7,7 +7,7 @@ namespace MIDI {
 	const int COMMAND_NOTE_OFF = 0x8;
 	const int COMMAND_CC = 0xB;
 
-	int convertMidiNotePitch(unsigned char midiNote);
+	char convertMidiNotePitch(unsigned char midiNote);
 	bool isValidEvent(unsigned char eventMsg);	// checks if the event type is known
 }
 
