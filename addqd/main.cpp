@@ -66,6 +66,11 @@ int main(int argc, char argv[]) {
 	square->env[0].attack = 0.001f;
 	square->env[0].release = 0.001f;
 
+	square->matrix.routes[0].enabled = true;
+	square->matrix.routes[0].source = MOD_ENV1;
+	square->matrix.routes[0].target.device = MOD_DEVICE_LOCAL;
+	square->matrix.routes[0].target.param_index = PARAM_VOLUME;
+
 	*square2 = syn_init_instrument(INS_OSC);
 	square2->volume=0.3f;
 	square2->octave = -1;

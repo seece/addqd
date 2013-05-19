@@ -1,5 +1,5 @@
 /* 
-* This file datatypes used by the synthesizer.
+* This file contains datatypes used by the synthesizer.
 */
 
 #ifndef ADDSYNTH_TYPES_H
@@ -121,19 +121,30 @@ struct EnvState {
 };
 
 
+/// VoiceState is not updated on each processed sample, but on a regular
+/// interval (SYN_ENVELOPE_JITTER) instead. The new calculated values are 
+/// always saved in the respective VoiceState of the voice, and looked up
+/// from there during the actual rendering.
+struct VoiceState {
+	float vol;	// volume after modulation
+	float pan;	// panning after modulation
+	Parameter params[SYN_MAX_PARAMETERS];	// effect chain parameter values
+	ModSource mod_signals;		// mod source signals
+};
+
 struct Channel {
 	Instrument * instrument;
 	float volume;
 	float pan;					// channel pan, between [-1.0, 1.0]
 	EffectChain chain;
 	SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
-	ModSource mod_signals;		// mod source signals
 	LFOState lfostate[SYN_CHN_LFO_AMOUNT];
 };
 
 struct Voice {
 	int pitch;
 	EnvState envstate;
+	VoiceState state;
 	bool active;
 	double phase;
 	Channel * channel;	// used for quick access

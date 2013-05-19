@@ -44,6 +44,12 @@ static void init_voice(Voice * v) {
 	v->envstate.volume = 1.0;
 	v->envstate.target_volume = v->envstate.volume;
 	v->pitch = 0;
+
+	v->state.pan = 0.0f;
+	v->state.vol = 1.0f;
+	memset(v->state.params, 0, sizeof(Parameter)*SYN_MAX_PARAMETERS);
+	memset(v->state.mod_signals.env, 0, sizeof(float)*SYN_CHN_ENV_AMOUNT);
+	memset(v->state.mod_signals.lfo, 0, sizeof(float)*SYN_CHN_LFO_AMOUNT);
 }
 
 static void init_voices() {
@@ -101,7 +107,7 @@ static void init_route(ModRoute* routep) {
 	routep->target.param_index = 0;
 }
 
-static void syn_init_instrument(Instrument * ins) {
+static void init_instrument_values(Instrument * ins) {
 	ins->volume = 1.0f;
 	ins->waveFunc = NULL;
 	ins->octave = 0;
@@ -130,18 +136,9 @@ void syn_set_instrument_list_pointer(Instrument * listpointer) {
 
 Instrument syn_init_instrument(InstrumentType type) {
 	Instrument ins;
+
+	init_instrument_values(&ins);
 	ins.type = type;
-	ins.waveFunc = NULL;
-	ins.volume = 1.0f;
-	ins.octave = 0;
-
-	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
-		init_envelope(&ins.env[i]);
-	}
-
-	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
-		init_lfo(&ins.lfo[i]);
-	}
 
 	return ins;
 }
@@ -256,29 +253,33 @@ static void process_channel_modulation(Channel* channelp) {
 	if (channelp->instrument == NULL) {
 		return;
 	}
+}
 
-	ModMatrix* matrix = &channelp->instrument->matrix;
+static void process_voice_envelope(Voice* voicep, double t) {
+	Instrument * ins = voicep->channel->instrument;
+	
+	double voicetime = t - voicep->envstate.beginTime;
 
-	// Process LFOs
+	// Calculate envelopes
+	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
+		float envelope_amp = saturate(((voicetime+0.00001f))/ins->env[i].attack);
 
-	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
-		#ifdef DEBUG_CHANNEL_SANITY_CHECKS
-			if (channelp->instrument->lfo[i].wavefunc == NULL) {
-				fprintf(stderr, "Warning: LFO wavefunc is NULL!\n");
-				return;
-			}
-		#endif
+		if (voicep->envstate.released) {
+			envelope_amp *= saturate(1.0f-(t-voicep->envstate.endTime)/ins->env[i].release);
+		}
 
-		double phase = channelp->lfostate->phase;
-		double f = channelp->instrument->lfo[i].frequency;
-		double gain = channelp->instrument->lfo[i].gain;
-
-		channelp->lfostate[i].phase = fmod(phase + ((f/(double)AUDIO_RATE)), 1.0);
-		channelp->mod_signals.lfo[i] = gain * channelp->instrument->lfo[i].wavefunc(phase * 2.0 * PI); 
+		voicep->state.mod_signals.env[i] = envelope_amp;
 	}
+}
+
+static void process_voice_modulation(Voice* voicep, double t) {
+	Channel* channel = voicep->channel;
+	Instrument* ins = voicep->channel->instrument;
+	ModMatrix* matrix = &voicep->channel->instrument->matrix;
+
+	process_voice_envelope(voicep, t);
 
 	// Process modulation routing
-	
 	for (int i=0;i<SYN_CHN_MOD_AMOUNT;i++) {
 		float signal = 0.0;
 		
@@ -292,16 +293,16 @@ static void process_channel_modulation(Channel* channelp) {
 
 		switch (matrix->routes[i].source) {
 			case MOD_ENV1:
-				signal = channelp->mod_signals.env[0];
+				signal = voicep->state.mod_signals.env[0];
 				break;
 			case MOD_ENV2:
-				signal = channelp->mod_signals.env[1];
+				signal = voicep->state.mod_signals.env[1];
 				break;
 			default:
 			#ifdef DEBUG_MODULATION_SANITY_CHECKS
-				fprintf(stderr, "Invalid mod source %d on channel pointer %p!\n",
+				fprintf(stderr, "Invalid mod source %d on voice pointer %p!\n",
 					matrix->routes[i].source,
-					channelp);
+					voicep);
 			#endif
 			continue;
 		}
@@ -317,42 +318,23 @@ static void process_channel_modulation(Channel* channelp) {
 
 		switch (matrix->routes[i].target.param_index) {
 			case PARAM_VOLUME:
+			voicep->state.vol = signal;
 			break;
 
 			case PARAM_PAN:
+			voicep->state.pan = signal;
 			break;
 
 			default:
 			#ifdef DEBUG_MODULATION_SANITY_CHECKS
-				fprintf(stderr, "Invalid mod target param_index %d on channel pointer %p!\n",
+				fprintf(stderr, "Invalid mod target param_index %d on voice pointer %p!\n",
 					matrix->routes[i].target.param_index,
-					channelp);
+					voicep);
 			#endif
 			continue;
 		}
 		
 	}
-}
-
-/// Calculates voice envelopes and stores them in the channel signal array.
-static void process_voice_envelope(Voice* voicep, double t) {
-	Instrument * ins = voicep->channel->instrument;
-	double voicetime = t - voicep->envstate.beginTime;
-
-	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
-		float envelope_amp = saturate(((voicetime+0.00001f))/ins->env[i].attack);
-
-		if (voicep->envstate.released) {
-			envelope_amp *= saturate(1.0f-(t-voicep->envstate.endTime)/ins->env[i].release);
-		}
-
-		voicep->channel->mod_signals.env[i] = envelope_amp;
-	}
-}
-
-static void process_voice_modulation(Voice* voicep) {
-	Instrument* ins = voicep->channel->instrument;
-	ModMatrix* matrix = &voicep->channel->instrument->matrix;
 }
 
 // writes stereo samples to the given array
@@ -445,10 +427,10 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			}
 
 			Instrument * ins = voice->channel->instrument;
-			process_voice_envelope(&voice_list[v], t);
+			//process_voice_envelope(&voice_list[v], t);
 
 			if (env_counter_hit) {
-				//process_voice_modulation(&voice_list[v]);
+				process_voice_modulation(&voice_list[v], t);
 			}
 
 			if (!voice_list[v].active) {
@@ -501,7 +483,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				}
 			}
 
-			sample *= ins->volume;
+			sample *= ins->volume * voice->state.vol;
 			//sample *= ins->volume * float(envelope_amp) * float(voice->envstate.volume);
 
 			voice_list[v].channel->buffer[i*2] += sample;

@@ -22,3 +22,5 @@ Signal sources:
 	note velocity
 	(other channel's output)
 		--> sidechain
+		
+laita envelopet voicekohtaisiksi!

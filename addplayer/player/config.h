@@ -30,7 +30,7 @@
 #define SYN_PARTIAL_AMOUNT 20
 #define SYN_ENVELOPE_JITTER 441	// envelope processing delay in frames 
 #define SYN_MAX_EFFECTS 10
-#define SYN_MAX_PARAMETERS 8
+#define SYN_MAX_PARAMETERS 10
 #define SYN_MAX_INSTRUMENTS 16
 #define SYN_PARTIAL_HIGH_CUT 17500.0
 #define SYN_SINE_TABLE_SIZE 2205
