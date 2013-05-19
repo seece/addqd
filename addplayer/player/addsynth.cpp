@@ -198,11 +198,12 @@ static void syn_process_event(Event * e) {
 			printf("EVENT_NOTE_ON (%d) at %ld.\n", pitch, e->when);
 			#endif
 
-			voice = syn_play_note(e->channel, pitch);
+			voice = syn_play_note(e->channel, pitch, e->when);
 			if (voice != NULL) {
 				vol = e->velocity;
-				//voice->envstate.volume = vol/255.0;
 				voice->envstate.target_volume = vol/255.0;
+				//voice->envstate.volume = vol/255.0;
+				//voice->state.vol = vol/255.0;
 			}
 
 			break;
@@ -428,12 +429,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			// TODO implement actual interpolation
 			float vol = (float)voice->envstate.volume;
 			float target = (float)voice->envstate.target_volume;
-			if (abs(target - vol) > SYN_VOLUME_LERP_THRESOLD) {
-				//voice->envstate.volume += (target - vol) * 0.4;
-				voice->envstate.volume = voice->envstate.target_volume;
-				//voice->envstate.volume += 0.005f *  
-					//sgn(voice->envstate.target_volume - voice->envstate.volume);
-			}
+			voice->envstate.volume = voice->envstate.target_volume;
 
 			if (voice->channel == NULL) {
 				continue;
@@ -546,7 +542,7 @@ EnvState init_envstate() {
 
 // returns a pointer to the voice where the note was assigned to
 // if no suitable voice is found, returns NULL
-Voice * syn_play_note(int channel, int pitch) {
+Voice * syn_play_note(int channel, int pitch, long t_samples) {
 	int activeVoices = 0;
 
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
@@ -565,7 +561,7 @@ Voice * syn_play_note(int channel, int pitch) {
 		voice->pitch = pitch;
 
 		init_voice_state(&voice->state);
-		process_voice_modulation(voice, state.time); // FIXME use interbuffer time
+		process_voice_modulation(voice, t_samples/(double)AUDIO_RATE); 
 
 		#ifdef DEBUG_VOICE
 		printf("new voice %d on chn %d!\n", v, voice->channel_id);

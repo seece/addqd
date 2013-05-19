@@ -75,7 +75,8 @@ void keys_check_presses() {
 			
 			keys_held[i] = true;
 			
-			syn_play_note(channel, keymap[i]);
+			// TODO: fix keyjazzing time parameter
+			syn_play_note(channel, keymap[i], 0);
 			
 			printf("key: %x\n", i);
 		} else {

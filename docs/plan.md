@@ -26,3 +26,4 @@ Signal sources:
 TODO:		
 
 signaalin clamppaus process_voice_modulation funktioon?
+FIKSAA voicep->envstate.volume saa outoja arvoja (välin 0-1 ulkopuolelta)
