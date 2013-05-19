@@ -61,11 +61,6 @@ struct LFO {
 	WaveformFunc_t wavefunc;	// oscillator function
 };
 
-/// State of an LFO stored in a channel.
-struct LFOState {
-	double phase;
-};
-
 struct Sample {
 	float * data;	// pointer to sample data
 	int length;		// amount of samples in data
@@ -138,7 +133,6 @@ struct Channel {
 	float pan;					// channel pan, between [-1.0, 1.0]
 	EffectChain chain;
 	SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
-	LFOState lfostate[SYN_CHN_LFO_AMOUNT];
 };
 
 struct Voice {

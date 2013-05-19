@@ -75,10 +75,6 @@ static void init_channel(Channel * channel) {
 		init_effect(&channel->chain.effects[i]);
 	}
 
-	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
-		channel->lfostate[i].phase = 0.0;
-	}	
-
 	channel->buffer = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 	memset(channel->buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(float));
 }
@@ -202,8 +198,6 @@ static void syn_process_event(Event * e) {
 			if (voice != NULL) {
 				vol = e->velocity;
 				voice->envstate.target_volume = vol/255.0;
-				//voice->envstate.volume = vol/255.0;
-				//voice->state.vol = vol/255.0;
 			}
 
 			break;

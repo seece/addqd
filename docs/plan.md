@@ -27,3 +27,5 @@ TODO:
 
 signaalin clamppaus process_voice_modulation funktioon?
 FIKSAA voicep->envstate.volume saa outoja arvoja (v‰lin 0-1 ulkopuolelta)
+	laita nuottien volume jonnekin fiksusti talteen ett‰ sit‰ voi kans k‰ytt‰‰ki
+	hankkiudu mahdollisesti eroon envstaten volume-kent‰st‰
