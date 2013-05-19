@@ -29,11 +29,17 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 
 	*tri = syn_init_instrument(INS_FM_TWO_OP);
 	tri->type = INS_FM_TWO_OP;
-	tri->volume=0.5f;
-	tri->octave=-2;
+	tri->volume=0.3f;
+	tri->octave=-3;
 	tri->fmFunc = *generators::resonant_fm;
-	tri->env[0].attack = 0.01f;
-	tri->env[0].release = 0.08f;
+	tri->env[0].attack = 0.05f;
+	tri->env[0].release = 0.5f;
+
+	tri->matrix.routes[0].enabled = true;
+	tri->matrix.routes[0].source = MOD_ENV1;
+	tri->matrix.routes[0].target.device = MOD_DEVICE_LOCAL;
+	tri->matrix.routes[0].target.param_index = PARAM_VOLUME;
+
 
 	listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;

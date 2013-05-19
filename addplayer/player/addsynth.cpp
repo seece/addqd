@@ -488,7 +488,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	
 			voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
-			if (t_samples - voice->envstate.endTime > ins->env[0].release*1000) {
+			if (t_samples - voice->envstate.endTime > ins->env[0].release*AUDIO_RATE) {
 				
 				if (voice->envstate.released) {
 					voice->active=false;
