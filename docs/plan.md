@@ -31,5 +31,8 @@ FIKSAA voicep->envstate.volume saa outoja arvoja (välin 0-1 ulkopuolelta)
 	hankkiudu mahdollisesti eroon envstaten volume-kentästä
 useammat oskillaattorit
 	--> kunnon DEVICET
+			channelille unit-lista jonka render-funktioita kutsutaan
 	--> useampi eri parametri, ehkä omia gui-widgettejä_
 	--> jaetaanko envelopet kaikkien oskillaattorien kesken?
+		--> joka unitin jokaista parametria voi venkslata
+	
