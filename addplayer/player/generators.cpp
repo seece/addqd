@@ -4,6 +4,7 @@
 #include <xmmintrin.h>
 #include "../misc.h"
 #include "generators.h"
+#include "sample.h"
 
 // returns the sign of a number
 // http://stackoverflow.com/a/4609795

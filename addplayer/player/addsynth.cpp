@@ -71,9 +71,11 @@ static void init_channel(Channel * channel) {
 	channel->chain.numberOfEffects = 0;
 	channel->instrument = NULL;
 
+	/*
 	for (int i=0;i<SYN_MAX_EFFECTS;i++) {
 		init_effect(&channel->chain.effects[i]);
 	}
+	*/
 
 	channel->buffer = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 	memset(channel->buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(float));
@@ -83,9 +85,11 @@ static void free_channel(Channel * channel) {
 	delete channel->buffer;
 	channel->buffer = NULL;
 
+	/*
 	for (int i=0;i<SYN_MAX_EFFECTS;i++) {
 		free_effect(&channel->chain.effects[i]);
 	}
+	*/
 }
 
 static void init_envelope(Envelope* envp) {

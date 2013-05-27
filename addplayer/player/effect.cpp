@@ -7,11 +7,12 @@
 
 char * effectName[] = {"no effect", "test effect"};
 
-
+/*
 void init_effect(Effect * effect) {
 	effect->name = effectName[SYN_EFFECT_NONE];
 	effect->numParams = 0;
 }
+*/
 
 void free_effect(Effect * effect) {
 

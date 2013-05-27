@@ -91,12 +91,18 @@
     <ClInclude Include="misc.h" />
     <ClInclude Include="player\addsynth.h" />
     <ClInclude Include="player\addsynth_types.h" />
+    <ClInclude Include="player\channel.h" />
     <ClInclude Include="player\config.h" />
     <ClInclude Include="player\device.h" />
     <ClInclude Include="player\effect.h" />
+    <ClInclude Include="player\envelope.h" />
     <ClInclude Include="player\event.h" />
     <ClInclude Include="player\generators.h" />
+    <ClInclude Include="player\instrument.h" />
+    <ClInclude Include="player\lfo.h" />
+    <ClInclude Include="player\modmatrix.h" />
     <ClInclude Include="player\player.h" />
+    <ClInclude Include="player\sample.h" />
     <ClInclude Include="player\sound.h" />
     <ClInclude Include="player\unit.h" />
     <ClInclude Include="player\units\toneblock.h" />
@@ -104,10 +110,12 @@
   <ItemGroup>
     <ClCompile Include="misc.cpp" />
     <ClCompile Include="player\addsynth.cpp" />
+    <ClCompile Include="player\channel.cpp" />
     <ClCompile Include="player\device.cpp" />
     <ClCompile Include="player\effect.cpp" />
     <ClCompile Include="player\event.cpp" />
     <ClCompile Include="player\generators.cpp" />
+    <ClCompile Include="player\instrument.cpp" />
     <ClCompile Include="player\player.cpp" />
     <ClCompile Include="player\sound.cpp" />
     <ClCompile Include="player\unit.cpp" />
