@@ -2,9 +2,9 @@
 #define DEVICE_H_
 
 class CDevice {
-	static const int MAX_PARAMS = 10;
-
 	public:
+		static const int MAX_PARAMS = 10;
+
 		CDevice();
 		~CDevice();
 		void init();

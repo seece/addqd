@@ -9,6 +9,7 @@ class CUnit : CDevice {
 		~CUnit();
 		virtual float render(double phase) = 0;
 		virtual void panic() = 0;
+		float param_values[CDevice::MAX_PARAMS];
 	private:
 
 };
