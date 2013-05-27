@@ -29,3 +29,7 @@ signaalin clamppaus process_voice_modulation funktioon?
 FIKSAA voicep->envstate.volume saa outoja arvoja (välin 0-1 ulkopuolelta)
 	laita nuottien volume jonnekin fiksusti talteen että sitä voi kans käyttääki
 	hankkiudu mahdollisesti eroon envstaten volume-kentästä
+useammat oskillaattorit
+	--> kunnon DEVICET
+	--> useampi eri parametri, ehkä omia gui-widgettejä_
+	--> jaetaanko envelopet kaikkien oskillaattorien kesken?
