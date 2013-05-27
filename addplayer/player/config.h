@@ -42,4 +42,10 @@
 #define SYN_CHN_LFO_AMOUNT 2
 #define SYN_CHN_MOD_AMOUNT 8	// how many modulation matrix entries are allowed
 
+// The size of the internal mixer buffer, the buffer size
+// requested by the host shouldn't exceed this value.
+// The size is in audio frames (stereo samples).
+// SYN_AUDIO_SANITY_CHECKS toggles the error checks for this value.
+#define SYN_MAX_BUFFER_SIZE 44100	
+
 #endif

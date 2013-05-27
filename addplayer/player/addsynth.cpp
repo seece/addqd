@@ -17,12 +17,6 @@
 #include "addsynth.h"
 #include "effect.h"
 
-// The size of the internal mixer buffer, the buffer size
-// requested by the host shouldn't exceed this value.
-// The size is in audio frames (stereo samples).
-// SYN_AUDIO_SANITY_CHECKS toggles the error checks for this value.
-#define SYN_MAX_BUFFER_SIZE 44100
-
 using namespace addqd;
 
 static SynthState state;
@@ -62,34 +56,6 @@ static void init_voices() {
 	for (int i=0;i<SYN_MAX_VOICES;i++) {
 		init_voice(&voice_list[i]);
 	}
-}
-
-static void init_channel(Channel * channel) {
-	channel->pan = 1.0f;
-	channel->volume = 1.0f;
-
-	channel->chain.numberOfEffects = 0;
-	channel->instrument = NULL;
-
-	/*
-	for (int i=0;i<SYN_MAX_EFFECTS;i++) {
-		init_effect(&channel->chain.effects[i]);
-	}
-	*/
-
-	channel->buffer = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
-	memset(channel->buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(float));
-}
-
-static void free_channel(Channel * channel) {
-	delete channel->buffer;
-	channel->buffer = NULL;
-
-	/*
-	for (int i=0;i<SYN_MAX_EFFECTS;i++) {
-		free_effect(&channel->chain.effects[i]);
-	}
-	*/
 }
 
 static void init_envelope(Envelope* envp) {
@@ -671,16 +637,11 @@ Channel * syn_get_channel(int num) {
 void syn_init(int channels) {
 	channel_list = new Channel[channels];
 
-	init_voices();
-
 	for (int i=0;i<channels;i++) {
-		init_channel(&channel_list[i]);
+		//channel_list[i] = Channel();
 	}
 
-	for (int i=0;i<SYN_MAX_INSTRUMENTS;i++) {
-		//instrument_list[i] = NULL;
-		//init_instrument(&instrument_list[i]);
-	}
+	init_voices();
 
 	state.channels = channels;
 	state.time = 0.0;
@@ -695,12 +656,7 @@ void syn_init(int channels) {
 
 
 void syn_free(void) {
-	
-	for (int c=0;c<state.channels;c++) {
-		free_channel(&channel_list[c]);
-	}
-
-	delete channel_list;
+	delete[] channel_list;
 
 	for (int i=0;i<SYN_MAX_INSTRUMENTS;i++) {
 		//free_instrument(instrument_list[i]);

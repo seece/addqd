@@ -7,6 +7,9 @@
 
 class Channel {
 	public:
+		Channel();
+		~Channel();
+
 		Instrument * instrument;
 		float volume;
 		float pan;					// channel pan, between [-1.0, 1.0]
