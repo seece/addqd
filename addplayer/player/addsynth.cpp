@@ -406,12 +406,9 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				process_voice_modulation(&voice_list[v], t);
 			}
 
-			sample = voice->channel->render(voice, t_samples);
+			voice->channel->render(voice, i, t_samples);
 			
 			//sample *= ins->volume * float(envelope_amp) * float(voice->envstate.volume);
-
-			voice_list[v].channel->buffer[i*2] += sample;
-			voice_list[v].channel->buffer[i*2+1] += sample;
 		}
 	}	
 

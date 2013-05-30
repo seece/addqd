@@ -38,11 +38,22 @@ Channel::~Channel() {
 	delete this->buffer;
 }
 
-double Channel::render(Voice* voice, long t_samples) {
+/// i: buffer array index
+void Channel::render(Voice* voice, int i, long t_samples) {
 	Instrument * ins = voice->channel->instrument;
+	double phase = voice->phase;
+	double ofs = 0.0;
+	double sample = 0.0;
 
 	if (!voice->active) {
-		return 0.0;
+		goto render_end;
+	}
+
+	if (voice->channel != this) {
+		#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+			fprintf(stderr, "Warning: trying to render foreign channel #%d voice in ::render!\n", voice->channel_id);
+			goto render_end;
+		#endif
 	}
 
 	if (this->instrument == NULL) {
@@ -50,18 +61,14 @@ double Channel::render(Voice* voice, long t_samples) {
 			fprintf(stderr, "Warning: NULL instrument on active voice. Channel: %d\n", 
 				voice->channel_id);
 		#endif
-		return 0.0;
+		return;
 	}
-
 
 	//Channel * chan = voice_list[v].channel;
 	WaveformFunc_t wavefunc = ins->waveFunc;
 
 	double f = NOTEFREQ(voice->pitch+3+ins->octave*12);
 
-	double phase = voice->phase;
-	double ofs = 0.0;
-	double sample = 0.0;
 	double t = t_samples/(double)AUDIO_RATE;
 
 	switch (ins->type) {
@@ -78,8 +85,7 @@ double Channel::render(Voice* voice, long t_samples) {
 				ins->sample->length);
 			break;
 		default:
-			#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS 
-
+			#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS
 				fprintf(stderr, "Invalid instrument type: 0x%x\n", ins->type);
 			#endif
 			break;
@@ -96,5 +102,9 @@ double Channel::render(Voice* voice, long t_samples) {
 
 	sample *= ins->volume * voice->state.vol;
 
-	return sample;
+	render_end:
+
+	this->buffer[i*2] += sample;
+	this->buffer[i*2+1] += sample;
+	return;
 }

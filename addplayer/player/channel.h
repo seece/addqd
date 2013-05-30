@@ -20,7 +20,7 @@ class Channel {
 		EffectChain chain;
 		SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
 
-		double render(Voice* voice, long t_samples);
+		void render(Voice* voice, int i, long t_samples);
 		
 		CUnit* units[MAX_UNITS];
 };
