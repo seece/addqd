@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <Windows.h>
 #include "../misc.h"
+#include "eks_math.h"
 #include "config.h"
 #include "addsynth.h"
 #include "effect.h"
@@ -325,8 +326,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	float sample = 0.0;
 	double t;
 	long t_samples;
-	double phase;
-	double f;
+	//double phase;
+	//double f;
 	double next_event_time = 0.0;
 
 	#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS
@@ -405,57 +406,8 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 				process_voice_modulation(&voice_list[v], t);
 			}
 
-			if (!voice_list[v].active) {
-				continue;
-			}
-
-			if (voice_list[v].channel->instrument == NULL) {
-				#ifdef DEBUG_INSTRUMENTS
-					fprintf(stderr, "Warning: NULL instrument on active voice. Channel: %d\n", 
-						voice_list[v].channel_id);
-				#endif
-				continue;
-			}
-	
-			//Channel * chan = voice_list[v].channel;
-			WaveformFunc_t wavefunc = ins->waveFunc;
-
-			f = NOTEFREQ(voice_list[v].pitch+3+ins->octave*12);
-
-			phase = voice->phase;
-			double ofs = 0.0;
-
-			switch (ins->type) {
-				case INS_OSC:
-					sample = (float)wavefunc(phase * 2.0 * PI);
-					break;
-				case INS_FM_TWO_OP:
-					sample = (float)ins->fmFunc(phase * 2.0 * PI, 1.0, 0.0);
-					break;
-				case INS_SAMPLER:
-					sample = (float)ins->samplerFunc(
-						t - voice->envstate.beginTime/(double)AUDIO_RATE * (f/440.0), 
-						ins->sample->data, 
-						ins->sample->length);
-					break;
-				default:
-					#ifdef DEBUG_INSTRUMENT_SANITY_CHECKS 
-
-						fprintf(stderr, "Invalid instrument type: 0x%x\n", ins->type);
-					#endif
-					break;
-			}
-	
-			voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
-		
-			if (t_samples - voice->envstate.endTime > ins->env[0].release*AUDIO_RATE) {
-				
-				if (voice->envstate.released) {
-					voice->active=false;
-				}
-			}
-
-			sample *= ins->volume * voice->state.vol;
+			sample = voice->channel->render(voice, t_samples);
+			
 			//sample *= ins->volume * float(envelope_amp) * float(voice->envstate.volume);
 
 			voice_list[v].channel->buffer[i*2] += sample;

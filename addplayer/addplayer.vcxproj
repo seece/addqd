@@ -95,6 +95,7 @@
     <ClInclude Include="player\config.h" />
     <ClInclude Include="player\device.h" />
     <ClInclude Include="player\effect.h" />
+    <ClInclude Include="player\eks_math.h" />
     <ClInclude Include="player\envelope.h" />
     <ClInclude Include="player\event.h" />
     <ClInclude Include="player\generators.h" />
@@ -106,6 +107,7 @@
     <ClInclude Include="player\sound.h" />
     <ClInclude Include="player\unit.h" />
     <ClInclude Include="player\units\toneblock.h" />
+    <ClInclude Include="player\voice.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="misc.cpp" />

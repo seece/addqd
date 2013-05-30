@@ -3,6 +3,7 @@
 #include <mmintrin.h>
 #include <xmmintrin.h>
 #include "../misc.h"
+#include "eks_math.h"
 #include "generators.h"
 #include "sample.h"
 
