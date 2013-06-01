@@ -14,13 +14,18 @@
 generators::osc_type CToneBlock::selected_osc;
 WaveformFunc_t CToneBlock::osc_functions[NUM_OSCILLATOR_TYPES];
 
+
 CToneBlock::CToneBlock() {
-	this->selected_osc = generators::OSC_SIN;
-	osc_functions[generators::OSC_SIN] = generators::sine;
+	this->selected_osc = generators::OSC_SINE;
+	osc_functions[generators::OSC_SINE] = generators::sine;
 	osc_functions[generators::OSC_SQUARE] = generators::square; 
 	osc_functions[generators::OSC_SAW] = generators::sawsin; // TODO get a proper saw wave
 
-	param_values[PARAM_VOLUME] = 1.0f;
+	param_values[CToneBlock::PARAM_VOLUME] = 1.0f;
+	param_values[CToneBlock::PARAM_OCTAVE] = 3.0f;
+	param_values[CToneBlock::PARAM_FINE] = 0.0f;
+	param_values[CToneBlock::PARAM_MOD_A] = 1.0f;
+	param_values[CToneBlock::PARAM_MOD_B] = 1.0f;
 }
 
 CToneBlock::~CToneBlock() {
@@ -32,11 +37,15 @@ float CToneBlock::render(double phase, Voice* voicep) {
 		assert(static_cast<int>(selected_osc) < NUM_OSCILLATOR_TYPES);
 	#endif
 
-	int octave = 1;
+	int octave = (int)param_values[PARAM_OCTAVE];
+	float fine = param_values[CToneBlock::PARAM_FINE];
 
-	double f = NOTEFREQ(voicep->pitch+3+octave*12);
+	double f = NOTEFREQ(voicep->pitch+3+octave*12 + (double)fine);
+	float sample = static_cast<float>(osc_functions[selected_osc](phase * 2.0 * PI));
+	sample*=param_values[PARAM_VOLUME];
+	sample*=voicep->state.vol;
 
-	return static_cast<float>(osc_functions[selected_osc](phase)) * param_values[PARAM_VOLUME];
+	return sample;
 }
 
 void CToneBlock::panic() {
@@ -44,5 +53,5 @@ void CToneBlock::panic() {
 };
 
 int CToneBlock::getParamNum() {
-	return 1;
+	return CToneBlock::PARAMETER_AMOUNT;
 }

@@ -15,10 +15,12 @@
 #include "event.h"
 #include "generators.h"
 #include "addsynth_types.h"
+#include "lfo.h"
 
 void create_spectrum(Spectrum * spectrum);
 Instrument** syn_get_instrument_list_pointer();
 void syn_set_instrument_list_pointer(Instrument * listpointer);
+LFO* syn_get_channel_lfo(int channel_id, int lfo_id);
 void syn_attach_instrument(int channel, int instrument_slot);
 void syn_free_instrument(Instrument * instrument);
 void syn_render_block(SAMPLE_TYPE * buf, int length, addqd::EventBuffer * eventbuffer);

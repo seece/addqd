@@ -9,6 +9,7 @@
 enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
 
 /// An instrument descriptor. Doesn't hold any instrument state.
+/// TODO remove this, different unit configurations are the future
 struct Instrument {
 	InstrumentType type;
 	//Spectra spectra;

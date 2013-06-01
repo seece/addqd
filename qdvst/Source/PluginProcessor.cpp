@@ -40,6 +40,14 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	tri->matrix.routes[0].target.device = MOD_DEVICE_LOCAL;
 	tri->matrix.routes[0].target.param_index = PARAM_VOLUME;
 
+	tri->matrix.routes[1].enabled = true;
+	tri->matrix.routes[1].source = MOD_LFO1;
+	tri->matrix.routes[1].target.device = MOD_DEVICE_UNIT;
+	tri->matrix.routes[1].target.device_index = 0;
+	tri->matrix.routes[1].target.param_index = 2;	// PARAM_FINE
+
+	LFO* triLFO = syn_get_channel_lfo(0, 0);
+
 
 	listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;

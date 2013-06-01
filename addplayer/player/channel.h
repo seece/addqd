@@ -19,6 +19,7 @@ class Channel {
 		float pan;					// channel pan, between [-1.0, 1.0]
 		EffectChain chain;
 		SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
+		LFO lfo[SYN_CHN_LFO_AMOUNT];
 
 		void render(Voice* voice, int i, long t_samples);
 		

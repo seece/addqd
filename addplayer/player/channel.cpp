@@ -22,6 +22,14 @@ Channel::Channel() {
 	this->buffer = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 	memset(this->buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(float));
 
+	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
+		LFO* lfop = &this->lfo[i];
+		lfop->frequency = 1.0f;
+		lfop->gain = 1.0f;
+		lfop->wavefunc = generators::sine;
+	}
+
+	// just testin'
 	units[0] = new CToneBlock();
 }
 
@@ -109,7 +117,7 @@ void Channel::render(Voice* voice, int i, long t_samples) {
 		}
 	}
 
-	sample *= voice->state.vol;
+	//sample *= voice->state.vol;
 
 	render_end:
 

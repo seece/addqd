@@ -8,6 +8,7 @@
 #include "../player/sound.h"
 #include "../player/event.h" // TODO replace this with some standalone definitions
 										// or wrap the loader in a load_binary_song function
+#include "../player/lfo.h"
 
 #define MAGIC
 

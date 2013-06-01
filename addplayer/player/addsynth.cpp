@@ -18,6 +18,10 @@
 #include "addsynth.h"
 #include "effect.h"
 
+#ifndef INTROLIB
+	#include <cassert>
+#endif
+
 using namespace addqd;
 
 static SynthState state;
@@ -66,11 +70,13 @@ static void init_envelope(Envelope* envp) {
 	envp->hold = 1.0f;
 }
 
+/*
 static void init_lfo(LFO* lfop) {
 	lfop->frequency = 1.0f;
 	lfop->gain = 1.0f;
 	lfop->wavefunc = generators::sine;
 }
+*/
 
 static void init_route(ModRoute* routep) {
 	routep->amount=1.0;
@@ -89,9 +95,12 @@ static void init_instrument_values(Instrument * ins) {
 		init_envelope(&ins->env[i]);
 	}
 
+	/*
+	// check the Channel constructor for this
 	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
 		init_lfo(&ins->lfo[i]);
 	}
+	*/
 
 	for (int i=0;i<SYN_CHN_MOD_AMOUNT;i++) {
 		init_route(&ins->matrix.routes[i]);
@@ -105,6 +114,14 @@ Instrument** syn_get_instrument_list_pointer() {
 
 void syn_set_instrument_list_pointer(Instrument * listpointer) {
 	instrument_list = listpointer;
+}
+
+LFO* syn_get_channel_lfo(int channel_id, int lfo_id) {
+	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+		assert(channel_id < state.channels);
+	#endif
+
+	return &channel_list[channel_id].lfo[lfo_id];
 }
 
 Instrument syn_init_instrument(InstrumentType type) {
@@ -210,6 +227,7 @@ static void syn_process_event(Event * e) {
 
 
 static void process_channel_modulation(Channel* channelp) {
+	/*
 	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
 		if (channelp == NULL) {
 			fprintf(stderr, "Warning: trying to process NULL channel modulation!\n");
@@ -225,13 +243,16 @@ static void process_channel_modulation(Channel* channelp) {
 	if (channelp->instrument == NULL) {
 		return;
 	}
+	*/
 }
 
+/// Calculates voice ADSR-like envelope and stores the results in
+/// voice->state.mod_signals array.
 static void process_voice_envelope(Voice* voicep, double t) {
 	Instrument * ins = voicep->channel->instrument;
 	
 	// envstate.beginTime and .endTime are in samples 
-	// but all other envestate values are in seconds (double)
+	// but all other envstate values are in seconds (double)
 	// so we have to convert the values first
 
 	double voicetime = t - voicep->envstate.beginTime/(double)AUDIO_RATE;
@@ -249,16 +270,32 @@ static void process_voice_envelope(Voice* voicep, double t) {
 	}
 }
 
+static void process_voice_lfo(Voice* voicep, double t) {
+	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
+		LFO* lfop = &voicep->channel->lfo[i];
+
+		if (lfop->wavefunc == NULL) {
+			continue;
+		}
+
+		float f = lfop->frequency;
+		float signal = lfop->wavefunc(2.0*PI*t*f) * lfop->gain;
+		voicep->state.mod_signals.lfo[i] = signal;
+	}
+}
+
 static void process_voice_modulation(Voice* voicep, double t) {
 	Channel* channel = voicep->channel;
 	Instrument* ins = voicep->channel->instrument;
 	ModMatrix* matrix = &voicep->channel->instrument->matrix;
 
 	process_voice_envelope(voicep, t);
+	process_voice_lfo(voicep, t);
 
 	// Process modulation routing
 	for (int i=0;i<SYN_CHN_MOD_AMOUNT;i++) {
 		float signal = 0.0;
+		ModRoute* route = &matrix->routes[i];
 		
 		if (!matrix->routes[i].enabled) {
 			continue;
@@ -275,6 +312,12 @@ static void process_voice_modulation(Voice* voicep, double t) {
 			case MOD_ENV2:
 				signal = voicep->state.mod_signals.env[1];
 				break;
+			case MOD_LFO1:
+				signal = voicep->state.mod_signals.lfo[0];
+				break;
+			case MOD_LFO2:
+				signal = voicep->state.mod_signals.lfo[1];
+				break;
 			default:
 			#ifdef DEBUG_MODULATION_SANITY_CHECKS
 				fprintf(stderr, "Invalid mod source %d on voice pointer %p!\n",
@@ -284,8 +327,7 @@ static void process_voice_modulation(Voice* voicep, double t) {
 			continue;
 		}
 
-		if (matrix->routes[i].target.device != MOD_DEVICE_LOCAL) {
-			// Currently effect parameter modulation is unsupported.
+		if (route->target.device == MOD_DEVICE_EFFECT) {
 			#ifdef DEBUG_MODULATION_SANITY_CHECKS
 				fprintf(stderr, "Invalid target device %d, skipping...\n", 
 					matrix->routes[i].target.device);
@@ -295,22 +337,35 @@ static void process_voice_modulation(Voice* voicep, double t) {
 
 		signal *= matrix->routes[i].amount;
 
-		switch (matrix->routes[i].target.param_index) {
-			case PARAM_VOLUME:
-			voicep->state.vol = signal;
-			break;
+		if (route->target.device == MOD_DEVICE_LOCAL) {
+			switch (matrix->routes[i].target.param_index) {
+				case PARAM_VOLUME:
+				voicep->state.vol = signal;
+				break;
 
-			case PARAM_PAN:
-			voicep->state.pan = signal;
-			break;
+				case PARAM_PAN:
+				voicep->state.pan = signal;
+				break;
 
-			default:
+				default:
+				#ifdef DEBUG_MODULATION_SANITY_CHECKS
+					fprintf(stderr, "Invalid mod target param_index %d on voice pointer %p!\n",
+						matrix->routes[i].target.param_index,
+						voicep);
+				#endif
+				continue;
+			}
+
+		} else if (route->target.device == MOD_DEVICE_UNIT) {
+			int device_index = route->target.device_index;
+
 			#ifdef DEBUG_MODULATION_SANITY_CHECKS
-				fprintf(stderr, "Invalid mod target param_index %d on voice pointer %p!\n",
-					matrix->routes[i].target.param_index,
-					voicep);
+				assert(voicep->channel->units[device_index] != NULL);
+				assert(voicep->channel->units[device_index]->getParamNum() < route->target.param_index);
 			#endif
-			continue;
+
+			CUnit* unit = voicep->channel->units[device_index];
+			unit->param_values[route->target.param_index] = signal;
 		}
 		
 	}
