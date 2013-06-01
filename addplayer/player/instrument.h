@@ -22,7 +22,6 @@ struct Instrument {
 	OscFunc_2op_t fmFunc;		// any two-op generator function
 	Sample * sample;			// Sample pointer for samplerFunc
 	ModMatrix matrix;			// modulation matrix
-
 };
 
 #endif

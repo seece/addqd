@@ -16,12 +16,6 @@
 #include "generators.h"
 #include "addsynth_types.h"
 
-#define NOTEMAGIC 1.059460646483
-//#define PI 3.14159265
-#define TAU (2*PI)
-#define NOTEFREQ(pitch) (pow(NOTEMAGIC, pitch) * 440.0)
-
-
 void create_spectrum(Spectrum * spectrum);
 Instrument** syn_get_instrument_list_pointer();
 void syn_set_instrument_list_pointer(Instrument * listpointer);

@@ -5,12 +5,9 @@
 #include "config.h"
 #include "channel.h"
 #include "unit.h"
+#include "units/toneblock.h"
 #include "eks_math.h"
 
-#define NOTEMAGIC 1.059460646483
-//#define PI 3.14159265
-#define TAU (2*PI)
-#define NOTEFREQ(pitch) (pow(NOTEMAGIC, pitch) * 440.0)
 
 Channel::Channel() {
 	this->pan = 1.0f;
@@ -24,6 +21,8 @@ Channel::Channel() {
 
 	this->buffer = new SAMPLE_TYPE[SYN_MAX_BUFFER_SIZE*2];
 	memset(this->buffer, 0, SYN_MAX_BUFFER_SIZE*2*sizeof(float));
+
+	units[0] = new CToneBlock();
 }
 
 Channel::~Channel() {
@@ -64,6 +63,15 @@ void Channel::render(Voice* voice, int i, long t_samples) {
 		return;
 	}
 
+	for (int u=0;u<Channel::MAX_UNITS;u++) {
+		if (this->units[u] == NULL) {
+			continue;
+		}
+
+		// TODO add wet/dry knob
+		sample += this->units[u]->render(phase, voice);
+	}
+
 	//Channel * chan = voice_list[v].channel;
 	WaveformFunc_t wavefunc = ins->waveFunc;
 
@@ -71,6 +79,7 @@ void Channel::render(Voice* voice, int i, long t_samples) {
 
 	double t = t_samples/(double)AUDIO_RATE;
 
+	/*
 	switch (ins->type) {
 		case INS_OSC:
 			sample = (float)wavefunc(phase * 2.0 * PI);
@@ -89,7 +98,7 @@ void Channel::render(Voice* voice, int i, long t_samples) {
 				fprintf(stderr, "Invalid instrument type: 0x%x\n", ins->type);
 			#endif
 			break;
-	}
+	}*/
 	
 	voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
@@ -100,11 +109,10 @@ void Channel::render(Voice* voice, int i, long t_samples) {
 		}
 	}
 
-	sample *= ins->volume * voice->state.vol;
+	sample *= voice->state.vol;
 
 	render_end:
 
 	this->buffer[i*2] += sample;
 	this->buffer[i*2+1] += sample;
-	return;
 }

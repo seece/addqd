@@ -3,6 +3,7 @@
 
 #include "envelope.h"
 #include "modmatrix.h"
+#include "effect.h"
 // #include "channel.h"
 
 class Channel;

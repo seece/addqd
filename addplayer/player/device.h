@@ -6,11 +6,11 @@ class CDevice {
 		static const int MAX_PARAMS = 10;
 
 		CDevice();
-		~CDevice();
+		virtual ~CDevice();
 		void init();
-		int getParams();
+		virtual int getParamNum();
 	private:
-		int num_params;
+
 };
 
 #endif

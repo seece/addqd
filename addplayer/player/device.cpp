@@ -11,3 +11,7 @@ CDevice::~CDevice() {
 void CDevice::init() {
 
 }
+
+int CDevice::getParamNum() {
+	return 0;
+}
