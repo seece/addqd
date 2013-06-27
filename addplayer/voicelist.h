@@ -3,10 +3,10 @@
 
 #include "player/voice.h"
 
-class VoiceList {
+class CVoiceList {
 	public:
-	VoiceList();
-	~VoiceList();
+	CVoiceList();
+	~CVoiceList();
 	void addVoice(Voice* voicep);
 	void removeVoice(Voice* voicep);
 	bool containsVoice(Voice* voicep);

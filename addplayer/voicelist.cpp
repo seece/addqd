@@ -2,27 +2,27 @@
 #include "player/voice.h"
 #include "voicelist.h"
 
-VoiceList::VoiceList() {
+CVoiceList::CVoiceList() {
 	this->clear();
 }
 
-VoiceList::~VoiceList() {
+CVoiceList::~CVoiceList() {
 
 }
 
-void VoiceList::addVoice(Voice* voicep) {
+void CVoiceList::addVoice(Voice* voicep) {
 	voices[voicep->index] = voicep;
 }
 
-void VoiceList::removeVoice(Voice* voicep) {
+void CVoiceList::removeVoice(Voice* voicep) {
 	voices[voicep->index] = NULL;
 }
 
-bool VoiceList::containsVoice(Voice* voicep) {
+bool CVoiceList::containsVoice(Voice* voicep) {
 	return voices[voicep->index] != NULL;
 }
 
-void VoiceList::clear() {
+void CVoiceList::clear() {
 	for (int i=0;i<SYN_MAX_VOICES;i++) {
 		voices[i] = NULL;
 	}
