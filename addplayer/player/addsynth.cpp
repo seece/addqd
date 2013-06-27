@@ -361,7 +361,7 @@ static void process_voice_modulation(Voice* voicep, double t) {
 
 			#ifdef DEBUG_MODULATION_SANITY_CHECKS
 				assert(voicep->channel->units[device_index] != NULL);
-				assert(voicep->channel->units[device_index]->getParamNum() < route->target.param_index);
+				assert(voicep->channel->units[device_index]->getParamNum() > route->target.param_index);
 			#endif
 
 			CUnit* unit = voicep->channel->units[device_index];

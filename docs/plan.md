@@ -35,4 +35,6 @@ useammat oskillaattorit
 	--> useampi eri parametri, ehkä omia gui-widgettejä_
 	--> jaetaanko envelopet kaikkien oskillaattorien kesken?
 		--> joka unitin jokaista parametria voi venkslata
-	
+		
+poista instrumenttistrukti, se on turha
+		
