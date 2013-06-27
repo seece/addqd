@@ -29,8 +29,7 @@
 	#define DEBUG_UNITS
 #endif
 
-// IL Harmor has 516 partials
-#define SYN_PARTIAL_AMOUNT 20
+#define SYN_PARTIAL_AMOUNT 20	// not used
 #define SYN_ENVELOPE_JITTER 42	// envelope processing delay in frames 
 #define SYN_MAX_EFFECTS 10
 #define SYN_MAX_PARAMETERS 10

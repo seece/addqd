@@ -30,7 +30,7 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	*tri = syn_init_instrument(INS_FM_TWO_OP);
 	tri->type = INS_FM_TWO_OP;
 	tri->volume=0.3f;
-	tri->octave=-3;
+	tri->octave=0;
 	tri->fmFunc = *generators::resonant_fm;
 	tri->env[0].attack = 0.05f;
 	tri->env[0].release = 0.5f;

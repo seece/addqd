@@ -20,6 +20,7 @@ struct VoiceState {
 
 struct Voice {
 	int pitch;
+	int index;
 	EnvState envstate;
 	VoiceState state;
 	bool active;

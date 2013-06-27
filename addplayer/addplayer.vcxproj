@@ -108,6 +108,7 @@
     <ClInclude Include="player\unit.h" />
     <ClInclude Include="player\units\toneblock.h" />
     <ClInclude Include="player\voice.h" />
+    <ClInclude Include="voicelist.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="misc.cpp" />
@@ -122,6 +123,7 @@
     <ClCompile Include="player\sound.cpp" />
     <ClCompile Include="player\unit.cpp" />
     <ClCompile Include="player\units\toneblock.cpp" />
+    <ClCompile Include="voicelist.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

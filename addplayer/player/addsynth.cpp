@@ -41,8 +41,9 @@ static void init_voice_state(VoiceState* vstatep) {
 	vstatep->vol = 1.0f;
 }
 
-static void init_voice(Voice * v) {
+static void init_voice(Voice * v, int index) {
 	v->active = false;
+	v->index = index;
 	v->channel = NULL;
 	v->envstate.hold = false;
 	v->envstate.beginTime = 0;
@@ -59,7 +60,7 @@ static void init_voice(Voice * v) {
 
 static void init_voices() {
 	for (int i=0;i<SYN_MAX_VOICES;i++) {
-		init_voice(&voice_list[i]);
+		init_voice(&voice_list[i], i);
 	}
 }
 
@@ -470,7 +471,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
 
 	for (int c=0;c<state.channels;c++) {
-		if (channel_list[c].volume <= 0.0001) {
+		if (channel_list[c].volume < 0.0001) {
 			continue;
 		}
 
@@ -642,7 +643,7 @@ void syn_init(int channels) {
 	channel_list = new Channel[channels];
 
 	for (int i=0;i<channels;i++) {
-		//channel_list[i] = Channel();
+		channel_list[i].index = i;
 	}
 
 	init_voices();

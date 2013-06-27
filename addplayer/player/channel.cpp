@@ -10,6 +10,7 @@
 
 
 Channel::Channel() {
+	//this->index = index;	// the index is set in void syn_init function
 	this->pan = 1.0f;
 	this->volume = 1.0f;
 	this->chain.numberOfEffects = 0;
@@ -29,7 +30,7 @@ Channel::Channel() {
 		lfop->wavefunc = generators::sine;
 	}
 
-	// just testin'
+	// TODO read device configuration from a file
 	units[0] = new CToneBlock();
 }
 
@@ -45,7 +46,7 @@ Channel::~Channel() {
 	delete this->buffer;
 }
 
-/// i: buffer array index
+/// i: audio buffer array index
 void Channel::render(Voice* voice, int i, long t_samples) {
 	Instrument * ins = voice->channel->instrument;
 	double phase = voice->phase;
@@ -81,7 +82,7 @@ void Channel::render(Voice* voice, int i, long t_samples) {
 	}
 
 	//Channel * chan = voice_list[v].channel;
-	WaveformFunc_t wavefunc = ins->waveFunc;
+	//WaveformFunc_t wavefunc = ins->waveFunc;
 
 	double f = NOTEFREQ(voice->pitch+3+ins->octave*12);
 
@@ -123,4 +124,14 @@ void Channel::render(Voice* voice, int i, long t_samples) {
 
 	this->buffer[i*2] += sample;
 	this->buffer[i*2+1] += sample;
+}
+
+void Channel::addPlayingVoice(Voice* voice) {
+	voice->channel = this;
+	voice->channel_id = this->index;
+	this->voicelist.addVoice(voice);
+}
+
+void Channel::removePlayingVoice(Voice* voice) {
+	this->voicelist.removeVoice(voice);
 }
