@@ -37,4 +37,5 @@ useammat oskillaattorit
 		--> joka unitin jokaista parametria voi venkslata
 		
 poista instrumenttistrukti, se on turha
-		
+
+fiksaa ärsyttävä näpytysbugi :(

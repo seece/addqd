@@ -1,3 +1,7 @@
+// The active voices on each channel are added to this map. It is used 
+// when the channel wants to know which voices are currently playing on 
+// it. 
+
 #ifndef VOICELIST_H
 #define VOICELIST_H
 

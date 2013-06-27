@@ -227,26 +227,6 @@ static void syn_process_event(Event * e) {
 }
 
 
-static void process_channel_modulation(Channel* channelp) {
-	/*
-	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
-		if (channelp == NULL) {
-			fprintf(stderr, "Warning: trying to process NULL channel modulation!\n");
-			return;
-		}
-
-		if (channelp->instrument == NULL) {
-			fprintf(stderr, "Warning: instrument is NULL in channel modulation!\n");
-			return;
-		}
-	#endif
-
-	if (channelp->instrument == NULL) {
-		return;
-	}
-	*/
-}
-
 /// Calculates voice ADSR-like envelope and stores the results in
 /// voice->state.mod_signals array.
 static void process_voice_envelope(Voice* voicep, double t) {
@@ -437,20 +417,37 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			current_event++;
 		}
 
-		if (env_counter_hit) {
-			for (int c=0;c<state.channels;c++) {
-				process_channel_modulation(&channel_list[c]);
-			}
-		}
-
 		for (int v=0;v<SYN_MAX_VOICES;v++) {
-			Voice * voice = &voice_list[v];
-			
+			Voice* voice = &voice_list[v];
+
 			// voice volume change smoothing
 			// TODO implement actual interpolation
 			float vol = (float)voice->envstate.volume;
 			float target = (float)voice->envstate.target_volume;
 			voice->envstate.volume = voice->envstate.target_volume;
+
+			if (!voice->channel)
+				continue;
+
+			if (env_counter_hit) { 
+				process_voice_modulation(voice, t);
+			}
+		}
+
+		// TODO use proper processing order derived from channel routings
+		for (int c=0;c<state.channels;c++) {
+			if (env_counter_hit) {
+				channel_list[c].processModulation();
+			}
+
+			channel_list[c].render(i, t_samples);
+		}
+
+		/*
+		for (int v=0;v<SYN_MAX_VOICES;v++) {
+			Voice * voice = &voice_list[v];
+			
+			
 
 			if (voice->channel == NULL) {
 				continue;
@@ -466,6 +463,7 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 			
 			//sample *= ins->volume * float(envelope_amp) * float(voice->envstate.volume);
 		}
+		*/
 	}	
 
 	memset(buf, 0, length*sizeof(SAMPLE_TYPE)*2);
@@ -511,7 +509,7 @@ EnvState init_envstate() {
 
 // returns a pointer to the voice where the note was assigned to
 // if no suitable voice is found, returns NULL
-Voice * syn_play_note(int channel, int pitch, long t_samples) {
+Voice * syn_play_note(int channel_id, int pitch, long t_samples) {
 	int activeVoices = 0;
 
 	for (int v=0;v<SYN_MAX_VOICES;v++) {
@@ -524,8 +522,16 @@ Voice * syn_play_note(int channel, int pitch, long t_samples) {
 		}
 
 		voice->active = true;
-		voice->channel = &channel_list[channel];
-		voice->channel_id = channel;
+
+		// remove the old assignment before adding a new one
+		if (voice->channel) {
+			voice->channel->removePlayingVoice(voice);
+			voice->channel = NULL;
+		}
+
+		channel_list[channel_id].addPlayingVoice(voice);
+		//voice->channel = &channel_list[channel];
+		//voice->channel_id = channel;
 		voice->envstate = init_envstate();
 		voice->pitch = pitch;
 

@@ -15,6 +15,7 @@ void CVoiceList::addVoice(Voice* voicep) {
 }
 
 void CVoiceList::removeVoice(Voice* voicep) {
+	voicep->channel = NULL;
 	voices[voicep->index] = NULL;
 }
 

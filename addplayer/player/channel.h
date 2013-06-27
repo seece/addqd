@@ -15,9 +15,11 @@ class Channel {
 	Channel();
 	~Channel();
 
-	void render(Voice* voice, int i, long t_samples);
+	void renderVoice(Voice* voice, int i, long t_samples);
+	void render(int i, long t_samples);
 	void addPlayingVoice(Voice* voice);
 	void removePlayingVoice(Voice* voice);
+	void processModulation();
 
 	int index;	// the index is set in void syn_init function
 	Instrument * instrument;	// TODO remove the Instrument struct altogether, use device configurations instead
