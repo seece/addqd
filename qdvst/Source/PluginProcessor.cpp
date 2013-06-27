@@ -7,6 +7,7 @@
 #include "PluginEditor.h"
 #include "player/addsynth.h"
 #include "addqd_midi.h"
+#include "editor_state.h"
 
 
 //==============================================================================
@@ -54,6 +55,7 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	//syn_set_instrument_list_pointer(insarr);
 
 	syn_attach_instrument(0, 0);
+	EditorState::processor = this;
 
 }
 
@@ -263,10 +265,13 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 		printf("VST: Warning blocksize too big: %d\n", length);
 	}
 
+	{
+		const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 	//renderStart = GetTickCount();
 	//if (sampleTime > 44100*2) {
 		syn_render_block(tempAudioBuffer, length, &synthEvents);
 	//}
+	}
 
 	//printf("%ld:\tbuffersize: %d\n", sampleTime, length);
 	
@@ -324,4 +329,19 @@ void QdvstAudioProcessor::setStateInformation (const void* data, int sizeInBytes
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new QdvstAudioProcessor();
+}
+
+Channel* QdvstAudioProcessor::getChannel(int index) 
+{
+	if (index < 0 || index > getNumChannels()) {
+		fprintf(stderr, "DSP: invalid channel num: %d\n", index);
+		return NULL;
+	}
+
+	return syn_get_channel(index);
+}
+
+int QdvstAudioProcessor::getNumChannels() 
+{
+	return this->settings.channels;
 }

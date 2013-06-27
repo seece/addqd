@@ -14,7 +14,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 
-
 //==============================================================================
 /**
 */
@@ -25,12 +24,11 @@ public:
     QdvstAudioProcessorEditor (QdvstAudioProcessor* ownerFilter);
     ~QdvstAudioProcessorEditor();
 
-    //==============================================================================
-    // This is just a standard Juce paint method...
     void paint (Graphics& g);
 	void sliderValueChanged(Slider* slider);
 
-	juce::Slider * testknob;
+	juce::Slider* testknob;
+	juce::Label* channelLabel;
 };
 
 

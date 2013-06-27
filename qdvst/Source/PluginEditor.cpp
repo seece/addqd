@@ -12,6 +12,7 @@
 #include <Windows.h>
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "editor_state.h"
 
 void initConsole(void) {
     AllocConsole();
@@ -35,7 +36,27 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 	testknob->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
 	testknob->addListener(this);
 	addAndMakeVisible(testknob);
+
+	channelLabel = new Label("channelLabel", "channels");
+	channelLabel->setBounds(10, 150, 150, 80);
 	
+	
+	EditorState::editor = this;
+
+	// a busy loop waiting for the processor to become available
+	while (!EditorState::processor) {
+		
+	}
+
+	juce::String channelText("channels: ");
+	channelText += EditorState::processor->getNumChannels();
+	channelLabel->setText(channelText, dontSendNotification);
+
+	addAndMakeVisible(channelLabel);
+
+	#ifdef DEBUG
+	printf("GUI system nominal.\n");
+	#endif
 }
 
 QdvstAudioProcessorEditor::~QdvstAudioProcessorEditor()
@@ -65,4 +86,14 @@ void QdvstAudioProcessorEditor::sliderValueChanged(Slider* slider)
 	#ifdef DEBUG
 	printf("slider value changse! %lf\n", slider->getValue());
 	#endif
+
+	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+
+	if (!EditorState::processor) {
+		return;
+	}
+
+	QdvstAudioProcessor* processor = EditorState::processor;
+	
+	//editorLock.
 }

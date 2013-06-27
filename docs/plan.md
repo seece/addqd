@@ -38,4 +38,4 @@ useammat oskillaattorit
 		
 poista instrumenttistrukti, se on turha
 
-fiksaa ärsyttävä näpytysbugi :(
+virittele joku gui että instrumentin datat vois tallentaa hyvin

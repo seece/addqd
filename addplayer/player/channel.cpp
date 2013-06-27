@@ -125,3 +125,17 @@ void Channel::removePlayingVoice(Voice* voice) {
 void Channel::processModulation() {
 
 }
+
+int Channel::unitsLoaded() {
+	int amount = 0;
+
+	for (int u=0;u<Channel::MAX_UNITS;u++) {
+		if (this->units[u] == NULL) {
+			continue;
+		}
+
+		amount++;
+	}
+
+	return amount;
+}

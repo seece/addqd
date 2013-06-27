@@ -12,7 +12,7 @@
 #define __PLUGINPROCESSOR_H_6F279363__
 
 #include "../JuceLibraryCode/JuceHeader.h"
-;
+
 #include "player/addsynth.h"
 
 struct PluginSettings {
@@ -72,6 +72,9 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
+
+	Channel* getChannel(int index);
+	int getNumChannels();
 
 private:
     //==============================================================================
