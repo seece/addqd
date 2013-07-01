@@ -16,6 +16,7 @@
 #include "generators.h"
 #include "addsynth_types.h"
 #include "lfo.h"
+#include "../unit_types.h"
 
 void create_spectrum(Spectrum * spectrum);
 Instrument** syn_get_instrument_list_pointer();

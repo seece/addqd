@@ -15,6 +15,7 @@ class CToneBlock : public CUnit {
 		static const int NUM_OSCILLATOR_TYPES = 3;
 		static generators::osc_type selected_osc;
 		static WaveformFunc_t osc_functions[NUM_OSCILLATOR_TYPES];
+		addqd::UnitType getType();
 
 	private:
 		static enum {

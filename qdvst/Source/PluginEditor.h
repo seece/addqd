@@ -11,14 +11,17 @@
 #ifndef __PLUGINEDITOR_H_A4123A30__
 #define __PLUGINEDITOR_H_A4123A30__
 
+#include <vector>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "ChannelView.h"
 
 //==============================================================================
 /**
 */
 class QdvstAudioProcessorEditor  :	public AudioProcessorEditor,
-									public SliderListener									
+									public SliderListener,
+									public juce::ComboBox::Listener								
 {
 public:
     QdvstAudioProcessorEditor (QdvstAudioProcessor* ownerFilter);
@@ -26,9 +29,16 @@ public:
 
     void paint (Graphics& g);
 	void sliderValueChanged(Slider* slider);
+	void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
 	juce::Slider* testknob;
 	juce::Label* channelLabel;
+	juce::ComboBox* channelSelector;
+
+private:
+	std::vector<ChannelView*> channels;
+	int channelAmount;	// amount of channels active in the pluginprocessor
+	int selectedChannelId;
 };
 
 

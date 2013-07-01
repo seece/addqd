@@ -50,8 +50,12 @@ float CToneBlock::render(double phase, Voice* voicep) {
 
 void CToneBlock::panic() {
 
-};
+}
 
 int CToneBlock::getParamNum() {
 	return CToneBlock::PARAMETER_AMOUNT;
+}
+
+addqd::UnitType CToneBlock::getType() {
+	return addqd::UnitType::UNIT_TONEBLOCK;
 }

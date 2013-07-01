@@ -13,6 +13,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "editor_state.h"
+#include "logger.h"
 
 void initConsole(void) {
     AllocConsole();
@@ -27,8 +28,17 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 	
 	#ifdef DEBUG
 	initConsole();
-	printf("Starting GUI.\n");
+	logger::info("starting GUI\n");
 	#endif
+
+	channelAmount = ownerFilter->getNumChannels();
+	
+	logger::info("creating %d channel views", channelAmount);
+	for (int i=0;i<channelAmount;i++) {
+		this->channels.push_back(new ChannelView(i));
+		channels[i]->setVisible(false);
+		this->addChildComponent(channels[i]);
+	}
 
     setSize (640, 480);
 	testknob = new Slider ("scale");
@@ -40,13 +50,7 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 	channelLabel = new Label("channelLabel", "channels");
 	channelLabel->setBounds(10, 150, 150, 80);
 	
-	
 	EditorState::editor = this;
-
-	// a busy loop waiting for the processor to become available
-	while (!EditorState::processor) {
-		
-	}
 
 	juce::String channelText("channels: ");
 	channelText += EditorState::processor->getNumChannels();
@@ -54,14 +58,35 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 
 	addAndMakeVisible(channelLabel);
 
-	#ifdef DEBUG
-	printf("GUI system nominal.\n");
-	#endif
+	channelSelector = new juce::ComboBox("channelSelector");
+	channelSelector->setBounds(150, 2, 150, 16);
+
+	for (int i=0;i<channelAmount;i++) {
+		juce::String text = "channel ";
+		text += (i);
+
+		channelSelector->addItem(text, i + 1);
+	}
+
+	channelSelector->setSelectedId(1);
+	this->selectedChannelId = 0;
+	channelSelector->addListener(this);
+	addAndMakeVisible(channelSelector);
+
+	logger::info("GUI system nominal.");
 }
 
 QdvstAudioProcessorEditor::~QdvstAudioProcessorEditor()
 {
 	deleteAllChildren();
+
+	/*
+	int channelNum = EditorState::processor->getNumChannels();
+	
+	for (int i=0;i<channelNum;i++) {
+		
+	}
+	*/
 
 	#ifdef DEBUG
 	FreeConsole();
@@ -94,6 +119,23 @@ void QdvstAudioProcessorEditor::sliderValueChanged(Slider* slider)
 	}
 
 	QdvstAudioProcessor* processor = EditorState::processor;
+	//int unitsLoaded = processor->getChannel(0)->
+	//printf("units loaded on chn 0: %d\n", unitsLoaded);
 	
 	//editorLock.
+}
+
+void QdvstAudioProcessorEditor::comboBoxChanged (ComboBox* box)
+{
+	int newId = box->getSelectedId() - 1;	// channel numbers begin from 0
+
+	if (newId >= this->channelAmount) {
+		logger::error("trying to change to an invalid channel: %d", newId);
+		return;
+	}
+
+	this->channels[selectedChannelId]->setVisible(false);
+	selectedChannelId = newId;
+	this->channels[selectedChannelId]->setVisible(true);
+	logger::info("changed to channel %d", newId);
 }
