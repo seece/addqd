@@ -31,6 +31,7 @@ class Channel {
 	LFO lfo[SYN_CHN_LFO_AMOUNT];
 	
 	CUnit* units[MAX_UNITS];
+	LFO* getLFO(int index);
 
 	private:
 	CVoiceList voicelist;

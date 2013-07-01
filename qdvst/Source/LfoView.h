@@ -6,12 +6,14 @@
 #include "player/addsynth.h"
 
 class LfoView  : public Component,
+				public SliderListener,
 				public ComboBox::Listener
 {
 	public:
 	LfoView(int index, Channel* channel);
 	virtual ~LfoView();
 	void paint (Graphics& g);
+	void sliderValueChanged(Slider* slider);
 	void comboBoxChanged (ComboBox* box);
 
 	private:

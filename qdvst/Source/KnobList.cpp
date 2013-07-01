@@ -34,6 +34,9 @@ void KnobList::addKnob(int index, Slider* knob, juce::String labelText)
 	int knob_x = (index % row_len)*size;
 	int knob_y = (index / row_len) * knob_h;
 
+	//knob->setName(juce::String() += index);
+	knob->setName(labelText);
+
 	knobs[index] = knob;
 	knob->setBounds(knob_x, knob_y, size, size);
 	labels[index]->setBounds(knob_x, knob_y + size, 75, 16);
@@ -55,9 +58,10 @@ Slider* KnobList::get(int index)
 }
 
 
-Slider* KnobList::createSlider(float low, float high, float step)
+Slider* KnobList::createSlider(float low, float high, float step, SliderListener* listener)
 {
 	Slider* slider = new juce::Slider();
 	slider->setRange(low, high, step);
+	slider->addListener(listener);
 	return slider;
 }

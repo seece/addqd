@@ -139,3 +139,15 @@ int Channel::unitsLoaded() {
 
 	return amount;
 }
+
+LFO* Channel::getLFO(int index)
+{
+	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+	if (index < 0 || index >= SYN_CHN_LFO_AMOUNT) {
+		fprintf(stderr, "LFO index out of bounds: %d\n", index);
+		return nullptr;
+	}
+	#endif
+
+	return &this->lfo[index];
+}

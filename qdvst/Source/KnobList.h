@@ -13,7 +13,7 @@ class KnobList : public Component
 	void addKnob(int index, Slider* knob, String label);
 	Slider* get(int index);
 
-	static Slider* createSlider(float low, float high, float step);
+	static Slider* createSlider(float low, float high, float step, SliderListener* listener);
 
 	private:
 	int knobAmount;
