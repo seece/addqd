@@ -20,10 +20,12 @@ ChannelView::ChannelView(int index)
 	unitAmountLabel->setBounds(0, 16, 100, 16);
 	addAndMakeVisible(unitAmountLabel);
 
-	knobs = new KnobList(5, 200, 70);
+	knobs = new KnobList(5, 150, 70);
 	knobs->setTopLeftPosition(0, 50);
-	knobs->addKnob(0, new juce::Slider());
-	knobs->addKnob(1, new juce::Slider());
+	knobs->addKnob(0, new juce::Slider(), "eka");
+	knobs->addKnob(1, new juce::Slider(), "toka");
+	knobs->addKnob(2, new juce::Slider(), "kolmas");
+	knobs->addKnob(3, new juce::Slider(), "neljas");
 	addAndMakeVisible(knobs);
 }
 
