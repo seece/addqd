@@ -22,12 +22,13 @@ KnobList::~KnobList()
 
 void KnobList::addKnob(int index, Slider* knob, juce::String labelText)
 {
-	int size = 28;
+	int size = 24;
 
 	labels[index] = new juce::Label();
 	labels[index]->setText(labelText, juce::NotificationType::dontSendNotification);
+	labels[index]->setFont(juce::Font(12));
 	
-	int knob_w = 28 + 5;
+	int knob_w = 24 + 5;
 	int knob_h = 40;
 	int row_len = this->getWidth() / knob_w;
 	int knob_x = (index % row_len)*size;
@@ -43,7 +44,7 @@ void KnobList::addKnob(int index, Slider* knob, juce::String labelText)
 	addAndMakeVisible(labels[index]);
 }
 
-Slider* KnobList::getKnob(int index)
+Slider* KnobList::get(int index)
 {
 	if (index < 0 || index >= knobAmount) {
 		logger::error("invalid getKnob index: %d", index);
@@ -51,4 +52,12 @@ Slider* KnobList::getKnob(int index)
 	}
 
 	return knobs[index];
+}
+
+
+Slider* KnobList::createSlider(float low, float high, float step)
+{
+	Slider* slider = new juce::Slider();
+	slider->setRange(low, high, step);
+	return slider;
 }

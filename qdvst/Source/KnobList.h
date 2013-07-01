@@ -11,7 +11,9 @@ class KnobList : public Component
 	KnobList(int knobAmount, int width, int height);
 	virtual ~KnobList();
 	void addKnob(int index, Slider* knob, String label);
-	Slider* getKnob(int index);
+	Slider* get(int index);
+
+	static Slider* createSlider(float low, float high, float step);
 
 	private:
 	int knobAmount;

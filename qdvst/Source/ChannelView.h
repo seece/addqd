@@ -4,6 +4,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "player/addsynth.h"
 #include "KnobList.h"
+#include "LfoView.h"
 
 class ChannelView : public Component
 {
@@ -21,6 +22,8 @@ class ChannelView : public Component
 	Channel* targetChannel;
 	
 	KnobList* knobs;
+	LfoView* lfoView;
+	
 };
 
 #endif
