@@ -137,6 +137,8 @@
     <ClCompile Include="..\..\Source\addqd_midi.cpp" />
     <ClCompile Include="..\..\Source\ChannelView.cpp" />
     <ClCompile Include="..\..\Source\editor_state.cpp" />
+    <ClCompile Include="..\..\Source\KnobList.cpp" />
+    <ClCompile Include="..\..\Source\LfoView.cpp" />
     <ClCompile Include="..\..\Source\logger.cpp" />
     <ClCompile Include="..\..\Source\PluginProcessor.cpp" />
     <ClCompile Include="..\..\Source\PluginEditor.cpp" />
@@ -1169,6 +1171,8 @@
     <ClInclude Include="..\..\Source\addqd_midi.h" />
     <ClInclude Include="..\..\Source\ChannelView.h" />
     <ClInclude Include="..\..\Source\editor_state.h" />
+    <ClInclude Include="..\..\Source\KnobList.h" />
+    <ClInclude Include="..\..\Source\LfoView.h" />
     <ClInclude Include="..\..\Source\logger.h" />
     <ClInclude Include="..\..\Source\PluginProcessor.h" />
     <ClInclude Include="..\..\Source\PluginEditor.h" />

@@ -37,6 +37,7 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 	for (int i=0;i<channelAmount;i++) {
 		this->channels.push_back(new ChannelView(i));
 		channels[i]->setVisible(false);
+		channels[i]->setTopLeftPosition(50, 50);
 		this->addChildComponent(channels[i]);
 	}
 
@@ -45,10 +46,10 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 	testknob->setBounds(10, 100, 150, 32);
 	testknob->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
 	testknob->addListener(this);
-	addAndMakeVisible(testknob);
+	//addAndMakeVisible(testknob);
 
 	channelLabel = new Label("channelLabel", "channels");
-	channelLabel->setBounds(10, 150, 150, 80);
+	channelLabel->setBounds(10, 0, 150, 80);
 	
 	EditorState::editor = this;
 
