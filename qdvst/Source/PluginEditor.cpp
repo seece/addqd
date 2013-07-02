@@ -113,7 +113,7 @@ void QdvstAudioProcessorEditor::sliderValueChanged(Slider* slider)
 	printf("slider value changse! %lf\n", slider->getValue());
 	#endif
 
-	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+	//const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 
 	if (!EditorState::processor) {
 		return;

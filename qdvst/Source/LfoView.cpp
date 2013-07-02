@@ -50,11 +50,13 @@ void LfoView::comboBoxChanged (ComboBox* box)
 {
 	int newId = box->getSelectedId() - 1;	
 	this->waveformType = static_cast<generators::osc_type>(newId);
+	// TODO add oscillator array to oscillators:: namespace with enum indexes
+	//this->channel->getLFO(index)->wavefunc = generators::
 }
 
 void LfoView::sliderValueChanged(Slider* slider) 
 {
-	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+	//const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 	LFO* lfo = this->channel->getLFO(index);
 	float val = slider->getValue();
 	//lfo->

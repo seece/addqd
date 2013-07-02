@@ -481,15 +481,6 @@ void syn_render_block(SAMPLE_TYPE * buf, int length, EventBuffer * eventbuffer) 
 	}
 }
 
-
-EnvState init_envstate() {
-	EnvState s;
-	s.hold = true;
-	s.beginTime = state.samples;
-	s.released = false;
-	return s;
-}
-
 // returns a pointer to the voice where the note was assigned to
 // if no suitable voice is found, returns NULL
 Voice * syn_play_note(int channel_id, int pitch, long t_samples) {
@@ -515,7 +506,7 @@ Voice * syn_play_note(int channel_id, int pitch, long t_samples) {
 		channel_list[channel_id].addPlayingVoice(voice);
 		//voice->channel = &channel_list[channel];
 		//voice->channel_id = channel;
-		voice->envstate = init_envstate();
+		voice->envstate = init_envstate(state.samples);
 		voice->pitch = pitch;
 
 		init_voice_state(&voice->state);

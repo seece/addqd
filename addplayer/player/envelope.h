@@ -20,4 +20,5 @@ struct Envelope {
 };
 
 void init_envelope(Envelope* env);
+EnvState init_envstate(long sampleTime);
 #endif

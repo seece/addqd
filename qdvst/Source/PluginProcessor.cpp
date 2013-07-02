@@ -261,14 +261,18 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 	synthEvents.amount = 0;
 	convertMidiEvents(midiMessages, synthEvents);
 		
+	static int lasttime;
 	int length = buffer.getNumSamples();
+
+	printf("renDNER %u %u size: %d!\n", this->sampleTime, this->sampleTime - lasttime, length);
+	lasttime = this->sampleTime;
 
 	if (length > maxSamplesPerBlock) {
 		printf("VST: Warning blocksize too big: %d\n", length);
 	}
 
 	{
-		const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+		//const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 	//renderStart = GetTickCount();
 	//if (sampleTime > 44100*2) {
 		syn_render_block(tempAudioBuffer, length, &synthEvents);
