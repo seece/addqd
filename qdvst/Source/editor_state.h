@@ -6,7 +6,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 namespace EditorState {
-	//extern CriticalSection editorLock;
+	extern CriticalSection editorLock;
 	extern QdvstAudioProcessor* processor;
 	extern QdvstAudioProcessorEditor* editor;
 }

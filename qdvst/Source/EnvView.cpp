@@ -47,11 +47,13 @@ void EnvView::comboBoxChanged (ComboBox* box)
 
 void EnvView::sliderValueChanged(Slider* slider) 
 {
-	//const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+
 	Envelope* env = this->channel->getEnvelope(index);
 	float val = slider->getValue();
 
 	juce::String name = slider->getName();
+
+	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 	
 	if (name == "att") {
 		env->attack = val;

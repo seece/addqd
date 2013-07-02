@@ -261,25 +261,16 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 	synthEvents.amount = 0;
 	convertMidiEvents(midiMessages, synthEvents);
 		
-	static int lasttime;
 	int length = buffer.getNumSamples();
-
-	printf("renDNER %u %u size: %d!\n", this->sampleTime, this->sampleTime - lasttime, length);
-	lasttime = this->sampleTime;
 
 	if (length > maxSamplesPerBlock) {
 		printf("VST: Warning blocksize too big: %d\n", length);
 	}
 
 	{
-		//const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
-	//renderStart = GetTickCount();
-	//if (sampleTime > 44100*2) {
+		const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 		syn_render_block(tempAudioBuffer, length, &synthEvents);
-	//}
 	}
-
-	//printf("%ld:\tbuffersize: %d\n", sampleTime, length);
 	
 	float* leftChannelData = buffer.getSampleData(0);
 	float* rightChannelData = buffer.getSampleData(1);
@@ -288,11 +279,6 @@ void QdvstAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& m
 		leftChannelData[i] = tempAudioBuffer[i*2];
 		rightChannelData[i] = tempAudioBuffer[i*2+1];
 	}
-
-
-	//printf("type 0: %d\n", (*listpointer)[0].type); 
-	//channelData[i] = sinf(440.0 * 2 * 3.14159265 * (i + sampleTime) * 1.0/(double)rate) * 0.8f;
-    
 
     // In case we have more outputs than inputs, we'll clear any output
     // channels that didn't contain input data, (because these aren't

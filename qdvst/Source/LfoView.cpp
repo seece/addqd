@@ -56,10 +56,11 @@ void LfoView::comboBoxChanged (ComboBox* box)
 
 void LfoView::sliderValueChanged(Slider* slider) 
 {
-	//const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+
 	LFO* lfo = this->channel->getLFO(index);
 	float val = slider->getValue();
-	//lfo->
+
+	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 
 	if (slider->getName() == "freq") {
 		logger::info("setting freq to %f", val);
