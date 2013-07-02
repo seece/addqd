@@ -79,5 +79,4 @@ void EnvView::fetchValues()
 	knobs->get(knobIndex::KNOB_SUS)->setValue(env->sustain);
 	knobs->get(knobIndex::KNOB_REL)->setValue(env->release);
 	//knobs->get(knobIndex::KNOB_ATT) = env->attack;
-
 }

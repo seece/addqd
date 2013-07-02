@@ -26,7 +26,6 @@ class EnvView : public Component,
 	enum knobIndex {KNOB_ATT = 0, KNOB_DEC = 1, KNOB_HOLD = 2, KNOB_SUS = 3, KNOB_REL = 4};
 
 	void fetchValues();
-
 };
 
 #endif

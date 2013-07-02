@@ -38,7 +38,6 @@ public:
 private:
 	std::vector<ChannelView*> channels;
 	int channelAmount;	// amount of channels active in the pluginprocessor
-	int selectedChannelId;
 };
 
 

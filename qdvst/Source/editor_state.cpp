@@ -8,4 +8,6 @@ CriticalSection EditorState::editorLock;
 QdvstAudioProcessor* EditorState::processor = NULL;
 QdvstAudioProcessorEditor* EditorState::editor = NULL;
 
+// the channel currently viewed in the editor
+int EditorState::selectedChannelId = 0;
 

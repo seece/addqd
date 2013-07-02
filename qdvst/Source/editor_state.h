@@ -9,6 +9,8 @@ namespace EditorState {
 	extern CriticalSection editorLock;
 	extern QdvstAudioProcessor* processor;
 	extern QdvstAudioProcessorEditor* editor;
+
+	extern int selectedChannelId;
 }
 
 #endif
