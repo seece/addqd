@@ -33,8 +33,10 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	tri->volume=0.3f;
 	tri->octave=0;
 	tri->fmFunc = *generators::resonant_fm;
-	tri->env[0].attack = 0.05f;
-	tri->env[0].release = 0.5f;
+	syn_get_channel(0)->env[0].attack = 0.05f;
+	syn_get_channel(0)->env[0].release = 0.5f;
+	//tri->env[0].attack = 0.05f;
+	//tri->env[0].release = 0.5f;
 
 	tri->matrix.routes[0].enabled = true;
 	tri->matrix.routes[0].source = MOD_ENV1;

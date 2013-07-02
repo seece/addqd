@@ -2,11 +2,12 @@
 #include "ChannelView.h"
 #include "KnobList.h"
 #include "LfoView.h"
+#include "EnvView.h"
 
 ChannelView::ChannelView(int index)
 {
 	this->index = index;
-	setSize (400, 300);
+	setSize (400, 420);
 
 	targetChannel = syn_get_channel(index);
 
@@ -26,6 +27,14 @@ ChannelView::ChannelView(int index)
 	lfoView[1] = new LfoView(1, targetChannel);
 	lfoView[1]->setTopLeftPosition(0, 120);
 	addAndMakeVisible(lfoView[1]);
+
+	envView[0] = new EnvView(0, targetChannel);
+	envView[0]->setTopLeftPosition(0, 190);
+	addAndMakeVisible(envView[0]);
+
+	envView[1] = new EnvView(1, targetChannel);
+	envView[1]->setTopLeftPosition(0, 260);
+	addAndMakeVisible(envView[1]);
 
 }
 

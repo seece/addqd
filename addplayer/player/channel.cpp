@@ -4,6 +4,7 @@
 #include <cstddef>
 #include "config.h"
 #include "channel.h"
+#include "envelope.h"
 #include "unit.h"
 #include "units/toneblock.h"
 #include "eks_math.h"
@@ -30,7 +31,11 @@ Channel::Channel() {
 		lfop->wavefunc = generators::sine;
 	}
 
-	// TODO read device configuration from a file
+	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
+		init_envelope(&env[i]);
+	}
+
+	// TODO read device configuration from a file/binary blob
 	units[0] = new CToneBlock();
 }
 
@@ -91,12 +96,13 @@ void Channel::renderVoice(Voice* voice, int i, long t_samples) {
 		sample += this->units[u]->render(phase, voice);
 	}
 
+	// TODO use table lookup for note pitch 
 	double f = NOTEFREQ(voice->pitch+3+ins->octave*12);
 	double t = t_samples/(double)AUDIO_RATE;
 
 	voice->phase = fmod(voice->phase + ((f/(double)AUDIO_RATE)), 1.0);
 		
-	if (t_samples - voice->envstate.endTime > ins->env[0].release*AUDIO_RATE) {
+	if (t_samples - voice->envstate.endTime > this->env[0].release*AUDIO_RATE) {
 		if (voice->envstate.released) {
 			this->removePlayingVoice(voice);
 			voice->active = false;
@@ -140,8 +146,7 @@ int Channel::unitsLoaded() {
 	return amount;
 }
 
-LFO* Channel::getLFO(int index)
-{
+LFO* Channel::getLFO(int index) {
 	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
 	if (index < 0 || index >= SYN_CHN_LFO_AMOUNT) {
 		fprintf(stderr, "LFO index out of bounds: %d\n", index);
@@ -150,4 +155,15 @@ LFO* Channel::getLFO(int index)
 	#endif
 
 	return &this->lfo[index];
+}
+
+Envelope* Channel::getEnvelope(int index) {
+	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+	if (index < 0 || index >= SYN_CHN_ENV_AMOUNT) {
+		fprintf(stderr, "ENV index out of bounds: %d\n", index);
+		return nullptr;
+	}
+	#endif
+
+	return &this->env[index];
 }

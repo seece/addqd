@@ -19,4 +19,5 @@ struct Envelope {
 	float release;
 };
 
+void init_envelope(Envelope* env);
 #endif

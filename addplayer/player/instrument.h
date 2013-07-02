@@ -13,7 +13,7 @@ enum InstrumentType {INS_OSC, INS_SAMPLER, INS_FM_TWO_OP};
 struct Instrument {
 	InstrumentType type;
 	//Spectra spectra;
-	Envelope env[SYN_CHN_ENV_AMOUNT];				
+	//Envelope env[SYN_CHN_ENV_AMOUNT];				
 	LFO lfo[SYN_CHN_LFO_AMOUNT];
 	//char * name;
 	float volume;				// volume in [0.0, 1.0]

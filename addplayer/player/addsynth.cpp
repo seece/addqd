@@ -71,13 +71,6 @@ static void init_envelope(Envelope* envp) {
 	envp->hold = 1.0f;
 }
 
-/*
-static void init_lfo(LFO* lfop) {
-	lfop->frequency = 1.0f;
-	lfop->gain = 1.0f;
-	lfop->wavefunc = generators::sine;
-}
-*/
 
 static void init_route(ModRoute* routep) {
 	routep->amount=1.0;
@@ -91,17 +84,6 @@ static void init_instrument_values(Instrument * ins) {
 	ins->volume = 1.0f;
 	ins->waveFunc = NULL;
 	ins->octave = 0;
-
-	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
-		init_envelope(&ins->env[i]);
-	}
-
-	/*
-	// check the Channel constructor for this
-	for (int i=0;i<SYN_CHN_LFO_AMOUNT;i++) {
-		init_lfo(&ins->lfo[i]);
-	}
-	*/
 
 	for (int i=0;i<SYN_CHN_MOD_AMOUNT;i++) {
 		init_route(&ins->matrix.routes[i]);
@@ -117,6 +99,7 @@ void syn_set_instrument_list_pointer(Instrument * listpointer) {
 	instrument_list = listpointer;
 }
 
+// check Channel->getLFO() for future use
 LFO* syn_get_channel_lfo(int channel_id, int lfo_id) {
 	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
 		assert(channel_id < state.channels);
@@ -226,11 +209,11 @@ static void syn_process_event(Event * e) {
 	#endif
 }
 
-
-/// Calculates voice ADSR-like envelope and stores the results in
+/// Calculates voice ADSR-like envelope and stores the results in 
 /// voice->state.mod_signals array.
 static void process_voice_envelope(Voice* voicep, double t) {
 	Instrument * ins = voicep->channel->instrument;
+	Channel* chn = voicep->channel;
 	
 	// envstate.beginTime and .endTime are in samples 
 	// but all other envstate values are in seconds (double)
@@ -241,10 +224,10 @@ static void process_voice_envelope(Voice* voicep, double t) {
 
 	// Calculate envelopes
 	for (int i=0;i<SYN_CHN_ENV_AMOUNT;i++) {
-		float envelope_amp = saturate(((voicetime+0.00001f))/ins->env[i].attack);
+		float envelope_amp = saturate(((voicetime+0.00001f))/chn->env[i].attack);
 
 		if (voicep->envstate.released) {
-			envelope_amp *= saturate(1.0f-(t - endtime)/ins->env[i].release);
+			envelope_amp *= saturate(1.0f-(t - endtime)/chn->env[i].release);
 		}
 
 		voicep->state.mod_signals.env[i] = envelope_amp;

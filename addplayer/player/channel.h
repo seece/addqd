@@ -28,10 +28,13 @@ class Channel {
 	float pan;					// channel pan, between [-1.0, 1.0]
 	EffectChain chain;
 	SAMPLE_TYPE * buffer;		// channel mixing buffer, see SYN_MAX_BUFFER_SIZE
+
 	LFO lfo[SYN_CHN_LFO_AMOUNT];
+	Envelope env[SYN_CHN_ENV_AMOUNT];				
 	
 	CUnit* units[MAX_UNITS];
 	LFO* getLFO(int index);
+	Envelope* getEnvelope(int index);
 
 	private:
 	CVoiceList voicelist;

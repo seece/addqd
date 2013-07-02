@@ -26,7 +26,7 @@ struct Voice {
 	bool active;
 	double phase;
 	Channel * channel;	// used for quick access
-	int channel_id;		// used to detect active notes on each channel 
+	int channel_id;		 
 };
 
 

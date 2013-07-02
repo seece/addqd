@@ -116,6 +116,7 @@
     <ClCompile Include="player\channel.cpp" />
     <ClCompile Include="player\device.cpp" />
     <ClCompile Include="player\effect.cpp" />
+    <ClCompile Include="player\envelope.cpp" />
     <ClCompile Include="player\event.cpp" />
     <ClCompile Include="player\generators.cpp" />
     <ClCompile Include="player\instrument.cpp" />

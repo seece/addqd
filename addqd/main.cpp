@@ -49,15 +49,12 @@ int main(int argc, char argv[]) {
 	noise->octave = -3;
 	noise->samplerFunc = *generators::sampler;
 	noise->sample = &snare;
-	noise->env[0].attack = 0.01f;
-	noise->env[0].release = 0.03f;
+	// TODO use channel envelopes in this test app too
 
 	*tri = syn_init_instrument(INS_FM_TWO_OP);
 	tri->volume=0.5f;
 	tri->octave=-2;
 	tri->fmFunc = *generators::resonant_fm;
-	tri->env[0].attack = 0.1f;
-	tri->env[0].release = 0.8f;
 	//tri->env[0].decay = 0.5f;
 
 	tri->matrix.routes[0].enabled = true;
@@ -69,15 +66,11 @@ int main(int argc, char argv[]) {
 	square->volume=0.3f;
 	square->octave = -1;
 	square->waveFunc = *generators::sinsquare;
-	square->env[0].attack = 0.001f;
-	square->env[0].release = 0.1f;
 
 	*square2 = syn_init_instrument(INS_OSC);
 	square2->volume=0.3f;
 	square2->octave = -1;
 	square2->waveFunc = *generators::square;
-	square2->env[0].attack = 0.001f;
-	square2->env[0].release = 0.1f;
 
 	Instrument** listpointer = syn_get_instrument_list_pointer();
 	*listpointer = (Instrument *)&insarr;
