@@ -20,15 +20,18 @@ ChannelView::ChannelView(int index)
 	unitAmountLabel->setBounds(0, 16, 100, 16);
 	addAndMakeVisible(unitAmountLabel);
 
-	lfoView = new LfoView(0, targetChannel);
-	lfoView->setTopLeftPosition(0, 50);
-	addAndMakeVisible(lfoView);
+	lfoView[0] = new LfoView(0, targetChannel);
+	lfoView[0]->setTopLeftPosition(0, 50);
+	addAndMakeVisible(lfoView[0]);
+	lfoView[1] = new LfoView(1, targetChannel);
+	lfoView[1]->setTopLeftPosition(0, 120);
+	addAndMakeVisible(lfoView[1]);
 
 }
 
 ChannelView::~ChannelView()
 {
-
+	deleteAllChildren();
 }
 
 int ChannelView::getIndex()

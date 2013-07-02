@@ -22,7 +22,7 @@ class ChannelView : public Component
 	Channel* targetChannel;
 	
 	KnobList* knobs;
-	LfoView* lfoView;
+	LfoView* lfoView[2];
 	
 };
 
