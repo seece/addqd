@@ -7,6 +7,8 @@
 #include "generators.h"
 #include "sample.h"
 
+WaveformFunc_t generators::osc_functions[] = {generators::sine, generators::square, generators::sawsin};
+
 // returns the sign of a number
 // http://stackoverflow.com/a/4609795
 template <typename T> int sgn(T val) {

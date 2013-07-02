@@ -12,8 +12,11 @@ typedef double (*SamplerFunc_t)(double time, float * samplearray, int arraysize)
 
 // the oscillators assume a phase in the range of [0, 2*PI[
 namespace generators {
+	const int NUM_OSCILLATOR_TYPES = 3;
 	/// Different oscillator types. Used in CToneBlock.
-	enum osc_type {OSC_SINE = 0, OSC_SQUARE, OSC_SAW};
+	enum osc_type {OSC_SINE = 0, OSC_SQUARE = 1, OSC_SAW = 2};
+	/// Maps an oscillator type enum to a rendering function
+	extern WaveformFunc_t osc_functions[NUM_OSCILLATOR_TYPES];
 
 	double sine(double x);
 	double sawsin(double x);

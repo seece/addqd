@@ -13,8 +13,8 @@ LfoView::LfoView(int index, Channel* channel)
 	this->setSize(200, 60);
 	knobs = new KnobList(2, 150, 70);
 	knobs->setTopLeftPosition(0, 16);
-	knobs->addKnob(0, KnobList::createSlider(0.0, 1.0, 0.0, this), "freq");
-	knobs->addKnob(1, KnobList::createSlider(0.0, 1.0, 0.0, this), "gain");
+	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 1.0, 0.0, this), "freq");
+	knobs->addKnob(knobIndex::KNOB_GAIN, KnobList::createSlider(0.0, 1.0, 0.0, this), "gain");
 	addAndMakeVisible(knobs);
 
 	juce::String name = "LFO ";
@@ -31,6 +31,8 @@ LfoView::LfoView(int index, Channel* channel)
 	waveformSelector->setSelectedId(generators::osc_type::OSC_SINE + 1);
 
 	addAndMakeVisible(waveformSelector);
+
+	fetchValues();
 }
 
 LfoView::~LfoView()
@@ -49,14 +51,19 @@ void LfoView::paint (Graphics& g)
 void LfoView::comboBoxChanged (ComboBox* box)
 {
 	int newId = box->getSelectedId() - 1;	
-	this->waveformType = static_cast<generators::osc_type>(newId);
-	// TODO add oscillator array to oscillators:: namespace with enum indexes
-	//this->channel->getLFO(index)->wavefunc = generators::
+	waveformType = static_cast<generators::osc_type>(newId);
+
+	if (waveformType < 0 || waveformType >= generators::NUM_OSCILLATOR_TYPES) {
+		logger::error("invalid lfo waveformtype %d", waveformType);
+		return;
+	}
+
+	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+	this->channel->getLFO(index)->wavefunc = generators::osc_functions[waveformType];
 }
 
 void LfoView::sliderValueChanged(Slider* slider) 
 {
-
 	LFO* lfo = this->channel->getLFO(index);
 	float val = slider->getValue();
 
@@ -70,9 +77,15 @@ void LfoView::sliderValueChanged(Slider* slider)
 		lfo->gain = val;
 	}
 
-
 	//int unitsLoaded = processor->getChannel(0)->
 	//printf("units loaded on chn 0: %d\n", unitsLoaded);
 	
 	//editorLock.
+}
+
+
+void LfoView::fetchValues() 
+{
+	this->knobs->get(knobIndex::KNOB_FREQ)->setValue(channel->getLFO(index)->frequency);	
+	this->knobs->get(knobIndex::KNOB_GAIN)->setValue(channel->getLFO(index)->gain);	
 }

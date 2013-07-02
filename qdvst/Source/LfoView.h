@@ -18,12 +18,15 @@ class LfoView  : public Component,
 
 	private:
 	int index;
+	enum knobIndex {KNOB_FREQ = 0, KNOB_GAIN = 1};
 
 	KnobList* knobs;
 	Label* nameLabel;
 	Channel* channel;
 	ComboBox* waveformSelector;
 	generators::osc_type waveformType;
+
+	void fetchValues();
 
 	
 };
