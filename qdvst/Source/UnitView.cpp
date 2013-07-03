@@ -1,17 +1,28 @@
 #include "UnitView.h"
 #include "player/../unit_types.h"
 
-UnitView::UnitView(Channel* targetChannel, CUnit* targetUnit)
+UnitView::UnitView(Channel* targetChannel, CUnit* targetUnit) : channel(targetChannel), unit(targetUnit), 
+	unitKnobs(KnobList(2, 32, 64))
 {
-	this->channel = targetChannel;
-	this->unit = targetUnit;
-
 	setSize(240, 80);
+	//unitKnobs->addKnob(knobIndex::KNOB_VOL, KnobList::createSlider(0.0, 1.0, 0.0, this), "unitVol");
+	// TODO handle unit VOL/PAN knob control & creation here
 }
 
 UnitView::~UnitView()
 {
+	for (int i=0;i<unitKnobs.knobs.size();i++) {
+		if (unitKnobs.knobs[i] != NULL)	{
+			delete unitKnobs.knobs[i];
+		}
+	}
+
 	deleteAllChildren();
+}
+
+void UnitView::fetchUnitKnobValues()
+{
+
 }
 
 /*

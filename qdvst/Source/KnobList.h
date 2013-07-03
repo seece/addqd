@@ -14,10 +14,11 @@ class KnobList : public Component
 	Slider* get(int index);
 
 	static Slider* createSlider(float low, float high, float step, SliderListener* listener);
+	std::vector<juce::Slider*> knobs;
 
 	private:
 	int knobAmount;
-	std::vector<juce::Slider*> knobs;
+
 	std::vector<juce::Label*> labels;
 };
 
