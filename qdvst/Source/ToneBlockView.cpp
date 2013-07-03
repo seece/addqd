@@ -2,7 +2,8 @@
 #include "ToneBlockView.h"
 #include "player/units/toneblock.h"
 
-ToneBlockView::ToneBlockView(Channel* targetChannel, CToneBlock* targetToneBlock) : UnitView(targetChannel, targetToneBlock)
+ToneBlockView::ToneBlockView(Channel* targetChannel, CToneBlock* targetToneBlock) : 
+	UnitView(targetChannel, targetToneBlock), channel(targetChannel), toneBlock(targetToneBlock)
 {
 	this->channel = targetChannel;
 	this->toneBlock = targetToneBlock;
