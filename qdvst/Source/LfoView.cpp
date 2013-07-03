@@ -10,11 +10,13 @@ LfoView::LfoView(int index, Channel* channel)
 	this->channel = channel;
 	this->index = index;
 
+	LFO* lfo = this->channel->getLFO(index);
+
 	this->setSize(175, 60);
 	knobs = new KnobList(2, 150, 70);
 	knobs->setTopLeftPosition(0, 16);
-	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 1.0, 0.0, this), "freq");
-	knobs->addKnob(knobIndex::KNOB_GAIN, KnobList::createSlider(0.0, 1.0, 0.0, this), "gain");
+	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 1.0, 0.0, this), "freq", &lfo->frequency);
+	knobs->addKnob(knobIndex::KNOB_GAIN, KnobList::createSlider(0.0, 1.0, 0.0, this), "gain", &lfo->gain);
 	addAndMakeVisible(knobs);
 
 	juce::String name = "LFO ";
@@ -64,23 +66,9 @@ void LfoView::comboBoxChanged (ComboBox* box)
 
 void LfoView::sliderValueChanged(Slider* slider) 
 {
-	LFO* lfo = this->channel->getLFO(index);
-	float val = slider->getValue();
-
 	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
 
-	if (slider->getName() == "freq") {
-		logger::info("setting freq to %f", val);
-		lfo->frequency = val;
-	} else if (slider->getName() == "gain") {
-		logger::info("setting gain to %f", val);
-		lfo->gain = val;
-	}
-
-	//int unitsLoaded = processor->getChannel(0)->
-	//printf("units loaded on chn 0: %d\n", unitsLoaded);
-	
-	//editorLock.
+	knobs->updateSlider(slider);
 }
 
 
