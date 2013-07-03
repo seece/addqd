@@ -17,7 +17,6 @@ class CToneBlock : public CUnit {
 		static WaveformFunc_t osc_functions[NUM_OSCILLATOR_TYPES];
 		addqd::UnitType getType();
 
-	private:
 		static enum {
 			PARAM_VOLUME = 0, 
 			PARAM_OCTAVE = 1,
@@ -25,6 +24,7 @@ class CToneBlock : public CUnit {
 			PARAM_MOD_A = 3,	// operator multipliers for FM
 			PARAM_MOD_B = 4
 			};
+	private:
 		
 		static const int PARAMETER_AMOUNT = 5;
 

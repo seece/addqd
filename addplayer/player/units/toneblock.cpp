@@ -14,7 +14,6 @@
 generators::osc_type CToneBlock::selected_osc;
 WaveformFunc_t CToneBlock::osc_functions[NUM_OSCILLATOR_TYPES];
 
-
 CToneBlock::CToneBlock() {
 	this->selected_osc = generators::OSC_SINE;
 	osc_functions[generators::OSC_SINE] = generators::sine;
