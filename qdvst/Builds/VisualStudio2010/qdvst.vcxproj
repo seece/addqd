@@ -78,7 +78,7 @@
     <Link>
       <OutputFile>.\Debug\qdvst.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt.lib; msvcrt.lib;;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug\qdvst.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +120,7 @@
     <Link>
       <OutputFile>.\Release\qdvst.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release\qdvst.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
