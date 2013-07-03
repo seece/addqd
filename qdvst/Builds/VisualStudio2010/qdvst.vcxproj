@@ -1173,6 +1173,7 @@
     <ClCompile Include="..\..\Source\RackView.cpp" />
     <ClCompile Include="..\..\Source\ToneBlockView.cpp" />
     <ClCompile Include="..\..\Source\UnitView.cpp" />
+    <ClCompile Include="..\..\Source\WaveformSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\addqd_midi.h" />
@@ -1587,6 +1588,7 @@
     <ClInclude Include="..\..\Source\RackView.h" />
     <ClInclude Include="..\..\Source\ToneBlockView.h" />
     <ClInclude Include="..\..\Source\UnitView.h" />
+    <ClInclude Include="..\..\Source\WaveformSelector.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc" />

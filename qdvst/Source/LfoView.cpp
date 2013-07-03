@@ -3,6 +3,7 @@
 #include "editor_state.h"
 #include "player/addsynth.h"
 #include "KnobList.h"
+#include "WaveformSelector.h"
 #include "LfoView.h"
 
 LfoView::LfoView(int index, Channel* channel) 
@@ -15,7 +16,7 @@ LfoView::LfoView(int index, Channel* channel)
 	this->setSize(175, 60);
 	knobs = new KnobList(2, 150, 70);
 	knobs->setTopLeftPosition(0, 16);
-	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 10.0, 0.0, this), "freq", &lfo->frequency);
+	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 60.0, 0.0, this), "freq", &lfo->frequency);
 	knobs->addKnob(knobIndex::KNOB_GAIN, KnobList::createSlider(0.0, 1.0, 0.0, this), "gain", &lfo->gain);
 	addAndMakeVisible(knobs);
 
@@ -25,13 +26,8 @@ LfoView::LfoView(int index, Channel* channel)
 	nameLabel->setBounds(0, 0, 80, 20);
 	addAndMakeVisible(nameLabel);
 
-	waveformSelector = new juce::ComboBox("waveformSelector");
-	waveformSelector->setBounds(75, 2, 95, 16);
-	waveformSelector->addItem("Sine", generators::osc_type::OSC_SINE + 1);
-	waveformSelector->addItem("Saw", generators::osc_type::OSC_SAW + 1);
-	waveformSelector->addItem("Square", generators::osc_type::OSC_SQUARE + 1);
-	waveformSelector->setSelectedId(generators::osc_type::OSC_SINE + 1);
-
+	waveformSelector = new WaveformSelector("waveformSelector");
+	waveformSelector->addListener(this);
 	addAndMakeVisible(waveformSelector);
 
 	fetchValues();
@@ -52,16 +48,11 @@ void LfoView::paint (Graphics& g)
 
 void LfoView::comboBoxChanged (ComboBox* box)
 {
-	int newId = box->getSelectedId() - 1;	
-	waveformType = static_cast<generators::osc_type>(newId);
-
-	if (waveformType < 0 || waveformType >= generators::NUM_OSCILLATOR_TYPES) {
-		logger::error("invalid lfo waveformtype %d", waveformType);
-		return;
-	}
-
 	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
-	this->channel->getLFO(index)->wavefunc = generators::osc_functions[waveformType];
+
+	generators::osc_type waveformType = waveformSelector->handleChange(box);
+	channel->getLFO(index)->wavefunc = generators::osc_functions[waveformType];
+	logger::info("wavefunc set to %d", waveformType);
 }
 
 void LfoView::sliderValueChanged(Slider* slider) 

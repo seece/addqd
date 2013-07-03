@@ -3,6 +3,7 @@
 
 #include "KnobList.h"
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "WaveformSelector.h"
 #include "player/addsynth.h"
 
 class LfoView  : public Component,
@@ -23,12 +24,10 @@ class LfoView  : public Component,
 	KnobList* knobs;
 	Label* nameLabel;
 	Channel* channel;
-	ComboBox* waveformSelector;
+	WaveformSelector* waveformSelector;
 	generators::osc_type waveformType;
 
 	void fetchValues();
-
-	
 };
 
 #endif
