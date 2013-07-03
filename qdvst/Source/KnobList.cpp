@@ -20,7 +20,7 @@ KnobList::~KnobList()
 	}
 }
 
-void KnobList::addKnob(int index, Slider* knob, juce::String labelText)
+void KnobList::addKnob(int index, Slider* knob, juce::String labelText, float* targetValue)
 {
 	int size = 24;
 
@@ -41,6 +41,11 @@ void KnobList::addKnob(int index, Slider* knob, juce::String labelText)
 	knob->setBounds(knob_x, knob_y, size, size);
 	labels[index]->setBounds(knob_x, knob_y + size, 75, 16);
 	knob->setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+
+	if (targetValue) {
+		knob->setValue(*targetValue);
+		knobMap[labelText] = targetValue;
+	}
 
 	// TODO add listener
 	addAndMakeVisible(knob);
@@ -63,5 +68,24 @@ Slider* KnobList::createSlider(float low, float high, float step, SliderListener
 	Slider* slider = new juce::Slider();
 	slider->setRange(low, high, step);
 	slider->addListener(listener);
+
 	return slider;
+}
+
+bool KnobList::updateSlider(Slider* slider)
+{
+	if (knobMap.find(slider->getName()) == knobMap.end()) {
+		return false;
+	} else {
+		float* target = knobMap[slider->getName()];
+
+		if (!target) {
+			logger::error("invalid (NULL) knob value target pointer in knob %s!", slider->getName().getCharPointer());
+			return false;	
+		}
+
+		*target = slider->getValue();
+		logger::info("setting knob %s to %f", slider->getName().getCharPointer(), slider->getValue());
+		return true;
+	}
 }

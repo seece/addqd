@@ -5,6 +5,7 @@
 	#include <cstdio>
 #endif
 
+#include <cstring>
 #include <cmath>
 #include "../eks_math.h"
 #include "toneblock.h"
@@ -25,13 +26,15 @@ CToneBlock::CToneBlock() {
 	param_values[CToneBlock::PARAM_FINE] = 0.0f;
 	param_values[CToneBlock::PARAM_MOD_A] = 1.0f;
 	param_values[CToneBlock::PARAM_MOD_B] = 1.0f;
+
+	memset(this->voicePhases, 0, sizeof(float) * SYN_MAX_VOICES);
 }
 
 CToneBlock::~CToneBlock() {
 
 }
 
-float CToneBlock::render(double phase, Voice* voicep) {
+float CToneBlock::render(double phase_in, Voice* voicep) {
 	#ifdef DEBUG_UNITS
 		assert(static_cast<int>(selected_osc) < NUM_OSCILLATOR_TYPES);
 	#endif
@@ -39,7 +42,13 @@ float CToneBlock::render(double phase, Voice* voicep) {
 	int octave = (int)param_values[PARAM_OCTAVE];
 	float fine = param_values[CToneBlock::PARAM_FINE];
 
-	double f = NOTEFREQ(voicep->pitch+3+octave*12 + (double)fine);
+	//double f = NOTEFREQ(voicep->pitch+3+octave*12 + (double)fine);
+	double f = NOTEFREQ(((double)voicep->pitch+3.0 + (double)fine) + octave*12.0);
+
+	double phase = voicePhases[voicep->index];
+	phase = fmod(phase + ((f/(double)AUDIO_RATE)), 1.0);
+	voicePhases[voicep->index] = phase; 
+	
 	float sample = static_cast<float>(osc_functions[selected_osc](phase * 2.0 * PI));
 	sample*=param_values[PARAM_VOLUME];
 	sample*=voicep->state.vol;

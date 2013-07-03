@@ -29,6 +29,7 @@ class ToneBlockView :	public UnitView,
 		Channel* channel;
 		CToneBlock* toneBlock;
 		KnobList* knobs;
+
 		void fetchValues();
 		std::map<juce::String, float*> knobMap;
 };

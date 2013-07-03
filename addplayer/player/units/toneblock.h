@@ -27,7 +27,7 @@ class CToneBlock : public CUnit {
 	private:
 		
 		static const int PARAMETER_AMOUNT = 5;
-
+		double voicePhases[SYN_MAX_VOICES]; // holds the current phase of each voice
 };
 
 #endif
