@@ -1,4 +1,6 @@
 #include "RackView.h"
+#include "GenericUnitView.h"
+#include "ToneBlockView.h"
 
 RackView::RackView(Channel* targetChannel) 
 {
@@ -34,7 +36,21 @@ void RackView::fetchValues()
 
 	for (int i=0;i<Channel::MAX_UNITS;i++) {
 		CUnit* unit = channel->getUnit(i);
-		UnitView* view = new UnitView(channel, unit);
+
+		if (!unit)
+			continue;
+
+		UnitView* view; 
+
+		switch (unit->getType()) {
+			case addqd::UnitType::UNIT_TONEBLOCK:
+				view = new ToneBlockView(channel, dynamic_cast<CToneBlock*> (unit));
+				break;
+			// NONE and GENERIC
+			default:
+				view = new GenericUnitView(channel, unit);
+				break;
+		}
 
 		this->units[i] = view;
 		view->setTopLeftPosition(margin, height*i);

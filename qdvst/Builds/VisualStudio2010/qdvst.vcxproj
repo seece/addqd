@@ -140,6 +140,7 @@
     <ClCompile Include="..\..\Source\ChannelView.cpp" />
     <ClCompile Include="..\..\Source\editor_state.cpp" />
     <ClCompile Include="..\..\Source\EnvView.cpp" />
+    <ClCompile Include="..\..\Source\GenericUnitView.cpp" />
     <ClCompile Include="..\..\Source\KnobList.cpp" />
     <ClCompile Include="..\..\Source\LfoView.cpp" />
     <ClCompile Include="..\..\Source\logger.cpp" />
@@ -1170,6 +1171,7 @@
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\VST\juce_VST_Wrapper.cpp" />
     <ClCompile Include="..\..\Source\RackView.cpp" />
+    <ClCompile Include="..\..\Source\ToneBlockView.cpp" />
     <ClCompile Include="..\..\Source\UnitView.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -1177,6 +1179,7 @@
     <ClInclude Include="..\..\Source\ChannelView.h" />
     <ClInclude Include="..\..\Source\editor_state.h" />
     <ClInclude Include="..\..\Source\EnvView.h" />
+    <ClInclude Include="..\..\Source\GenericUnitView.h" />
     <ClInclude Include="..\..\Source\KnobList.h" />
     <ClInclude Include="..\..\Source\LfoView.h" />
     <ClInclude Include="..\..\Source\logger.h" />
@@ -1582,6 +1585,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
     <ClInclude Include="..\..\Source\RackView.h" />
+    <ClInclude Include="..\..\Source\ToneBlockView.h" />
     <ClInclude Include="..\..\Source\UnitView.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,25 +1,30 @@
-#include "UnitView.h"
-#include "player/../unit_types.h"
 
-UnitView::UnitView(Channel* targetChannel, CUnit* targetUnit)
+#include "ToneBlockView.h"
+#include "player/units/toneblock.h"
+
+ToneBlockView::ToneBlockView(Channel* targetChannel, CToneBlock* targetToneBlock) : UnitView(targetChannel, targetToneBlock)
 {
 	this->channel = targetChannel;
-	this->unit = targetUnit;
+	this->toneBlock = targetToneBlock;
 
-	setSize(240, 80);
+	fetchValues();
 }
 
-UnitView::~UnitView()
+ToneBlockView::~ToneBlockView()
 {
 	deleteAllChildren();
 }
 
-/*
-void UnitView::paint (Graphics& g)
+void ToneBlockView::fetchValues()
+{
+
+}
+
+void ToneBlockView::paint (Graphics& g)
 {
 	g.fillAll (Colours::darkkhaki);
 
-	if (unit == NULL) {
+	if (toneBlock == NULL) {
 		g.fillAll (Colours::darkslategrey);
 		g.setColour (Colours::white);
 		g.setFont (15.0f);
@@ -27,12 +32,10 @@ void UnitView::paint (Graphics& g)
 						  0, 0, getWidth(), getHeight(),
 						  Justification::topLeft, 1);
 	} else {
-		addqd::UnitType type = unit->getType();
+		g.fillAll (Colours::yellow);
 		g.setColour (Colours::black);
 		g.setFont (15.0f);
-		String title = "type: ";
-		title += type;
-		g.drawFittedText (title,
+		g.drawFittedText ("a toneblock!",
 						  0, 0, getWidth(), getHeight(),
 						  Justification::topLeft, 1);
 	}
@@ -40,4 +43,3 @@ void UnitView::paint (Graphics& g)
     g.setColour (Colours::black);
 	g.drawRect(0, 0, this->getWidth(), this->getHeight(), 1);
 }
-*/
