@@ -28,7 +28,7 @@ QdvstAudioProcessorEditor::QdvstAudioProcessorEditor (QdvstAudioProcessor* owner
 	for (int i=0;i<channelAmount;i++) {
 		this->channels.push_back(new ChannelView(i));
 		channels[i]->setVisible(false);
-		channels[i]->setTopLeftPosition(50, 50);
+		channels[i]->setTopLeftPosition(0, 25);
 		this->addChildComponent(channels[i]);
 	}
 

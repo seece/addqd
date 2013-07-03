@@ -32,9 +32,11 @@ class Channel {
 	LFO lfo[SYN_CHN_LFO_AMOUNT];
 	Envelope env[SYN_CHN_ENV_AMOUNT];				
 	
-	CUnit* units[MAX_UNITS];
+	CUnit* units[MAX_UNITS];	// we must use pointers since we are taking advantage of polymorphism
+
 	LFO* getLFO(int index);
 	Envelope* getEnvelope(int index);
+	CUnit* getUnit(int index);
 
 	private:
 	CVoiceList voicelist;

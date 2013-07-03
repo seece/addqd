@@ -8,7 +8,7 @@ EnvView::EnvView(int index, Channel* channel)
 	this->index = index;
 	this->channel = channel;
 
-	this->setSize(200, 60);
+	this->setSize(175, 60);
 
 	juce::String name = "ENV ";
 	name += index;

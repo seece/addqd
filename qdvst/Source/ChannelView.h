@@ -6,6 +6,7 @@
 #include "KnobList.h"
 #include "LfoView.h"
 #include "EnvView.h"
+#include "RackView.h"
 
 class ChannelView : public Component
 {
@@ -25,6 +26,7 @@ class ChannelView : public Component
 	KnobList* knobs;
 	LfoView* lfoView[2];
 	EnvView* envView[2];
+	RackView* rackView;
 	
 };
 

@@ -1169,6 +1169,8 @@
       <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\VST\juce_VST_Wrapper.cpp" />
+    <ClCompile Include="..\..\Source\RackView.cpp" />
+    <ClCompile Include="..\..\Source\UnitView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\addqd_midi.h" />
@@ -1579,6 +1581,8 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_gui_extra\juce_gui_extra.h" />
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
+    <ClInclude Include="..\..\Source\RackView.h" />
+    <ClInclude Include="..\..\Source\UnitView.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc" />

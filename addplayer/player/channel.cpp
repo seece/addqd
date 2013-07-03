@@ -167,3 +167,15 @@ Envelope* Channel::getEnvelope(int index) {
 
 	return &this->env[index];
 }
+
+CUnit* Channel::getUnit(int index)
+{
+	#ifdef DEBUG_CHANNEL_SANITY_CHECKS
+	if (index < 0 || index >= Channel::MAX_UNITS) {
+		fprintf(stderr, "unit index out of bounds: %d\n", index);
+		return nullptr;
+	}
+	#endif
+
+	return units[index];
+}

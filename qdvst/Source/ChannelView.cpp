@@ -7,7 +7,9 @@
 ChannelView::ChannelView(int index)
 {
 	this->index = index;
-	setSize (400, 420);
+	setSize (600, 420);
+
+	int marginTop = 28;
 
 	targetChannel = syn_get_channel(index);
 
@@ -36,6 +38,9 @@ ChannelView::ChannelView(int index)
 	envView[1]->setTopLeftPosition(0, 260);
 	addAndMakeVisible(envView[1]);
 
+	rackView = new RackView(targetChannel);
+	rackView->setTopLeftPosition(180, marginTop);
+	addAndMakeVisible(rackView);
 }
 
 ChannelView::~ChannelView()

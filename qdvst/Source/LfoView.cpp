@@ -10,7 +10,7 @@ LfoView::LfoView(int index, Channel* channel)
 	this->channel = channel;
 	this->index = index;
 
-	this->setSize(200, 60);
+	this->setSize(175, 60);
 	knobs = new KnobList(2, 150, 70);
 	knobs->setTopLeftPosition(0, 16);
 	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 1.0, 0.0, this), "freq");
@@ -24,7 +24,7 @@ LfoView::LfoView(int index, Channel* channel)
 	addAndMakeVisible(nameLabel);
 
 	waveformSelector = new juce::ComboBox("waveformSelector");
-	waveformSelector->setBounds(100, 2, 95, 16);
+	waveformSelector->setBounds(75, 2, 95, 16);
 	waveformSelector->addItem("Sine", generators::osc_type::OSC_SINE + 1);
 	waveformSelector->addItem("Saw", generators::osc_type::OSC_SAW + 1);
 	waveformSelector->addItem("Square", generators::osc_type::OSC_SQUARE + 1);
