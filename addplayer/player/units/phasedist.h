@@ -20,8 +20,8 @@ class CPhaseDist : public CUnit {
 		static enum {
 			PARAM_OCTAVE = 0,
 			PARAM_FINE = 1,
-			PARAM_A = 2,
-			PARAM_B = 3
+			PARAM_MOD_A = 2,
+			PARAM_MOD_B = 3
 			};
 	private:
 

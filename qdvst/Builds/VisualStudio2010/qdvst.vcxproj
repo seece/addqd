@@ -144,6 +144,7 @@
     <ClCompile Include="..\..\Source\KnobList.cpp" />
     <ClCompile Include="..\..\Source\LfoView.cpp" />
     <ClCompile Include="..\..\Source\logger.cpp" />
+    <ClCompile Include="..\..\Source\PhaseDistView.cpp" />
     <ClCompile Include="..\..\Source\PluginProcessor.cpp" />
     <ClCompile Include="..\..\Source\PluginEditor.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioDataConverters.cpp">
@@ -1184,6 +1185,7 @@
     <ClInclude Include="..\..\Source\KnobList.h" />
     <ClInclude Include="..\..\Source\LfoView.h" />
     <ClInclude Include="..\..\Source\logger.h" />
+    <ClInclude Include="..\..\Source\PhaseDistView.h" />
     <ClInclude Include="..\..\Source\PluginProcessor.h" />
     <ClInclude Include="..\..\Source\PluginEditor.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioDataConverters.h" />
