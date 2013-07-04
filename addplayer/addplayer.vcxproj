@@ -106,6 +106,7 @@
     <ClInclude Include="player\sample.h" />
     <ClInclude Include="player\sound.h" />
     <ClInclude Include="player\unit.h" />
+    <ClInclude Include="player\units\phasedist.h" />
     <ClInclude Include="player\units\toneblock.h" />
     <ClInclude Include="player\voice.h" />
     <ClInclude Include="voicelist.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="player\player.cpp" />
     <ClCompile Include="player\sound.cpp" />
     <ClCompile Include="player\unit.cpp" />
+    <ClCompile Include="player\units\phasedist.cpp" />
     <ClCompile Include="player\units\toneblock.cpp" />
     <ClCompile Include="voicelist.cpp" />
   </ItemGroup>

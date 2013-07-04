@@ -7,8 +7,8 @@
 #include "envelope.h"
 #include "unit.h"
 #include "units/toneblock.h"
+#include "units/phasedist.h"
 #include "eks_math.h"
-
 
 Channel::Channel() {
 	//this->index = index;	// the index is set in void syn_init function
@@ -37,6 +37,7 @@ Channel::Channel() {
 
 	// TODO read device configuration from a file/binary blob
 	units[0] = new CToneBlock();
+	units[1] = new CPhaseDist();
 }
 
 Channel::~Channel() {

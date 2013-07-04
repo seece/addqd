@@ -21,6 +21,11 @@ ToneBlockView::ToneBlockView(Channel* targetChannel, CToneBlock* targetToneBlock
 
 	addAndMakeVisible(knobs);
 
+	waveformSelector = new WaveformSelector("waveformSelector");
+	waveformSelector->addListener(this);
+	waveformSelector->setTopLeftPosition(125, 5);
+	addAndMakeVisible(waveformSelector);
+
 	fetchValues();
 }
 
@@ -70,4 +75,11 @@ void ToneBlockView::sliderValueChanged(Slider* slider)
 
 	// this slider was not found from the knobs value mapping, so one should perform some
 	// custom value updating here
+}
+
+void ToneBlockView::comboBoxChanged (ComboBox* box)
+{
+	const GenericScopedLock<CriticalSection> scopedLock(EditorState::editorLock);
+
+	toneBlock->selected_osc = waveformSelector->handleChange(box);
 }

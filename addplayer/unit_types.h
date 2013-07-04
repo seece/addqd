@@ -2,7 +2,7 @@
 #define UNIT_TYPES_H
 namespace addqd {
 
-enum UnitType {UNIT_NONE, UNIT_GENERIC, UNIT_TONEBLOCK}; 
+enum UnitType {UNIT_NONE, UNIT_GENERIC, UNIT_TONEBLOCK, UNIT_PHASEDIST}; 
 
 };
 
