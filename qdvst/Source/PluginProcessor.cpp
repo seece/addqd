@@ -6,6 +6,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "player/addsynth.h"
+#include "player/units/toneblock.h"
 #include "addqd_midi.h"
 #include "editor_state.h"
 
@@ -33,8 +34,10 @@ QdvstAudioProcessor::QdvstAudioProcessor()
 	tri->volume=0.3f;
 	tri->octave=0;
 	tri->fmFunc = *generators::resonant_fm;
-	syn_get_channel(0)->env[0].attack = 0.05f;
-	syn_get_channel(0)->env[0].release = 0.5f;
+	Channel* chan0 = syn_get_channel(0);
+	chan0->env[0].attack = 0.05f;
+	chan0->env[0].release = 0.5f;
+	chan0->getUnit(0)->param_values[CToneBlock::PARAM_OCTAVE] = 0.0;
 	//tri->env[0].attack = 0.05f;
 	//tri->env[0].release = 0.5f;
 

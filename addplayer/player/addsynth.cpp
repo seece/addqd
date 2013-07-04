@@ -242,8 +242,11 @@ static void process_voice_lfo(Voice* voicep, double t) {
 			continue;
 		}
 
+		// each voice has its own independent LFO timer
+		// we don't use phase summing for these since accuracy isn't that important
+		float voice_t = t - (voicep->envstate.beginTime/(double)AUDIO_RATE);
 		float f = lfop->frequency;
-		float signal = lfop->wavefunc(2.0*PI*t*f) * lfop->gain;
+		float signal = lfop->wavefunc(2.0*PI*fmod(voice_t*f, 1.0f)) * lfop->gain;
 		voicep->state.mod_signals.lfo[i] = signal;
 	}
 }

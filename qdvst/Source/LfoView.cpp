@@ -16,8 +16,8 @@ LfoView::LfoView(int index, Channel* channel)
 	this->setSize(175, 60);
 	knobs = new KnobList(2, 150, 70);
 	knobs->setTopLeftPosition(0, 16);
-	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 60.0, 0.0, this), "freq", &lfo->frequency);
-	knobs->addKnob(knobIndex::KNOB_GAIN, KnobList::createSlider(0.0, 1.0, 0.0, this), "gain", &lfo->gain);
+	knobs->addKnob(knobIndex::KNOB_FREQ, KnobList::createSlider(0.0, 16.0, 0.0, this), "freq", &lfo->frequency);
+	knobs->addKnob(knobIndex::KNOB_GAIN, KnobList::createSlider(0.0, 5.0, 0.0, this), "gain", &lfo->gain);
 	addAndMakeVisible(knobs);
 
 	juce::String name = "LFO ";
